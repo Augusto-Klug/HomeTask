@@ -8,12 +8,12 @@ namespace HomeTask.WebApi.Services.Interfaces;
 /// </summary>
 public interface IPrestadorService
 {
-    Task<Prestador?> ObterPorIdAsync(int id);
-    Task<Prestador?> ObterPorUsuarioIdAsync(int usuarioId);
+    Task<Prestador?> ObterPorIdAsync(Guid id);
+    Task<Prestador?> ObterPorUsuarioIdAsync(Guid usuarioId);
     Task<Prestador> CriarAsync(Prestador prestador);
     Task<Prestador> AtualizarAsync(Prestador prestador);
     Task<IEnumerable<Prestador>> BuscarAsync(CategoriaServico? categoria, string? cidade, DateTime? dataDisponivel);
-    Task<IEnumerable<Agendamento>> ObterHistoricoServicosAsync(int prestadorId);
-    Task AtualizarMediaAvaliacoesAsync(int prestadorId);
-    Task AtualizarStatusAsync(int prestadorId, StatusPrestador status);
+    Task<IEnumerable<Agendamento>> ObterHistoricoServicosAsync(Guid prestadorId);
+    Task AtualizarMediaAvaliacoesAsync(Guid prestadorId);
+    Task AtualizarStatusAsync(Guid prestadorId, StatusPrestador status);
 }

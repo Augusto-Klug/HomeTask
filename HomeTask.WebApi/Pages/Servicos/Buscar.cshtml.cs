@@ -82,7 +82,7 @@ public class BuscarModel : PageModel
 
     public class ServicoViewModel
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public string Titulo { get; set; } = string.Empty;
         public string Descricao { get; set; } = string.Empty;
         public string CategoriaNome { get; set; } = string.Empty;

@@ -8,14 +8,14 @@ namespace HomeTask.WebApi.Services.Interfaces;
 /// </summary>
 public interface IAgendamentoService
 {
-    Task<Agendamento?> ObterPorIdAsync(int id);
+    Task<Agendamento?> ObterPorIdAsync(Guid id);
     Task<Agendamento> CriarAsync(Agendamento agendamento);
-    Task<Agendamento> AceitarAsync(int agendamentoId);
-    Task<Agendamento> RecusarAsync(int agendamentoId, string motivo);
-    Task<Agendamento> IniciarAsync(int agendamentoId);
-    Task<Agendamento> ConcluirAsync(int agendamentoId);
-    Task<Agendamento> CancelarAsync(int agendamentoId, string motivo);
-    Task<IEnumerable<Agendamento>> ObterPorClienteAsync(int clienteId);
-    Task<IEnumerable<Agendamento>> ObterPorPrestadorAsync(int prestadorId);
+    Task<Agendamento> AceitarAsync(Guid agendamentoId);
+    Task<Agendamento> RecusarAsync(Guid agendamentoId, string motivo);
+    Task<Agendamento> IniciarAsync(Guid agendamentoId);
+    Task<Agendamento> ConcluirAsync(Guid agendamentoId);
+    Task<Agendamento> CancelarAsync(Guid agendamentoId, string motivo);
+    Task<IEnumerable<Agendamento>> ObterPorClienteAsync(Guid clienteId);
+    Task<IEnumerable<Agendamento>> ObterPorPrestadorAsync(Guid prestadorId);
     Task<IEnumerable<Agendamento>> ObterPorStatusAsync(StatusAgendamento status);
 }

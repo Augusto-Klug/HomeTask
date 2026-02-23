@@ -17,7 +17,7 @@ public class MensagemService : IMensagemService
         _context = context;
     }
 
-    public async Task<Mensagem?> ObterPorIdAsync(int id)
+    public async Task<Mensagem?> ObterPorIdAsync(Guid id)
     {
         return await _context.Mensagens
             .Include(m => m.Remetente)
@@ -36,7 +36,7 @@ public class MensagemService : IMensagemService
         return mensagem;
     }
 
-    public async Task<IEnumerable<Mensagem>> ObterConversaAsync(int usuarioId1, int usuarioId2)
+    public async Task<IEnumerable<Mensagem>> ObterConversaAsync(Guid usuarioId1, Guid usuarioId2)
     {
         return await _context.Mensagens
             .Include(m => m.Remetente)
@@ -48,7 +48,7 @@ public class MensagemService : IMensagemService
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<Mensagem>> ObterConversasPorUsuarioAsync(int usuarioId)
+    public async Task<IEnumerable<Mensagem>> ObterConversasPorUsuarioAsync(Guid usuarioId)
     {
         // Retorna a última mensagem de cada conversa do usuário
         var mensagens = await _context.Mensagens
@@ -63,7 +63,7 @@ public class MensagemService : IMensagemService
             .OrderByDescending(m => m.DataEnvio);
     }
 
-    public async Task MarcarComoLidaAsync(int mensagemId)
+    public async Task MarcarComoLidaAsync(Guid mensagemId)
     {
         var mensagem = await _context.Mensagens.FindAsync(mensagemId);
         if (mensagem != null && !mensagem.Lida)
@@ -74,7 +74,7 @@ public class MensagemService : IMensagemService
         }
     }
 
-    public async Task<int> ObterNaoLidasAsync(int usuarioId)
+    public async Task<int> ObterNaoLidasAsync(Guid usuarioId)
     {
         return await _context.Mensagens
             .CountAsync(m => m.DestinatarioId == usuarioId && !m.Lida);

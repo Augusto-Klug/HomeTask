@@ -9,7 +9,7 @@ namespace HomeTask.WebApi.Models.Entities;
 public class Usuario
 {
     [Key]
-    public int Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
 
     [Required]
     [MaxLength(100)]

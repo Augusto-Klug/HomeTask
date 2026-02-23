@@ -10,10 +10,10 @@ namespace HomeTask.WebApi.Models.Entities;
 public class ServicoOferecido
 {
     [Key]
-    public int Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
 
     [Required]
-    public int PrestadorId { get; set; }
+    public Guid PrestadorId { get; set; }
 
     [ForeignKey(nameof(PrestadorId))]
     public Prestador Prestador { get; set; } = null!;

@@ -8,10 +8,10 @@ namespace HomeTask.WebApi.Services.Interfaces;
 /// </summary>
 public interface IServicoService
 {
-    Task<ServicoOferecido?> ObterPorIdAsync(int id);
+    Task<ServicoOferecido?> ObterPorIdAsync(Guid id);
     Task<ServicoOferecido> CriarAsync(ServicoOferecido servico);
     Task<ServicoOferecido> AtualizarAsync(ServicoOferecido servico);
-    Task<bool> RemoverAsync(int id);
-    Task<IEnumerable<ServicoOferecido>> ObterPorPrestadorAsync(int prestadorId);
+    Task<bool> RemoverAsync(Guid id);
+    Task<IEnumerable<ServicoOferecido>> ObterPorPrestadorAsync(Guid prestadorId);
     Task<IEnumerable<ServicoOferecido>> BuscarAsync(CategoriaServico? categoria, string? cidade, decimal? precoMaximo);
 }

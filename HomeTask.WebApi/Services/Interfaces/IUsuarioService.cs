@@ -8,7 +8,7 @@ namespace HomeTask.WebApi.Services.Interfaces;
 /// </summary>
 public interface IUsuarioService
 {
-    Task<Usuario?> ObterPorIdAsync(int id);
+    Task<Usuario?> ObterPorIdAsync(Guid id);
     Task<Usuario?> ObterPorEmailAsync(string email);
     Task<Usuario> CriarAsync(Usuario usuario, string senha);
     Task<Usuario> AtualizarAsync(Usuario usuario);

@@ -20,7 +20,7 @@ public class AvaliacaoService : IAvaliacaoService
         _prestadorService = prestadorService;
     }
 
-    public async Task<Avaliacao?> ObterPorIdAsync(int id)
+    public async Task<Avaliacao?> ObterPorIdAsync(Guid id)
     {
         return await _context.Avaliacoes
             .Include(a => a.Cliente)
@@ -30,7 +30,7 @@ public class AvaliacaoService : IAvaliacaoService
             .FirstOrDefaultAsync(a => a.Id == id);
     }
 
-    public async Task<Avaliacao?> ObterPorAgendamentoAsync(int agendamentoId)
+    public async Task<Avaliacao?> ObterPorAgendamentoAsync(Guid agendamentoId)
     {
         return await _context.Avaliacoes
             .Include(a => a.Cliente)
@@ -61,7 +61,7 @@ public class AvaliacaoService : IAvaliacaoService
         return avaliacao;
     }
 
-    public async Task<IEnumerable<Avaliacao>> ObterPorPrestadorAsync(int prestadorId)
+    public async Task<IEnumerable<Avaliacao>> ObterPorPrestadorAsync(Guid prestadorId)
     {
         return await _context.Avaliacoes
             .Include(a => a.Cliente)
@@ -73,7 +73,7 @@ public class AvaliacaoService : IAvaliacaoService
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<Avaliacao>> ObterPorClienteAsync(int clienteId)
+    public async Task<IEnumerable<Avaliacao>> ObterPorClienteAsync(Guid clienteId)
     {
         return await _context.Avaliacoes
             .Include(a => a.Prestador)
@@ -85,7 +85,7 @@ public class AvaliacaoService : IAvaliacaoService
             .ToListAsync();
     }
 
-    public async Task<bool> PodeAvaliarAsync(int clienteId, int agendamentoId)
+    public async Task<bool> PodeAvaliarAsync(Guid clienteId, Guid agendamentoId)
     {
         var agendamento = await _context.Agendamentos
             .FirstOrDefaultAsync(a => a.Id == agendamentoId && a.ClienteId == clienteId);

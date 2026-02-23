@@ -9,13 +9,13 @@ namespace HomeTask.WebApi.Models.Entities;
 public class Mensagem
 {
     [Key]
-    public int Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
 
     /// <summary>
     /// Usuário que enviou a mensagem
     /// </summary>
     [Required]
-    public int RemetenteId { get; set; }
+    public Guid RemetenteId { get; set; }
 
     [ForeignKey(nameof(RemetenteId))]
     public Usuario Remetente { get; set; } = null!;
@@ -24,7 +24,7 @@ public class Mensagem
     /// Usuário que recebeu a mensagem
     /// </summary>
     [Required]
-    public int DestinatarioId { get; set; }
+    public Guid DestinatarioId { get; set; }
 
     [ForeignKey(nameof(DestinatarioId))]
     public Usuario Destinatario { get; set; } = null!;
@@ -32,7 +32,7 @@ public class Mensagem
     /// <summary>
     /// Agendamento relacionado à conversa (opcional)
     /// </summary>
-    public int? AgendamentoId { get; set; }
+    public Guid? AgendamentoId { get; set; }
 
     [ForeignKey(nameof(AgendamentoId))]
     public Agendamento? Agendamento { get; set; }

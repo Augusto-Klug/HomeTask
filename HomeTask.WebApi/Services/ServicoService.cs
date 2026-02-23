@@ -18,7 +18,7 @@ public class ServicoService : IServicoService
         _context = context;
     }
 
-    public async Task<ServicoOferecido?> ObterPorIdAsync(int id)
+    public async Task<ServicoOferecido?> ObterPorIdAsync(Guid id)
     {
         return await _context.ServicosOferecidos
             .Include(s => s.Prestador)
@@ -44,18 +44,18 @@ public class ServicoService : IServicoService
         return servico;
     }
 
-    public async Task<bool> RemoverAsync(int id)
+    public async Task<bool> RemoverAsync(Guid id)
     {
         var servico = await _context.ServicosOferecidos.FindAsync(id);
         if (servico == null)
             return false;
-        
+
         servico.Ativo = false;
         await _context.SaveChangesAsync();
         return true;
     }
 
-    public async Task<IEnumerable<ServicoOferecido>> ObterPorPrestadorAsync(int prestadorId)
+    public async Task<IEnumerable<ServicoOferecido>> ObterPorPrestadorAsync(Guid prestadorId)
     {
         return await _context.ServicosOferecidos
             .Where(s => s.PrestadorId == prestadorId && s.Ativo)

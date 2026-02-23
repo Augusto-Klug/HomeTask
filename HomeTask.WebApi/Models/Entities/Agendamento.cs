@@ -10,22 +10,22 @@ namespace HomeTask.WebApi.Models.Entities;
 public class Agendamento
 {
     [Key]
-    public int Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
 
     [Required]
-    public int ClienteId { get; set; }
+    public Guid ClienteId { get; set; }
 
     [ForeignKey(nameof(ClienteId))]
     public Cliente Cliente { get; set; } = null!;
 
     [Required]
-    public int PrestadorId { get; set; }
+    public Guid PrestadorId { get; set; }
 
     [ForeignKey(nameof(PrestadorId))]
     public Prestador Prestador { get; set; } = null!;
 
     [Required]
-    public int ServicoOferecidoId { get; set; }
+    public Guid ServicoOferecidoId { get; set; }
 
     [ForeignKey(nameof(ServicoOferecidoId))]
     public ServicoOferecido ServicoOferecido { get; set; } = null!;

@@ -8,11 +8,11 @@ namespace HomeTask.WebApi.Services.Interfaces;
 /// </summary>
 public interface IPagamentoService
 {
-    Task<Pagamento?> ObterPorIdAsync(int id);
-    Task<Pagamento?> ObterPorAgendamentoAsync(int agendamentoId);
+    Task<Pagamento?> ObterPorIdAsync(Guid id);
+    Task<Pagamento?> ObterPorAgendamentoAsync(Guid agendamentoId);
     Task<Pagamento> CriarAsync(Pagamento pagamento);
-    Task<Pagamento> ProcessarAsync(int pagamentoId);
-    Task<Pagamento> ConfirmarAsync(int pagamentoId, string transacaoId);
-    Task<Pagamento> RecusarAsync(int pagamentoId, string motivo);
-    Task<Pagamento> EstornarAsync(int pagamentoId);
+    Task<Pagamento> ProcessarAsync(Guid pagamentoId);
+    Task<Pagamento> ConfirmarAsync(Guid pagamentoId, string transacaoId);
+    Task<Pagamento> RecusarAsync(Guid pagamentoId, string motivo);
+    Task<Pagamento> EstornarAsync(Guid pagamentoId);
 }

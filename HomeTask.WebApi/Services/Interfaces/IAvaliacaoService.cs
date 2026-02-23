@@ -7,10 +7,10 @@ namespace HomeTask.WebApi.Services.Interfaces;
 /// </summary>
 public interface IAvaliacaoService
 {
-    Task<Avaliacao?> ObterPorIdAsync(int id);
-    Task<Avaliacao?> ObterPorAgendamentoAsync(int agendamentoId);
+    Task<Avaliacao?> ObterPorIdAsync(Guid id);
+    Task<Avaliacao?> ObterPorAgendamentoAsync(Guid agendamentoId);
     Task<Avaliacao> CriarAsync(Avaliacao avaliacao);
-    Task<IEnumerable<Avaliacao>> ObterPorPrestadorAsync(int prestadorId);
-    Task<IEnumerable<Avaliacao>> ObterPorClienteAsync(int clienteId);
-    Task<bool> PodeAvaliarAsync(int clienteId, int agendamentoId);
+    Task<IEnumerable<Avaliacao>> ObterPorPrestadorAsync(Guid prestadorId);
+    Task<IEnumerable<Avaliacao>> ObterPorClienteAsync(Guid clienteId);
+    Task<bool> PodeAvaliarAsync(Guid clienteId, Guid agendamentoId);
 }

@@ -17,14 +17,14 @@ public class ClienteService : IClienteService
         _context = context;
     }
 
-    public async Task<Cliente?> ObterPorIdAsync(int id)
+    public async Task<Cliente?> ObterPorIdAsync(Guid id)
     {
         return await _context.Clientes
             .Include(c => c.Usuario)
             .FirstOrDefaultAsync(c => c.Id == id);
     }
 
-    public async Task<Cliente?> ObterPorUsuarioIdAsync(int usuarioId)
+    public async Task<Cliente?> ObterPorUsuarioIdAsync(Guid usuarioId)
     {
         return await _context.Clientes
             .Include(c => c.Usuario)
@@ -45,7 +45,7 @@ public class ClienteService : IClienteService
         return cliente;
     }
 
-    public async Task<IEnumerable<Agendamento>> ObterHistoricoAgendamentosAsync(int clienteId)
+    public async Task<IEnumerable<Agendamento>> ObterHistoricoAgendamentosAsync(Guid clienteId)
     {
         return await _context.Agendamentos
             .Include(a => a.Prestador)

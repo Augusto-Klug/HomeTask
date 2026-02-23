@@ -19,7 +19,7 @@ public class UsuarioService : IUsuarioService
         _context = context;
     }
 
-    public async Task<Usuario?> ObterPorIdAsync(int id)
+    public async Task<Usuario?> ObterPorIdAsync(Guid id)
     {
         return await _context.Usuarios
             .Include(u => u.Cliente)
