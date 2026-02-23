@@ -7,10 +7,10 @@ namespace HomeTask.WebApi.Services.Interfaces;
 /// </summary>
 public interface IMensagemService
 {
-    Task<Mensagem?> ObterPorIdAsync(int id);
+    Task<Mensagem?> ObterPorIdAsync(Guid id);
     Task<Mensagem> EnviarAsync(Mensagem mensagem);
-    Task<IEnumerable<Mensagem>> ObterConversaAsync(int usuarioId1, int usuarioId2);
-    Task<IEnumerable<Mensagem>> ObterConversasPorUsuarioAsync(int usuarioId);
-    Task MarcarComoLidaAsync(int mensagemId);
-    Task<int> ObterNaoLidasAsync(int usuarioId);
+    Task<IEnumerable<Mensagem>> ObterConversaAsync(Guid usuarioId1, Guid usuarioId2);
+    Task<IEnumerable<Mensagem>> ObterConversasPorUsuarioAsync(Guid usuarioId);
+    Task MarcarComoLidaAsync(Guid mensagemId);
+    Task<int> ObterNaoLidasAsync(Guid usuarioId);
 }

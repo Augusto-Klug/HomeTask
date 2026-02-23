@@ -18,7 +18,7 @@ public class PrestadorService : IPrestadorService
         _context = context;
     }
 
-    public async Task<Prestador?> ObterPorIdAsync(int id)
+    public async Task<Prestador?> ObterPorIdAsync(Guid id)
     {
         return await _context.Prestadores
             .Include(p => p.Usuario)
@@ -30,7 +30,7 @@ public class PrestadorService : IPrestadorService
             .FirstOrDefaultAsync(p => p.Id == id);
     }
 
-    public async Task<Prestador?> ObterPorUsuarioIdAsync(int usuarioId)
+    public async Task<Prestador?> ObterPorUsuarioIdAsync(Guid usuarioId)
     {
         return await _context.Prestadores
             .Include(p => p.Usuario)
@@ -86,7 +86,7 @@ public class PrestadorService : IPrestadorService
         return await query.OrderByDescending(p => p.MediaAvaliacoes).ToListAsync();
     }
 
-    public async Task<IEnumerable<Agendamento>> ObterHistoricoServicosAsync(int prestadorId)
+    public async Task<IEnumerable<Agendamento>> ObterHistoricoServicosAsync(Guid prestadorId)
     {
         return await _context.Agendamentos
             .Include(a => a.Cliente)
@@ -98,7 +98,7 @@ public class PrestadorService : IPrestadorService
             .ToListAsync();
     }
 
-    public async Task AtualizarMediaAvaliacoesAsync(int prestadorId)
+    public async Task AtualizarMediaAvaliacoesAsync(Guid prestadorId)
     {
         var prestador = await _context.Prestadores
             .Include(p => p.Avaliacoes)
@@ -124,7 +124,7 @@ public class PrestadorService : IPrestadorService
         }
     }
 
-    public async Task AtualizarStatusAsync(int prestadorId, StatusPrestador status)
+    public async Task AtualizarStatusAsync(Guid prestadorId, StatusPrestador status)
     {
         var prestador = await _context.Prestadores.FindAsync(prestadorId);
         if (prestador != null)

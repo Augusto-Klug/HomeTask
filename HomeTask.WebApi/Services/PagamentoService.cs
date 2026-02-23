@@ -18,14 +18,14 @@ public class PagamentoService : IPagamentoService
         _context = context;
     }
 
-    public async Task<Pagamento?> ObterPorIdAsync(int id)
+    public async Task<Pagamento?> ObterPorIdAsync(Guid id)
     {
         return await _context.Pagamentos
             .Include(p => p.Agendamento)
             .FirstOrDefaultAsync(p => p.Id == id);
     }
 
-    public async Task<Pagamento?> ObterPorAgendamentoAsync(int agendamentoId)
+    public async Task<Pagamento?> ObterPorAgendamentoAsync(Guid agendamentoId)
     {
         return await _context.Pagamentos
             .Include(p => p.Agendamento)
@@ -43,58 +43,58 @@ public class PagamentoService : IPagamentoService
         return pagamento;
     }
 
-    public async Task<Pagamento> ProcessarAsync(int pagamentoId)
+    public async Task<Pagamento> ProcessarAsync(Guid pagamentoId)
     {
         var pagamento = await _context.Pagamentos.FindAsync(pagamentoId);
         if (pagamento == null)
             throw new InvalidOperationException("Pagamento não encontrado");
-        
+
         if (pagamento.Status != StatusPagamento.Pendente)
             throw new InvalidOperationException("Pagamento não pode ser processado neste status");
-        
+
         pagamento.Status = StatusPagamento.Processando;
         pagamento.DataProcessamento = DateTime.UtcNow;
-        
+
         // TODO: Integração com gateway de pagamento
-        
+
         await _context.SaveChangesAsync();
         return pagamento;
     }
 
-    public async Task<Pagamento> ConfirmarAsync(int pagamentoId, string transacaoId)
+    public async Task<Pagamento> ConfirmarAsync(Guid pagamentoId, string transacaoId)
     {
         var pagamento = await _context.Pagamentos.FindAsync(pagamentoId);
         if (pagamento == null)
             throw new InvalidOperationException("Pagamento não encontrado");
-        
+
         if (pagamento.Status != StatusPagamento.Processando)
             throw new InvalidOperationException("Pagamento não pode ser confirmado neste status");
-        
+
         pagamento.Status = StatusPagamento.Aprovado;
         pagamento.TransacaoId = transacaoId;
         pagamento.DataConfirmacao = DateTime.UtcNow;
-        
+
         await _context.SaveChangesAsync();
         return pagamento;
     }
 
-    public async Task<Pagamento> RecusarAsync(int pagamentoId, string motivo)
+    public async Task<Pagamento> RecusarAsync(Guid pagamentoId, string motivo)
     {
         var pagamento = await _context.Pagamentos.FindAsync(pagamentoId);
         if (pagamento == null)
             throw new InvalidOperationException("Pagamento não encontrado");
-        
+
         if (pagamento.Status != StatusPagamento.Processando)
             throw new InvalidOperationException("Pagamento não pode ser recusado neste status");
-        
+
         pagamento.Status = StatusPagamento.Recusado;
         pagamento.MotivoRecusa = motivo;
-        
+
         await _context.SaveChangesAsync();
         return pagamento;
     }
 
-    public async Task<Pagamento> EstornarAsync(int pagamentoId)
+    public async Task<Pagamento> EstornarAsync(Guid pagamentoId)
     {
         var pagamento = await _context.Pagamentos.FindAsync(pagamentoId);
         if (pagamento == null)

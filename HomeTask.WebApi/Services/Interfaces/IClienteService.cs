@@ -7,9 +7,9 @@ namespace HomeTask.WebApi.Services.Interfaces;
 /// </summary>
 public interface IClienteService
 {
-    Task<Cliente?> ObterPorIdAsync(int id);
-    Task<Cliente?> ObterPorUsuarioIdAsync(int usuarioId);
+    Task<Cliente?> ObterPorIdAsync(Guid id);
+    Task<Cliente?> ObterPorUsuarioIdAsync(Guid usuarioId);
     Task<Cliente> CriarAsync(Cliente cliente);
     Task<Cliente> AtualizarAsync(Cliente cliente);
-    Task<IEnumerable<Agendamento>> ObterHistoricoAgendamentosAsync(int clienteId);
+    Task<IEnumerable<Agendamento>> ObterHistoricoAgendamentosAsync(Guid clienteId);
 }

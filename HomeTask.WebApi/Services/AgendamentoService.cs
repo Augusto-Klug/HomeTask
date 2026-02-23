@@ -18,7 +18,7 @@ public class AgendamentoService : IAgendamentoService
         _context = context;
     }
 
-    public async Task<Agendamento?> ObterPorIdAsync(int id)
+    public async Task<Agendamento?> ObterPorIdAsync(Guid id)
     {
         return await _context.Agendamentos
             .Include(a => a.Cliente)
@@ -42,7 +42,7 @@ public class AgendamentoService : IAgendamentoService
         return agendamento;
     }
 
-    public async Task<Agendamento> AceitarAsync(int agendamentoId)
+    public async Task<Agendamento> AceitarAsync(Guid agendamentoId)
     {
         var agendamento = await _context.Agendamentos.FindAsync(agendamentoId);
         if (agendamento == null)
@@ -58,7 +58,7 @@ public class AgendamentoService : IAgendamentoService
         return agendamento;
     }
 
-    public async Task<Agendamento> RecusarAsync(int agendamentoId, string motivo)
+    public async Task<Agendamento> RecusarAsync(Guid agendamentoId, string motivo)
     {
         var agendamento = await _context.Agendamentos.FindAsync(agendamentoId);
         if (agendamento == null)
@@ -75,7 +75,7 @@ public class AgendamentoService : IAgendamentoService
         return agendamento;
     }
 
-    public async Task<Agendamento> IniciarAsync(int agendamentoId)
+    public async Task<Agendamento> IniciarAsync(Guid agendamentoId)
     {
         var agendamento = await _context.Agendamentos.FindAsync(agendamentoId);
         if (agendamento == null)
@@ -90,7 +90,7 @@ public class AgendamentoService : IAgendamentoService
         return agendamento;
     }
 
-    public async Task<Agendamento> ConcluirAsync(int agendamentoId)
+    public async Task<Agendamento> ConcluirAsync(Guid agendamentoId)
     {
         var agendamento = await _context.Agendamentos.FindAsync(agendamentoId);
         if (agendamento == null)
@@ -113,7 +113,7 @@ public class AgendamentoService : IAgendamentoService
         return agendamento;
     }
 
-    public async Task<Agendamento> CancelarAsync(int agendamentoId, string motivo)
+    public async Task<Agendamento> CancelarAsync(Guid agendamentoId, string motivo)
     {
         var agendamento = await _context.Agendamentos.FindAsync(agendamentoId);
         if (agendamento == null)
@@ -130,7 +130,7 @@ public class AgendamentoService : IAgendamentoService
         return agendamento;
     }
 
-    public async Task<IEnumerable<Agendamento>> ObterPorClienteAsync(int clienteId)
+    public async Task<IEnumerable<Agendamento>> ObterPorClienteAsync(Guid clienteId)
     {
         return await _context.Agendamentos
             .Include(a => a.Prestador)
@@ -141,7 +141,7 @@ public class AgendamentoService : IAgendamentoService
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<Agendamento>> ObterPorPrestadorAsync(int prestadorId)
+    public async Task<IEnumerable<Agendamento>> ObterPorPrestadorAsync(Guid prestadorId)
     {
         return await _context.Agendamentos
             .Include(a => a.Cliente)
