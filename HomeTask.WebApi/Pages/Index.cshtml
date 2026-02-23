@@ -1,0 +1,107 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "HomeTask - Serviços Domésticos";
+}
+
+<div class="container py-5">
+    <!-- Hero Section -->
+    <div class="row align-items-center mb-5">
+        <div class="col-lg-6">
+            <h1 class="display-4 fw-bold text-primary">HomeTask</h1>
+            <p class="lead text-muted">
+                A plataforma que conecta você aos melhores prestadores de serviços domésticos.
+                Faxina, jardinagem, reparos, babá e muito mais, com segurança e praticidade.
+            </p>
+            <div class="d-flex gap-3 mt-4">
+                <a href="/Servicos/Buscar" class="btn btn-primary btn-lg">Buscar Serviços</a>
+                <a href="/Cadastro" class="btn btn-outline-primary btn-lg">Cadastre-se</a>
+            </div>
+        </div>
+        <div class="col-lg-6 text-center">
+            <div class="bg-light rounded-4 p-5">
+                <i class="bi bi-house-heart" style="font-size: 8rem; color: #0d6efd;"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categorias de Serviços -->
+    <section class="mb-5">
+        <h2 class="text-center mb-4">Categorias de Serviços</h2>
+        <div class="row g-4">
+            @foreach (var categoria in Model.Categorias)
+            {
+                <div class="col-md-4 col-lg-3">
+                    <div class="card h-100 text-center border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="@categoria.Icone fs-1 text-primary mb-3"></i>
+                            <h5 class="card-title">@categoria.Nome</h5>
+                            <p class="card-text text-muted small">@categoria.Descricao</p>
+                            <a href="/Servicos/Buscar?categoria=@categoria.Id" class="btn btn-sm btn-outline-primary">Ver Serviços</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+
+    <!-- Como Funciona -->
+    <section class="mb-5 bg-light rounded-4 p-5">
+        <h2 class="text-center mb-4">Como Funciona</h2>
+        <div class="row g-4">
+            <div class="col-md-4 text-center">
+                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                    <span class="fs-4 fw-bold">1</span>
+                </div>
+                <h5>Busque o Serviço</h5>
+                <p class="text-muted">Encontre profissionais qualificados na sua região.</p>
+            </div>
+            <div class="col-md-4 text-center">
+                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                    <span class="fs-4 fw-bold">2</span>
+                </div>
+                <h5>Agende</h5>
+                <p class="text-muted">Escolha data e horário que melhor se encaixam na sua rotina.</p>
+            </div>
+            <div class="col-md-4 text-center">
+                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                    <span class="fs-4 fw-bold">3</span>
+                </div>
+                <h5>Avalie</h5>
+                <p class="text-muted">Após o serviço, avalie o profissional e ajude outros clientes.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefícios -->
+    <section class="mb-5">
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <h4 class="card-title text-primary">Para Clientes</h4>
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Profissionais verificados</li>
+                            <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Pagamento seguro pela plataforma</li>
+                            <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Avaliações de outros clientes</li>
+                            <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Histórico de serviços contratados</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <h4 class="card-title text-primary">Para Prestadores</h4>
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Amplie sua clientela</li>
+                            <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Gerencie sua agenda facilmente</li>
+                            <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Receba pagamentos de forma segura</li>
+                            <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Construa sua reputação com avaliações</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
