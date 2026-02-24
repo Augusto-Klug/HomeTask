@@ -1,7 +1,0 @@
-<Solution>
-  <Project Path="HomeTask.Application/HomeTask.Application.csproj" />
-  <Project Path="HomeTask.Domain/HomeTask.Domain.csproj" />
-  <Project Path="HomeTask.Infrastructure/HomeTask.Infrastructure.csproj" />
-  <Project Path="HomeTask.WebApi/HomeTask.WebApi.csproj" />
-  <Project Path="HomeTask.Web/HomeTask.Web.csproj" />
-</Solution>
