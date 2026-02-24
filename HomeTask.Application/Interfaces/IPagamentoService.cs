@@ -1,0 +1,17 @@
+using HomeTask.Domain.Entities;
+
+namespace HomeTask.Application.Interfaces;
+
+/// <summary>
+/// Interface para gerenciamento de pagamentos (RF05, NEG04)
+/// </summary>
+public interface IPagamentoService
+{
+    Task<Pagamento?> ObterPorIdAsync(Guid id);
+    Task<Pagamento?> ObterPorAgendamentoAsync(Guid agendamentoId);
+    Task<Pagamento> CriarAsync(Pagamento pagamento);
+    Task<Pagamento> ProcessarAsync(Guid pagamentoId);
+    Task<Pagamento> ConfirmarAsync(Guid pagamentoId, string transacaoId);
+    Task<Pagamento> RecusarAsync(Guid pagamentoId, string motivo);
+    Task<Pagamento> EstornarAsync(Guid pagamentoId);
+}

@@ -1,0 +1,164 @@
+using Microsoft.EntityFrameworkCore;
+using HomeTask.Application.Interfaces;
+using HomeTask.Domain.Entities;
+using HomeTask.Domain.Enums;
+using HomeTask.Infrastructure.Data;
+
+namespace HomeTask.Infrastructure.Services;
+
+/// <summary>
+/// Implementação do serviço de agendamentos (RF04, RF10)
+/// </summary>
+public class AgendamentoService : IAgendamentoService
+{
+    private readonly HomeTaskDbContext _context;
+
+    public AgendamentoService(HomeTaskDbContext context)
+    {
+        _context = context;
+    }
+
+    public async Task<Agendamento?> ObterPorIdAsync(Guid id)
+    {
+        return await _context.Agendamentos
+            .Include(a => a.Cliente)
+                .ThenInclude(c => c.Usuario)
+            .Include(a => a.Prestador)
+                .ThenInclude(p => p.Usuario)
+            .Include(a => a.ServicoOferecido)
+            .Include(a => a.Pagamento)
+            .Include(a => a.Avaliacao)
+            .FirstOrDefaultAsync(a => a.Id == id);
+    }
+
+    public async Task<Agendamento> CriarAsync(Agendamento agendamento)
+    {
+        agendamento.Status = StatusAgendamento.Solicitado;
+        agendamento.DataSolicitacao = DateTime.UtcNow;
+
+        _context.Agendamentos.Add(agendamento);
+        await _context.SaveChangesAsync();
+
+        return agendamento;
+    }
+
+    public async Task<Agendamento> AceitarAsync(Guid agendamentoId)
+    {
+        var agendamento = await _context.Agendamentos.FindAsync(agendamentoId);
+        if (agendamento == null)
+            throw new InvalidOperationException("Agendamento não encontrado");
+
+        if (agendamento.Status != StatusAgendamento.Solicitado)
+            throw new InvalidOperationException("Agendamento não pode ser aceito neste status");
+
+        agendamento.Status = StatusAgendamento.Aceito;
+        agendamento.DataResposta = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync();
+        return agendamento;
+    }
+
+    public async Task<Agendamento> RecusarAsync(Guid agendamentoId, string motivo)
+    {
+        var agendamento = await _context.Agendamentos.FindAsync(agendamentoId);
+        if (agendamento == null)
+            throw new InvalidOperationException("Agendamento não encontrado");
+
+        if (agendamento.Status != StatusAgendamento.Solicitado)
+            throw new InvalidOperationException("Agendamento não pode ser recusado neste status");
+
+        agendamento.Status = StatusAgendamento.Recusado;
+        agendamento.DataResposta = DateTime.UtcNow;
+        agendamento.MotivoRecusa = motivo;
+
+        await _context.SaveChangesAsync();
+        return agendamento;
+    }
+
+    public async Task<Agendamento> IniciarAsync(Guid agendamentoId)
+    {
+        var agendamento = await _context.Agendamentos.FindAsync(agendamentoId);
+        if (agendamento == null)
+            throw new InvalidOperationException("Agendamento não encontrado");
+
+        if (agendamento.Status != StatusAgendamento.Aceito)
+            throw new InvalidOperationException("Agendamento não pode ser iniciado neste status");
+
+        agendamento.Status = StatusAgendamento.EmAndamento;
+
+        await _context.SaveChangesAsync();
+        return agendamento;
+    }
+
+    public async Task<Agendamento> ConcluirAsync(Guid agendamentoId)
+    {
+        var agendamento = await _context.Agendamentos.FindAsync(agendamentoId);
+        if (agendamento == null)
+            throw new InvalidOperationException("Agendamento não encontrado");
+
+        if (agendamento.Status != StatusAgendamento.EmAndamento)
+            throw new InvalidOperationException("Agendamento não pode ser concluído neste status");
+
+        agendamento.Status = StatusAgendamento.Concluido;
+        agendamento.DataConclusao = DateTime.UtcNow;
+
+        var prestador = await _context.Prestadores.FindAsync(agendamento.PrestadorId);
+        if (prestador != null)
+        {
+            prestador.TotalServicosConcluidos++;
+        }
+
+        await _context.SaveChangesAsync();
+        return agendamento;
+    }
+
+    public async Task<Agendamento> CancelarAsync(Guid agendamentoId, string motivo)
+    {
+        var agendamento = await _context.Agendamentos.FindAsync(agendamentoId);
+        if (agendamento == null)
+            throw new InvalidOperationException("Agendamento não encontrado");
+
+        if (agendamento.Status == StatusAgendamento.Concluido ||
+            agendamento.Status == StatusAgendamento.Cancelado)
+            throw new InvalidOperationException("Agendamento não pode ser cancelado neste status");
+
+        agendamento.Status = StatusAgendamento.Cancelado;
+        agendamento.MotivoRecusa = motivo;
+
+        await _context.SaveChangesAsync();
+        return agendamento;
+    }
+
+    public async Task<IEnumerable<Agendamento>> ObterPorClienteAsync(Guid clienteId)
+    {
+        return await _context.Agendamentos
+            .Include(a => a.Prestador)
+                .ThenInclude(p => p.Usuario)
+            .Include(a => a.ServicoOferecido)
+            .Where(a => a.ClienteId == clienteId)
+            .OrderByDescending(a => a.DataHoraAgendada)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Agendamento>> ObterPorPrestadorAsync(Guid prestadorId)
+    {
+        return await _context.Agendamentos
+            .Include(a => a.Cliente)
+                .ThenInclude(c => c.Usuario)
+            .Include(a => a.ServicoOferecido)
+            .Where(a => a.PrestadorId == prestadorId)
+            .OrderByDescending(a => a.DataHoraAgendada)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Agendamento>> ObterPorStatusAsync(StatusAgendamento status)
+    {
+        return await _context.Agendamentos
+            .Include(a => a.Cliente)
+            .Include(a => a.Prestador)
+            .Include(a => a.ServicoOferecido)
+            .Where(a => a.Status == status)
+            .OrderByDescending(a => a.DataSolicitacao)
+            .ToListAsync();
+    }
+}
