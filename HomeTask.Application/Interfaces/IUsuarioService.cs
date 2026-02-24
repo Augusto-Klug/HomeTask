@@ -1,0 +1,17 @@
+using HomeTask.Domain.Entities;
+
+namespace HomeTask.Application.Interfaces;
+
+/// <summary>
+/// Interface para gerenciamento de usuários (RF01)
+/// </summary>
+public interface IUsuarioService
+{
+    Task<Usuario?> ObterPorIdAsync(Guid id);
+    Task<Usuario?> ObterPorEmailAsync(string email);
+    Task<Usuario> CriarAsync(Usuario usuario, string senha);
+    Task<Usuario> AtualizarAsync(Usuario usuario);
+    Task<bool> ValidarSenhaAsync(string email, string senha);
+    Task<bool> ExisteEmailAsync(string email);
+    Task<bool> ExisteCpfAsync(string cpf);
+}

@@ -1,0 +1,146 @@
+@page
+@model HomeTask.Web.Pages.Cadastro.IndexModel
+@{
+    ViewData["Title"] = "Cadastro - HomeTask";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Cadastre-se no HomeTask</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                        
+                        <!-- Tipo de Cadastro -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Como você deseja usar o HomeTask?</label>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-check card p-3">
+                                        <input class="form-check-input" type="radio" asp-for="Input.TipoUsuario" value="1" id="tipoCliente" checked>
+                                        <label class="form-check-label" for="tipoCliente">
+                                            <strong>Cliente</strong>
+                                            <p class="text-muted small mb-0">Quero contratar serviços domésticos</p>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check card p-3">
+                                        <input class="form-check-input" type="radio" asp-for="Input.TipoUsuario" value="2" id="tipoPrestador">
+                                        <label class="form-check-label" for="tipoPrestador">
+                                            <strong>Prestador de Serviço</strong>
+                                            <p class="text-muted small mb-0">Quero oferecer meus serviços</p>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- Dados Pessoais -->
+                        <h5 class="mb-3">Dados Pessoais</h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="Input.Nome" class="form-label">Nome Completo</label>
+                                <input asp-for="Input.Nome" class="form-control" placeholder="Seu nome completo">
+                                <span asp-validation-for="Input.Nome" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Input.Cpf" class="form-label">CPF</label>
+                                <input asp-for="Input.Cpf" class="form-control" placeholder="000.000.000-00">
+                                <span asp-validation-for="Input.Cpf" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Input.Email" class="form-label">E-mail</label>
+                                <input asp-for="Input.Email" class="form-control" type="email" placeholder="seu@email.com">
+                                <span asp-validation-for="Input.Email" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Input.Telefone" class="form-label">Telefone</label>
+                                <input asp-for="Input.Telefone" class="form-control" placeholder="(00) 00000-0000">
+                                <span asp-validation-for="Input.Telefone" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- Endereço -->
+                        <h5 class="mb-3">Endereço</h5>
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label asp-for="Input.Cep" class="form-label">CEP</label>
+                                <input asp-for="Input.Cep" class="form-control" placeholder="00000-000">
+                                <span asp-validation-for="Input.Cep" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-9">
+                                <label asp-for="Input.Endereco" class="form-label">Endereço</label>
+                                <input asp-for="Input.Endereco" class="form-control" placeholder="Rua, número, complemento">
+                                <span asp-validation-for="Input.Endereco" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="Input.Bairro" class="form-label">Bairro</label>
+                                <input asp-for="Input.Bairro" class="form-control">
+                                <span asp-validation-for="Input.Bairro" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-5">
+                                <label asp-for="Input.Cidade" class="form-label">Cidade</label>
+                                <input asp-for="Input.Cidade" class="form-control">
+                                <span asp-validation-for="Input.Cidade" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-3">
+                                <label asp-for="Input.Estado" class="form-label">Estado</label>
+                                <select asp-for="Input.Estado" class="form-select">
+                                    <option value="">Selecione</option>
+                                    <option value="SC">Santa Catarina</option>
+                                    <option value="PR">Paraná</option>
+                                    <option value="RS">Rio Grande do Sul</option>
+                                    <option value="SP">São Paulo</option>
+                                    <option value="RJ">Rio de Janeiro</option>
+                                    <!-- Adicionar outros estados conforme necessário -->
+                                </select>
+                                <span asp-validation-for="Input.Estado" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- Senha -->
+                        <h5 class="mb-3">Segurança</h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="Input.Senha" class="form-label">Senha</label>
+                                <input asp-for="Input.Senha" class="form-control" type="password" placeholder="Mínimo 8 caracteres">
+                                <span asp-validation-for="Input.Senha" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Input.ConfirmarSenha" class="form-label">Confirmar Senha</label>
+                                <input asp-for="Input.ConfirmarSenha" class="form-control" type="password">
+                                <span asp-validation-for="Input.ConfirmarSenha" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-check mt-4">
+                            <input class="form-check-input" type="checkbox" asp-for="Input.AceitaTermos" id="aceitaTermos">
+                            <label class="form-check-label" for="aceitaTermos">
+                                Li e aceito os <a href="/Termos">Termos de Uso</a> e a <a href="/Privacidade">Política de Privacidade</a>
+                            </label>
+                            <span asp-validation-for="Input.AceitaTermos" class="text-danger d-block"></span>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">Criar Conta</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-center">
+                    Já tem uma conta? <a href="/Login">Faça login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
