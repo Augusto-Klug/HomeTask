@@ -1,0 +1,26 @@
+@page
+@model HomeTask.Web.Pages.Agendamento.SucessoModel
+@{
+    ViewData["Title"] = "Agendamento Confirmado - HomeTask";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+            <div class="card shadow-sm">
+                <div class="card-body py-5">
+                    <i class="bi bi-check-circle-fill text-success" style="font-size: 5rem;"></i>
+                    <h2 class="mt-4">Agendamento Solicitado!</h2>
+                    <p class="text-muted">
+                        Sua solicitação foi enviada ao prestador. Aguarde a confirmação.
+                        Você receberá uma notificação assim que o prestador aceitar.
+                    </p>
+                    <div class="d-flex gap-3 justify-content-center mt-4">
+                        <a href="/Servicos/Buscar" class="btn btn-outline-primary">Buscar mais serviços</a>
+                        <a href="/" class="btn btn-primary">Voltar ao início</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

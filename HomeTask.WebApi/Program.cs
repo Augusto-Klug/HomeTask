@@ -1,46 +1,44 @@
-using Microsoft.EntityFrameworkCore;
-using HomeTask.WebApi.Data;
-using HomeTask.WebApi.Services;
-using HomeTask.WebApi.Services.Interfaces;
+using HomeTask.Infrastructure;
+using HomeTask.WebApi.Conversores.Implementacoes.Agendamento;
+using HomeTask.WebApi.Conversores.Implementacoes.Avaliacao;
+using HomeTask.WebApi.Conversores.Implementacoes.Cliente;
+using HomeTask.WebApi.Conversores.Implementacoes.Mensagem;
+using HomeTask.WebApi.Conversores.Implementacoes.Pagamento;
+using HomeTask.WebApi.Conversores.Implementacoes.Prestador;
+using HomeTask.WebApi.Conversores.Implementacoes.ServicoOferecido;
+using HomeTask.WebApi.Conversores.Implementacoes.Usuario;
+using HomeTask.WebApi.Conversores.Interfaces.Agendamento;
+using HomeTask.WebApi.Conversores.Interfaces.Avaliacao;
+using HomeTask.WebApi.Conversores.Interfaces.Cliente;
+using HomeTask.WebApi.Conversores.Interfaces.Mensagem;
+using HomeTask.WebApi.Conversores.Interfaces.Pagamento;
+using HomeTask.WebApi.Conversores.Interfaces.Prestador;
+using HomeTask.WebApi.Conversores.Interfaces.ServicoOferecido;
+using HomeTask.WebApi.Conversores.Interfaces.Usuario;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddRazorPages();
+builder.Services.AddControllers();
+builder.Services.AddInfrastructure(builder.Configuration);
 
-// Configuração do DbContext com MySQL (RNF02)
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<HomeTaskDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
-
-// Registro dos serviços
-builder.Services.AddScoped<IUsuarioService, UsuarioService>();
-builder.Services.AddScoped<IClienteService, ClienteService>();
-builder.Services.AddScoped<IPrestadorService, PrestadorService>();
-builder.Services.AddScoped<IServicoService, ServicoService>();
-builder.Services.AddScoped<IAgendamentoService, AgendamentoService>();
-builder.Services.AddScoped<IAvaliacaoService, AvaliacaoService>();
-builder.Services.AddScoped<IPagamentoService, PagamentoService>();
-builder.Services.AddScoped<IMensagemService, MensagemService>();
+builder.Services.AddScoped<IConversorCliente, ConversorCliente>();
+builder.Services.AddScoped<IConversorUsuario, ConversorUsuario>();
+builder.Services.AddScoped<IConversorPrestador, ConversorPrestador>();
+builder.Services.AddScoped<IConversorAgendamento, ConversorAgendamento>();
+builder.Services.AddScoped<IConversorAvaliacao, ConversorAvaliacao>();
+builder.Services.AddScoped<IConversorPagamento, ConversorPagamento>();
+builder.Services.AddScoped<IConversorMensagem, ConversorMensagem>();
+builder.Services.AddScoped<IConversorServicoOferecido, ConversorServicoOferecido>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
-
-app.UseRouting();
-
 app.UseAuthorization();
-
-app.MapStaticAssets();
-app.MapRazorPages()
-   .WithStaticAssets();
+app.MapControllers();
 
 app.Run();
