@@ -1,4 +1,4 @@
-using HomeTask.Infrastructure;
+using HomeTask.Infrastructure.DI;
 using HomeTask.WebApi.Conversores.Implementacoes.Agendamento;
 using HomeTask.WebApi.Conversores.Implementacoes.Avaliacao;
 using HomeTask.WebApi.Conversores.Implementacoes.Cliente;

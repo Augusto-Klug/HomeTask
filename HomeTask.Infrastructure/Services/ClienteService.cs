@@ -4,10 +4,6 @@ using HomeTask.Domain.Entities;
 using HomeTask.Infrastructure.Data;
 
 namespace HomeTask.Infrastructure.Services;
-
-/// <summary>
-/// Implementação do serviço de clientes (RF11)
-/// </summary>
 public class ClienteService : IClienteService
 {
     private readonly HomeTaskDbContext _context;

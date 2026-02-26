@@ -5,7 +5,7 @@ using HomeTask.Application.Interfaces;
 using HomeTask.Infrastructure.Data;
 using HomeTask.Infrastructure.Services;
 
-namespace HomeTask.Infrastructure;
+namespace HomeTask.Infrastructure.DI;
 
 public static class DependencyInjection
 {
@@ -17,7 +17,14 @@ public static class DependencyInjection
         services.AddDbContext<HomeTaskDbContext>(options =>
             options.UseMySql(
                 connectionString,
-                new MySqlServerVersion(new Version(8, 0, 0))));
+                new MySqlServerVersion(new Version(8, 0, 0)),
+        mySqlOptions => mySqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(30),
+            errorNumbersToAdd: null
+            )
+        )
+    );
 
         services.AddScoped<IUsuarioService, UsuarioService>();
         services.AddScoped<IClienteService, ClienteService>();

@@ -1,4 +1,6 @@
-using HomeTask.Infrastructure;
+using HomeTask.Infrastructure.Data;
+using HomeTask.Infrastructure.DI;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +15,12 @@ builder.Services.AddSession(options =>
 });
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<HomeTaskDbContext>();
+    await db.Database.MigrateAsync();
+}
 
 if (!app.Environment.IsDevelopment())
 {
