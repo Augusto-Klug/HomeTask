@@ -1,0 +1,111 @@
+@page "/Servicos/Detalhes/{id:guid}"
+@model HomeTask.Web.Pages.Servicos.DetalhesModel
+@{
+    ViewData["Title"] = $"{Model.Servico.Titulo} - HomeTask";
+}
+
+<div class="container py-4">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/Servicos/Buscar">Buscar Serviços</a></li>
+            <li class="breadcrumb-item active">@Model.Servico.Titulo</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <!-- Detalhes do Serviço -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <span class="badge bg-secondary mb-2">@Model.Servico.CategoriaNome</span>
+                    <h2 class="card-title">@Model.Servico.Titulo</h2>
+                    <p class="text-muted">@Model.Servico.Descricao</p>
+
+                    <hr>
+
+                    <div class="row g-3">
+                        <div class="col-sm-4 text-center">
+                            <div class="text-primary fs-4 fw-bold">R$ @Model.Servico.PrecoBase.ToString("N2")</div>
+                            <small class="text-muted">por @Model.Servico.UnidadeCobranca</small>
+                        </div>
+                        <div class="col-sm-4 text-center">
+                            <div class="fs-4 fw-bold">@Model.Servico.DuracaoEstimadaMinutos min</div>
+                            <small class="text-muted">duração estimada</small>
+                        </div>
+                        <div class="col-sm-4 text-center">
+                            <div class="fs-4 fw-bold">@Model.Servico.TotalServicosConcluidos</div>
+                            <small class="text-muted">serviços concluídos</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Avaliações -->
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">Avaliações (@Model.Servico.TotalAvaliacoes)</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.Avaliacoes.Any())
+                    {
+                        @foreach (var avaliacao in Model.Avaliacoes)
+                        {
+                            <div class="border-bottom pb-3 mb-3">
+                                <div class="text-warning mb-1">
+                                    @for (int i = 0; i < 5; i++)
+                                    {
+                                        <i class="bi @(i < avaliacao.Nota ? "bi-star-fill" : "bi-star")"></i>
+                                    }
+                                    <small class="text-muted ms-2">@avaliacao.DataAvaliacao.ToString("dd/MM/yyyy")</small>
+                                </div>
+                                @if (!string.IsNullOrEmpty(avaliacao.Comentario))
+                                {
+                                    <p class="mb-0">@avaliacao.Comentario</p>
+                                }
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">Nenhuma avaliação ainda.</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Card do Prestador + Agendar -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm sticky-top" style="top: 1rem;">
+                <div class="card-body text-center">
+                    <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                         style="width: 70px; height: 70px;">
+                        <span class="fs-3">@Model.Servico.PrestadorNome[0]</span>
+                    </div>
+                    <h5 class="mb-0">@Model.Servico.PrestadorNome</h5>
+                    <p class="text-muted small">@Model.Servico.Cidade@(string.IsNullOrEmpty(Model.Servico.Estado) ? "" : $", {Model.Servico.Estado}")</p>
+
+                    <div class="text-warning mb-3">
+                        @for (int i = 0; i < 5; i++)
+                        {
+                            <i class="bi @(i < (int)Model.Servico.MediaAvaliacoes ? "bi-star-fill" : "bi-star")"></i>
+                        }
+                        <span class="text-muted small ms-1">@Model.Servico.MediaAvaliacoes.ToString("N1") (@Model.Servico.TotalAvaliacoes)</span>
+                    </div>
+
+                    <hr>
+
+                    <div class="d-grid gap-2">
+                        <a href="/Agendamento/Novo?servicoId=@Model.Servico.Id&prestadorId=@Model.Servico.PrestadorId"
+                           class="btn btn-primary btn-lg">
+                            <i class="bi bi-calendar-check me-1"></i> Agendar Serviço
+                        </a>
+                        <a href="/Servicos/Buscar" class="btn btn-outline-secondary">
+                            Voltar para Busca
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

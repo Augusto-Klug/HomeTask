@@ -7,11 +7,11 @@ namespace HomeTask.Application.Interfaces;
 /// </summary>
 public interface IPagamentoService
 {
-    Task<Pagamento?> ObterPorIdAsync(Guid id);
-    Task<Pagamento?> ObterPorAgendamentoAsync(Guid agendamentoId);
-    Task<Pagamento> CriarAsync(Pagamento pagamento);
-    Task<Pagamento> ProcessarAsync(Guid pagamentoId);
-    Task<Pagamento> ConfirmarAsync(Guid pagamentoId, string transacaoId);
-    Task<Pagamento> RecusarAsync(Guid pagamentoId, string motivo);
-    Task<Pagamento> EstornarAsync(Guid pagamentoId);
+    Task<Pagamento?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<Pagamento?> ObterPorAgendamentoAsync(Guid agendamentoId, CancellationToken cancellationToken = default);
+    Task<Pagamento> CriarAsync(Pagamento pagamento, CancellationToken cancellationToken = default);
+    Task<Pagamento> ProcessarAsync(Guid pagamentoId, CancellationToken cancellationToken = default);
+    Task<Pagamento> ConfirmarAsync(Guid pagamentoId, string transacaoId, CancellationToken cancellationToken = default);
+    Task<Pagamento> RecusarAsync(Guid pagamentoId, string motivo, CancellationToken cancellationToken = default);
+    Task<Pagamento> EstornarAsync(Guid pagamentoId, CancellationToken cancellationToken = default);
 }

@@ -18,52 +18,52 @@ public class ServicoService : IServicoService
         _context = context;
     }
 
-    public async Task<ServicoOferecido?> ObterPorIdAsync(Guid id)
+    public async Task<ServicoOferecido?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _context.ServicosOferecidos
             .Include(s => s.Prestador)
                 .ThenInclude(p => p.Usuario)
-            .FirstOrDefaultAsync(s => s.Id == id);
+            .FirstOrDefaultAsync(s => s.Id == id, cancellationToken);
     }
 
-    public async Task<ServicoOferecido> CriarAsync(ServicoOferecido servico)
+    public async Task<ServicoOferecido> CriarAsync(ServicoOferecido servico, CancellationToken cancellationToken = default)
     {
         servico.DataCriacao = DateTime.UtcNow;
         servico.Ativo = true;
 
         _context.ServicosOferecidos.Add(servico);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
 
         return servico;
     }
 
-    public async Task<ServicoOferecido> AtualizarAsync(ServicoOferecido servico)
+    public async Task<ServicoOferecido> AtualizarAsync(ServicoOferecido servico, CancellationToken cancellationToken = default)
     {
         _context.ServicosOferecidos.Update(servico);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
         return servico;
     }
 
-    public async Task<bool> RemoverAsync(Guid id)
+    public async Task<bool> RemoverAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var servico = await _context.ServicosOferecidos.FindAsync(id);
+        var servico = await _context.ServicosOferecidos.FindAsync([id], cancellationToken);
         if (servico == null)
             return false;
 
         servico.Ativo = false;
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
         return true;
     }
 
-    public async Task<IEnumerable<ServicoOferecido>> ObterPorPrestadorAsync(Guid prestadorId)
+    public async Task<IEnumerable<ServicoOferecido>> ObterPorPrestadorAsync(Guid prestadorId, CancellationToken cancellationToken = default)
     {
         return await _context.ServicosOferecidos
             .Where(s => s.PrestadorId == prestadorId && s.Ativo)
             .OrderBy(s => s.Categoria)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<ServicoOferecido>> BuscarAsync(CategoriaServico? categoria, string? cidade, decimal? precoMaximo)
+    public async Task<IEnumerable<ServicoOferecido>> BuscarAsync(CategoriaServico? categoria, string? cidade, decimal? precoMaximo, CancellationToken cancellationToken = default)
     {
         var query = _context.ServicosOferecidos
             .Include(s => s.Prestador)
@@ -90,6 +90,6 @@ public class ServicoService : IServicoService
         return await query
             .OrderByDescending(s => s.Prestador.MediaAvaliacoes)
             .ThenBy(s => s.PrecoBase)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 }

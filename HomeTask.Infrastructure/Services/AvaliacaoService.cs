@@ -20,31 +20,31 @@ public class AvaliacaoService : IAvaliacaoService
         _prestadorService = prestadorService;
     }
 
-    public async Task<Avaliacao?> ObterPorIdAsync(Guid id)
+    public async Task<Avaliacao?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _context.Avaliacoes
             .Include(a => a.Cliente)
                 .ThenInclude(c => c.Usuario)
             .Include(a => a.Prestador)
             .Include(a => a.Agendamento)
-            .FirstOrDefaultAsync(a => a.Id == id);
+            .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
     }
 
-    public async Task<Avaliacao?> ObterPorAgendamentoAsync(Guid agendamentoId)
+    public async Task<Avaliacao?> ObterPorAgendamentoAsync(Guid agendamentoId, CancellationToken cancellationToken = default)
     {
         return await _context.Avaliacoes
             .Include(a => a.Cliente)
-            .FirstOrDefaultAsync(a => a.AgendamentoId == agendamentoId);
+            .FirstOrDefaultAsync(a => a.AgendamentoId == agendamentoId, cancellationToken);
     }
 
-    public async Task<Avaliacao> CriarAsync(Avaliacao avaliacao)
+    public async Task<Avaliacao> CriarAsync(Avaliacao avaliacao, CancellationToken cancellationToken = default)
     {
         // NEG06 - Somente clientes que concluíram um serviço podem avaliar
-        var podeAvaliar = await PodeAvaliarAsync(avaliacao.ClienteId, avaliacao.AgendamentoId);
+        var podeAvaliar = await PodeAvaliarAsync(avaliacao.ClienteId, avaliacao.AgendamentoId, cancellationToken);
         if (!podeAvaliar)
             throw new InvalidOperationException("Somente serviços concluídos podem ser avaliados");
 
-        var avaliacaoExistente = await ObterPorAgendamentoAsync(avaliacao.AgendamentoId);
+        var avaliacaoExistente = await ObterPorAgendamentoAsync(avaliacao.AgendamentoId, cancellationToken);
         if (avaliacaoExistente != null)
             throw new InvalidOperationException("Este serviço já foi avaliado");
 
@@ -52,14 +52,14 @@ public class AvaliacaoService : IAvaliacaoService
         avaliacao.Visivel = true; // NEG07 - Avaliações são públicas
 
         _context.Avaliacoes.Add(avaliacao);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
 
-        await _prestadorService.AtualizarMediaAvaliacoesAsync(avaliacao.PrestadorId);
+        await _prestadorService.AtualizarMediaAvaliacoesAsync(avaliacao.PrestadorId, cancellationToken);
 
         return avaliacao;
     }
 
-    public async Task<IEnumerable<Avaliacao>> ObterPorPrestadorAsync(Guid prestadorId)
+    public async Task<IEnumerable<Avaliacao>> ObterPorPrestadorAsync(Guid prestadorId, CancellationToken cancellationToken = default)
     {
         return await _context.Avaliacoes
             .Include(a => a.Cliente)
@@ -68,10 +68,10 @@ public class AvaliacaoService : IAvaliacaoService
                 .ThenInclude(ag => ag.ServicoOferecido)
             .Where(a => a.PrestadorId == prestadorId && a.Visivel)
             .OrderByDescending(a => a.DataAvaliacao)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<Avaliacao>> ObterPorClienteAsync(Guid clienteId)
+    public async Task<IEnumerable<Avaliacao>> ObterPorClienteAsync(Guid clienteId, CancellationToken cancellationToken = default)
     {
         return await _context.Avaliacoes
             .Include(a => a.Prestador)
@@ -80,13 +80,13 @@ public class AvaliacaoService : IAvaliacaoService
                 .ThenInclude(ag => ag.ServicoOferecido)
             .Where(a => a.ClienteId == clienteId)
             .OrderByDescending(a => a.DataAvaliacao)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task<bool> PodeAvaliarAsync(Guid clienteId, Guid agendamentoId)
+    public async Task<bool> PodeAvaliarAsync(Guid clienteId, Guid agendamentoId, CancellationToken cancellationToken = default)
     {
         var agendamento = await _context.Agendamentos
-            .FirstOrDefaultAsync(a => a.Id == agendamentoId && a.ClienteId == clienteId);
+            .FirstOrDefaultAsync(a => a.Id == agendamentoId && a.ClienteId == clienteId, cancellationToken);
 
         if (agendamento == null)
             return false;

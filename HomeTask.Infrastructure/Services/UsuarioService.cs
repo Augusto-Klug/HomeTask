@@ -19,57 +19,57 @@ public class UsuarioService : IUsuarioService
         _context = context;
     }
 
-    public async Task<Usuario?> ObterPorIdAsync(Guid id)
+    public async Task<Usuario?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _context.Usuarios
             .Include(u => u.Cliente)
             .Include(u => u.Prestador)
-            .FirstOrDefaultAsync(u => u.Id == id);
+            .FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
     }
 
-    public async Task<Usuario?> ObterPorEmailAsync(string email)
+    public async Task<Usuario?> ObterPorEmailAsync(string email, CancellationToken cancellationToken = default)
     {
         return await _context.Usuarios
             .Include(u => u.Cliente)
             .Include(u => u.Prestador)
-            .FirstOrDefaultAsync(u => u.Email == email);
+            .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
     }
 
-    public async Task<Usuario> CriarAsync(Usuario usuario, string senha)
+    public async Task<Usuario> CriarAsync(Usuario usuario, string senha, CancellationToken cancellationToken = default)
     {
         usuario.SenhaHash = HashSenha(senha);
         usuario.DataCadastro = DateTime.UtcNow;
 
         _context.Usuarios.Add(usuario);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
 
         return usuario;
     }
 
-    public async Task<Usuario> AtualizarAsync(Usuario usuario)
+    public async Task<Usuario> AtualizarAsync(Usuario usuario, CancellationToken cancellationToken = default)
     {
         _context.Usuarios.Update(usuario);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
         return usuario;
     }
 
-    public async Task<bool> ValidarSenhaAsync(string email, string senha)
+    public async Task<bool> ValidarSenhaAsync(string email, string senha, CancellationToken cancellationToken = default)
     {
-        var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == email);
+        var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
         if (usuario == null) return false;
 
         var senhaHash = HashSenha(senha);
         return usuario.SenhaHash == senhaHash;
     }
 
-    public async Task<bool> ExisteEmailAsync(string email)
+    public async Task<bool> ExisteEmailAsync(string email, CancellationToken cancellationToken = default)
     {
-        return await _context.Usuarios.AnyAsync(u => u.Email == email);
+        return await _context.Usuarios.AnyAsync(u => u.Email == email, cancellationToken);
     }
 
-    public async Task<bool> ExisteCpfAsync(string cpf)
+    public async Task<bool> ExisteCpfAsync(string cpf, CancellationToken cancellationToken = default)
     {
-        return await _context.Usuarios.AnyAsync(u => u.Cpf == cpf);
+        return await _context.Usuarios.AnyAsync(u => u.Cpf == cpf, cancellationToken);
     }
 
     /// <summary>

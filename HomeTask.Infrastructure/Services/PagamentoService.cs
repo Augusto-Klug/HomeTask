@@ -18,34 +18,34 @@ public class PagamentoService : IPagamentoService
         _context = context;
     }
 
-    public async Task<Pagamento?> ObterPorIdAsync(Guid id)
+    public async Task<Pagamento?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _context.Pagamentos
             .Include(p => p.Agendamento)
-            .FirstOrDefaultAsync(p => p.Id == id);
+            .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
     }
 
-    public async Task<Pagamento?> ObterPorAgendamentoAsync(Guid agendamentoId)
+    public async Task<Pagamento?> ObterPorAgendamentoAsync(Guid agendamentoId, CancellationToken cancellationToken = default)
     {
         return await _context.Pagamentos
             .Include(p => p.Agendamento)
-            .FirstOrDefaultAsync(p => p.AgendamentoId == agendamentoId);
+            .FirstOrDefaultAsync(p => p.AgendamentoId == agendamentoId, cancellationToken);
     }
 
-    public async Task<Pagamento> CriarAsync(Pagamento pagamento)
+    public async Task<Pagamento> CriarAsync(Pagamento pagamento, CancellationToken cancellationToken = default)
     {
         pagamento.Status = StatusPagamento.Pendente;
         pagamento.DataCriacao = DateTime.UtcNow;
 
         _context.Pagamentos.Add(pagamento);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
 
         return pagamento;
     }
 
-    public async Task<Pagamento> ProcessarAsync(Guid pagamentoId)
+    public async Task<Pagamento> ProcessarAsync(Guid pagamentoId, CancellationToken cancellationToken = default)
     {
-        var pagamento = await _context.Pagamentos.FindAsync(pagamentoId);
+        var pagamento = await _context.Pagamentos.FindAsync([pagamentoId], cancellationToken);
         if (pagamento == null)
             throw new InvalidOperationException("Pagamento não encontrado");
 
@@ -57,13 +57,13 @@ public class PagamentoService : IPagamentoService
 
         // TODO: Integração com gateway de pagamento
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
         return pagamento;
     }
 
-    public async Task<Pagamento> ConfirmarAsync(Guid pagamentoId, string transacaoId)
+    public async Task<Pagamento> ConfirmarAsync(Guid pagamentoId, string transacaoId, CancellationToken cancellationToken = default)
     {
-        var pagamento = await _context.Pagamentos.FindAsync(pagamentoId);
+        var pagamento = await _context.Pagamentos.FindAsync([pagamentoId], cancellationToken);
         if (pagamento == null)
             throw new InvalidOperationException("Pagamento não encontrado");
 
@@ -74,13 +74,13 @@ public class PagamentoService : IPagamentoService
         pagamento.TransacaoId = transacaoId;
         pagamento.DataConfirmacao = DateTime.UtcNow;
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
         return pagamento;
     }
 
-    public async Task<Pagamento> RecusarAsync(Guid pagamentoId, string motivo)
+    public async Task<Pagamento> RecusarAsync(Guid pagamentoId, string motivo, CancellationToken cancellationToken = default)
     {
-        var pagamento = await _context.Pagamentos.FindAsync(pagamentoId);
+        var pagamento = await _context.Pagamentos.FindAsync([pagamentoId], cancellationToken);
         if (pagamento == null)
             throw new InvalidOperationException("Pagamento não encontrado");
 
@@ -90,13 +90,13 @@ public class PagamentoService : IPagamentoService
         pagamento.Status = StatusPagamento.Recusado;
         pagamento.MotivoRecusa = motivo;
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
         return pagamento;
     }
 
-    public async Task<Pagamento> EstornarAsync(Guid pagamentoId)
+    public async Task<Pagamento> EstornarAsync(Guid pagamentoId, CancellationToken cancellationToken = default)
     {
-        var pagamento = await _context.Pagamentos.FindAsync(pagamentoId);
+        var pagamento = await _context.Pagamentos.FindAsync([pagamentoId], cancellationToken);
         if (pagamento == null)
             throw new InvalidOperationException("Pagamento não encontrado");
 
@@ -107,7 +107,7 @@ public class PagamentoService : IPagamentoService
 
         // TODO: Integração com gateway de pagamento para estorno
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
         return pagamento;
     }
 }

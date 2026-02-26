@@ -2,18 +2,14 @@ using HomeTask.Domain.Entities;
 using HomeTask.Domain.Enums;
 
 namespace HomeTask.Application.Interfaces;
-
-/// <summary>
-/// Interface para gerenciamento de prestadores (RF02, RF07, RF09, RF12)
-/// </summary>
 public interface IPrestadorService
 {
-    Task<Prestador?> ObterPorIdAsync(Guid id);
-    Task<Prestador?> ObterPorUsuarioIdAsync(Guid usuarioId);
-    Task<Prestador> CriarAsync(Prestador prestador);
-    Task<Prestador> AtualizarAsync(Prestador prestador);
-    Task<IEnumerable<Prestador>> BuscarAsync(CategoriaServico? categoria, string? cidade, DateTime? dataDisponivel);
-    Task<IEnumerable<Agendamento>> ObterHistoricoServicosAsync(Guid prestadorId);
-    Task AtualizarMediaAvaliacoesAsync(Guid prestadorId);
-    Task AtualizarStatusAsync(Guid prestadorId, StatusPrestador status);
+    Task<Prestador?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<Prestador?> ObterPorUsuarioIdAsync(Guid usuarioId, CancellationToken cancellationToken = default);
+    Task<Prestador> CriarAsync(Prestador prestador, CancellationToken cancellationToken = default);
+    Task<Prestador> AtualizarAsync(Prestador prestador, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Prestador>> BuscarAsync(CategoriaServico? categoria, string? cidade, DateTime? dataDisponivel, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Agendamento>> ObterHistoricoServicosAsync(Guid prestadorId, CancellationToken cancellationToken = default);
+    Task AtualizarMediaAvaliacoesAsync(Guid prestadorId, CancellationToken cancellationToken = default);
+    Task AtualizarStatusAsync(Guid prestadorId, StatusPrestador status, CancellationToken cancellationToken = default);
 }

@@ -1,15 +1,11 @@
 using HomeTask.Domain.Entities;
 
 namespace HomeTask.Application.Interfaces;
-
-/// <summary>
-/// Interface para gerenciamento de clientes (RF11)
-/// </summary>
 public interface IClienteService
 {
-    Task<Cliente?> ObterPorIdAsync(Guid id);
-    Task<Cliente?> ObterPorUsuarioIdAsync(Guid usuarioId);
-    Task<Cliente> CriarAsync(Cliente cliente);
-    Task<Cliente> AtualizarAsync(Cliente cliente);
-    Task<IEnumerable<Agendamento>> ObterHistoricoAgendamentosAsync(Guid clienteId);
+    Task<Cliente?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<Cliente?> ObterPorUsuarioIdAsync(Guid usuarioId, CancellationToken cancellationToken = default);
+    Task<Cliente> CriarAsync(Cliente cliente, CancellationToken cancellationToken = default);
+    Task<Cliente> AtualizarAsync(Cliente cliente, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Agendamento>> ObterHistoricoAgendamentosAsync(Guid clienteId, CancellationToken cancellationToken = default);
 }
