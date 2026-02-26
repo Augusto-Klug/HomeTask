@@ -6,10 +6,6 @@ using System.Security.Cryptography;
 using System.Text;
 
 namespace HomeTask.Infrastructure.Services;
-
-/// <summary>
-/// Implementação do serviço de usuários (RF01, RNF10)
-/// </summary>
 public class UsuarioService : IUsuarioService
 {
     private readonly HomeTaskDbContext _context;
