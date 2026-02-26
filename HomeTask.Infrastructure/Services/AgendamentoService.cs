@@ -18,7 +18,7 @@ public class AgendamentoService : IAgendamentoService
         _context = context;
     }
 
-    public async Task<Agendamento?> ObterPorIdAsync(Guid id)
+    public async Task<Agendamento?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _context.Agendamentos
             .Include(a => a.Cliente)
@@ -28,23 +28,23 @@ public class AgendamentoService : IAgendamentoService
             .Include(a => a.ServicoOferecido)
             .Include(a => a.Pagamento)
             .Include(a => a.Avaliacao)
-            .FirstOrDefaultAsync(a => a.Id == id);
+            .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
     }
 
-    public async Task<Agendamento> CriarAsync(Agendamento agendamento)
+    public async Task<Agendamento> CriarAsync(Agendamento agendamento, CancellationToken cancellationToken = default)
     {
         agendamento.Status = StatusAgendamento.Solicitado;
         agendamento.DataSolicitacao = DateTime.UtcNow;
 
         _context.Agendamentos.Add(agendamento);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
 
         return agendamento;
     }
 
-    public async Task<Agendamento> AceitarAsync(Guid agendamentoId)
+    public async Task<Agendamento> AceitarAsync(Guid agendamentoId, CancellationToken cancellationToken = default)
     {
-        var agendamento = await _context.Agendamentos.FindAsync(agendamentoId);
+        var agendamento = await _context.Agendamentos.FindAsync([agendamentoId], cancellationToken);
         if (agendamento == null)
             throw new InvalidOperationException("Agendamento não encontrado");
 
@@ -54,13 +54,13 @@ public class AgendamentoService : IAgendamentoService
         agendamento.Status = StatusAgendamento.Aceito;
         agendamento.DataResposta = DateTime.UtcNow;
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
         return agendamento;
     }
 
-    public async Task<Agendamento> RecusarAsync(Guid agendamentoId, string motivo)
+    public async Task<Agendamento> RecusarAsync(Guid agendamentoId, string motivo, CancellationToken cancellationToken = default)
     {
-        var agendamento = await _context.Agendamentos.FindAsync(agendamentoId);
+        var agendamento = await _context.Agendamentos.FindAsync([agendamentoId], cancellationToken);
         if (agendamento == null)
             throw new InvalidOperationException("Agendamento não encontrado");
 
@@ -71,13 +71,13 @@ public class AgendamentoService : IAgendamentoService
         agendamento.DataResposta = DateTime.UtcNow;
         agendamento.MotivoRecusa = motivo;
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
         return agendamento;
     }
 
-    public async Task<Agendamento> IniciarAsync(Guid agendamentoId)
+    public async Task<Agendamento> IniciarAsync(Guid agendamentoId, CancellationToken cancellationToken = default)
     {
-        var agendamento = await _context.Agendamentos.FindAsync(agendamentoId);
+        var agendamento = await _context.Agendamentos.FindAsync([agendamentoId], cancellationToken);
         if (agendamento == null)
             throw new InvalidOperationException("Agendamento não encontrado");
 
@@ -86,13 +86,13 @@ public class AgendamentoService : IAgendamentoService
 
         agendamento.Status = StatusAgendamento.EmAndamento;
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
         return agendamento;
     }
 
-    public async Task<Agendamento> ConcluirAsync(Guid agendamentoId)
+    public async Task<Agendamento> ConcluirAsync(Guid agendamentoId, CancellationToken cancellationToken = default)
     {
-        var agendamento = await _context.Agendamentos.FindAsync(agendamentoId);
+        var agendamento = await _context.Agendamentos.FindAsync([agendamentoId], cancellationToken);
         if (agendamento == null)
             throw new InvalidOperationException("Agendamento não encontrado");
 
@@ -102,19 +102,19 @@ public class AgendamentoService : IAgendamentoService
         agendamento.Status = StatusAgendamento.Concluido;
         agendamento.DataConclusao = DateTime.UtcNow;
 
-        var prestador = await _context.Prestadores.FindAsync(agendamento.PrestadorId);
+        var prestador = await _context.Prestadores.FindAsync([agendamento.PrestadorId], cancellationToken);
         if (prestador != null)
         {
             prestador.TotalServicosConcluidos++;
         }
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
         return agendamento;
     }
 
-    public async Task<Agendamento> CancelarAsync(Guid agendamentoId, string motivo)
+    public async Task<Agendamento> CancelarAsync(Guid agendamentoId, string motivo, CancellationToken cancellationToken = default)
     {
-        var agendamento = await _context.Agendamentos.FindAsync(agendamentoId);
+        var agendamento = await _context.Agendamentos.FindAsync([agendamentoId], cancellationToken);
         if (agendamento == null)
             throw new InvalidOperationException("Agendamento não encontrado");
 
@@ -125,11 +125,11 @@ public class AgendamentoService : IAgendamentoService
         agendamento.Status = StatusAgendamento.Cancelado;
         agendamento.MotivoRecusa = motivo;
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
         return agendamento;
     }
 
-    public async Task<IEnumerable<Agendamento>> ObterPorClienteAsync(Guid clienteId)
+    public async Task<IEnumerable<Agendamento>> ObterPorClienteAsync(Guid clienteId, CancellationToken cancellationToken = default)
     {
         return await _context.Agendamentos
             .Include(a => a.Prestador)
@@ -137,10 +137,10 @@ public class AgendamentoService : IAgendamentoService
             .Include(a => a.ServicoOferecido)
             .Where(a => a.ClienteId == clienteId)
             .OrderByDescending(a => a.DataHoraAgendada)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<Agendamento>> ObterPorPrestadorAsync(Guid prestadorId)
+    public async Task<IEnumerable<Agendamento>> ObterPorPrestadorAsync(Guid prestadorId, CancellationToken cancellationToken = default)
     {
         return await _context.Agendamentos
             .Include(a => a.Cliente)
@@ -148,10 +148,10 @@ public class AgendamentoService : IAgendamentoService
             .Include(a => a.ServicoOferecido)
             .Where(a => a.PrestadorId == prestadorId)
             .OrderByDescending(a => a.DataHoraAgendada)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<Agendamento>> ObterPorStatusAsync(StatusAgendamento status)
+    public async Task<IEnumerable<Agendamento>> ObterPorStatusAsync(StatusAgendamento status, CancellationToken cancellationToken = default)
     {
         return await _context.Agendamentos
             .Include(a => a.Cliente)
@@ -159,6 +159,6 @@ public class AgendamentoService : IAgendamentoService
             .Include(a => a.ServicoOferecido)
             .Where(a => a.Status == status)
             .OrderByDescending(a => a.DataSolicitacao)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 }

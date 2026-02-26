@@ -18,7 +18,7 @@ public class PrestadorService : IPrestadorService
         _context = context;
     }
 
-    public async Task<Prestador?> ObterPorIdAsync(Guid id)
+    public async Task<Prestador?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _context.Prestadores
             .Include(p => p.Usuario)
@@ -27,33 +27,33 @@ public class PrestadorService : IPrestadorService
             .Include(p => p.Portfolios)
             .Include(p => p.Disponibilidades)
             .Include(p => p.Avaliacoes)
-            .FirstOrDefaultAsync(p => p.Id == id);
+            .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
     }
 
-    public async Task<Prestador?> ObterPorUsuarioIdAsync(Guid usuarioId)
+    public async Task<Prestador?> ObterPorUsuarioIdAsync(Guid usuarioId, CancellationToken cancellationToken = default)
     {
         return await _context.Prestadores
             .Include(p => p.Usuario)
             .Include(p => p.ServicosOferecidos)
-            .FirstOrDefaultAsync(p => p.UsuarioId == usuarioId);
+            .FirstOrDefaultAsync(p => p.UsuarioId == usuarioId, cancellationToken);
     }
 
-    public async Task<Prestador> CriarAsync(Prestador prestador)
+    public async Task<Prestador> CriarAsync(Prestador prestador, CancellationToken cancellationToken = default)
     {
         prestador.Status = StatusPrestador.EmAnalise;
         _context.Prestadores.Add(prestador);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
         return prestador;
     }
 
-    public async Task<Prestador> AtualizarAsync(Prestador prestador)
+    public async Task<Prestador> AtualizarAsync(Prestador prestador, CancellationToken cancellationToken = default)
     {
         _context.Prestadores.Update(prestador);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
         return prestador;
     }
 
-    public async Task<IEnumerable<Prestador>> BuscarAsync(CategoriaServico? categoria, string? cidade, DateTime? dataDisponivel)
+    public async Task<IEnumerable<Prestador>> BuscarAsync(CategoriaServico? categoria, string? cidade, DateTime? dataDisponivel, CancellationToken cancellationToken = default)
     {
         var query = _context.Prestadores
             .Include(p => p.Usuario)
@@ -83,10 +83,10 @@ public class PrestadorService : IPrestadorService
                 d.Ativo));
         }
 
-        return await query.OrderByDescending(p => p.MediaAvaliacoes).ToListAsync();
+        return await query.OrderByDescending(p => p.MediaAvaliacoes).ToListAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<Agendamento>> ObterHistoricoServicosAsync(Guid prestadorId)
+    public async Task<IEnumerable<Agendamento>> ObterHistoricoServicosAsync(Guid prestadorId, CancellationToken cancellationToken = default)
     {
         return await _context.Agendamentos
             .Include(a => a.Cliente)
@@ -95,14 +95,14 @@ public class PrestadorService : IPrestadorService
             .Include(a => a.Avaliacao)
             .Where(a => a.PrestadorId == prestadorId)
             .OrderByDescending(a => a.DataHoraAgendada)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task AtualizarMediaAvaliacoesAsync(Guid prestadorId)
+    public async Task AtualizarMediaAvaliacoesAsync(Guid prestadorId, CancellationToken cancellationToken = default)
     {
         var prestador = await _context.Prestadores
             .Include(p => p.Avaliacoes)
-            .FirstOrDefaultAsync(p => p.Id == prestadorId);
+            .FirstOrDefaultAsync(p => p.Id == prestadorId, cancellationToken);
 
         if (prestador != null && prestador.Avaliacoes.Count != 0)
         {
@@ -120,13 +120,13 @@ public class PrestadorService : IPrestadorService
                 prestador.Status = StatusPrestador.Suspenso;
             }
 
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
         }
     }
 
-    public async Task AtualizarStatusAsync(Guid prestadorId, StatusPrestador status)
+    public async Task AtualizarStatusAsync(Guid prestadorId, StatusPrestador status, CancellationToken cancellationToken = default)
     {
-        var prestador = await _context.Prestadores.FindAsync(prestadorId);
+        var prestador = await _context.Prestadores.FindAsync([prestadorId], cancellationToken);
         if (prestador != null)
         {
             prestador.Status = status;
@@ -134,7 +134,7 @@ public class PrestadorService : IPrestadorService
             {
                 prestador.DataVerificacao = DateTime.UtcNow;
             }
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
         }
     }
 }

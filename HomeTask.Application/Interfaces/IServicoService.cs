@@ -8,10 +8,10 @@ namespace HomeTask.Application.Interfaces;
 /// </summary>
 public interface IServicoService
 {
-    Task<ServicoOferecido?> ObterPorIdAsync(Guid id);
-    Task<ServicoOferecido> CriarAsync(ServicoOferecido servico);
-    Task<ServicoOferecido> AtualizarAsync(ServicoOferecido servico);
-    Task<bool> RemoverAsync(Guid id);
-    Task<IEnumerable<ServicoOferecido>> ObterPorPrestadorAsync(Guid prestadorId);
-    Task<IEnumerable<ServicoOferecido>> BuscarAsync(CategoriaServico? categoria, string? cidade, decimal? precoMaximo);
+    Task<ServicoOferecido?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<ServicoOferecido> CriarAsync(ServicoOferecido servico, CancellationToken cancellationToken = default);
+    Task<ServicoOferecido> AtualizarAsync(ServicoOferecido servico, CancellationToken cancellationToken = default);
+    Task<bool> RemoverAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<IEnumerable<ServicoOferecido>> ObterPorPrestadorAsync(Guid prestadorId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<ServicoOferecido>> BuscarAsync(CategoriaServico? categoria, string? cidade, decimal? precoMaximo, CancellationToken cancellationToken = default);
 }

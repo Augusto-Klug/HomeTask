@@ -7,10 +7,10 @@ namespace HomeTask.Application.Interfaces;
 /// </summary>
 public interface IAvaliacaoService
 {
-    Task<Avaliacao?> ObterPorIdAsync(Guid id);
-    Task<Avaliacao?> ObterPorAgendamentoAsync(Guid agendamentoId);
-    Task<Avaliacao> CriarAsync(Avaliacao avaliacao);
-    Task<IEnumerable<Avaliacao>> ObterPorPrestadorAsync(Guid prestadorId);
-    Task<IEnumerable<Avaliacao>> ObterPorClienteAsync(Guid clienteId);
-    Task<bool> PodeAvaliarAsync(Guid clienteId, Guid agendamentoId);
+    Task<Avaliacao?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<Avaliacao?> ObterPorAgendamentoAsync(Guid agendamentoId, CancellationToken cancellationToken = default);
+    Task<Avaliacao> CriarAsync(Avaliacao avaliacao, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Avaliacao>> ObterPorPrestadorAsync(Guid prestadorId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Avaliacao>> ObterPorClienteAsync(Guid clienteId, CancellationToken cancellationToken = default);
+    Task<bool> PodeAvaliarAsync(Guid clienteId, Guid agendamentoId, CancellationToken cancellationToken = default);
 }
