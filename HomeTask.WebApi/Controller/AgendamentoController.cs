@@ -2,12 +2,14 @@ using HomeTask.Application.Interfaces;
 using HomeTask.Domain.Enums;
 using HomeTask.Domain.ViewModel;
 using HomeTask.WebApi.Conversores.Interfaces.Agendamento;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HomeTask.WebApi.Controller
 {
     [ApiController]
     [Route("api/[controller]/[action]")]
+    [Authorize]
     public class AgendamentoController : ControllerBase
     {
         private readonly IAgendamentoService _agendamentoService;
