@@ -1,20 +1,20 @@
 import ui from "beercss";
-import { useRouter } from "vue-router";
 
 export default {
   fecharSidenav(idElemento: string) {
     const elemento = document.getElementById(idElemento);
+    console.log(elemento);
     if (elemento?.classList.contains("active")) {
-      ui(idElemento);
+      ui(`#${idElemento}`);
     }
   },
   abiriSidenav(idElemento: string) {
     const elemento = document.getElementById(idElemento);
     if (!elemento?.classList.contains("active")) {
-      ui(idElemento);
+      ui(`#${idElemento}`);
     }
   },
   fecharOuAbrirSidenav(idElemento: string) {
-    ui(idElemento);
+    ui(`#${idElemento}`);
   },
 };

@@ -15,7 +15,7 @@ div
   .padding
     h4.center-align Categorias
     .grid.padding-top
-      article.s4.m3.l2(
+      article.s12.m4.l4(
         v-for="cat in categorias"
         :key="cat.id"
       )
@@ -44,7 +44,6 @@ const categorias: Categoria[] = [
   { id: 2, nome: "Jardinagem", icone: "yard" },
   { id: 3, nome: "Reparos", icone: "handyman" },
   { id: 4, nome: "Lavanderia", icone: "local_laundry_service" },
-  { id: 5, nome: "Passadoria", icone: "iron" },
   { id: 6, nome: "Babysitter", icone: "child_care" },
   { id: 7, nome: "Cuidador de Idosos", icone: "elderly" },
   { id: 8, nome: "Pet Sitter", icone: "pets" },

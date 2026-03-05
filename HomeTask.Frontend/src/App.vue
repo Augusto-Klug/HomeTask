@@ -1,8 +1,8 @@
 <template lang="pug">
-Cabecalho
-main.responsive
+div
+  Cabecalho
   RouterView
-Rodape
+  Rodape
 </template>
 
 <script setup lang="ts">
