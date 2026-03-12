@@ -34,6 +34,9 @@ public static class DependencyInjection
         services.AddScoped<IAvaliacaoService, AvaliacaoService>();
         services.AddScoped<IPagamentoService, PagamentoService>();
         services.AddScoped<IMensagemService, MensagemService>();
+        services.AddScoped<IArquivoService, LocalArquivoService>();
+        services.AddScoped<IPortfolioService, PortfolioService>();
+        services.AddScoped<ICertificacaoService, CertificacaoService>();
 
         return services;
     }

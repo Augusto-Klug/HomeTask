@@ -68,10 +68,6 @@ public class UsuarioService : IUsuarioService
         return await _context.Usuarios.AnyAsync(u => u.Cpf == cpf, cancellationToken);
     }
 
-    /// <summary>
-    /// Hash da senha usando SHA256 (RNF10 - dados sensíveis criptografados)
-    /// Em produção, usar BCrypt ou Argon2
-    /// </summary>
     private static string HashSenha(string senha)
     {
         var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(senha));
