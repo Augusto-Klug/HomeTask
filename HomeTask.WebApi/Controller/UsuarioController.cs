@@ -59,6 +59,12 @@ namespace HomeTask.WebApi.Controller
             if (string.IsNullOrEmpty(senha))
                 return BadRequest("Senha é obrigatória.");
 
+            if (await _usuarioService.ExisteEmailAsync(viewmodel.Email, cancellationToken))
+                return Conflict("Este e-mail já está cadastrado.");
+
+            if (await _usuarioService.ExisteCpfAsync(viewmodel.Cpf, cancellationToken))
+                return Conflict("Este CPF já está cadastrado.");
+
             var usuarioCriado = await _usuarioService.CriarAsync(usuario, senha, cancellationToken);
             var usuarioContrato = _conversorUsuario.ConverterUsuarioparaContrato(usuarioCriado);
             var viewModel = _conversorUsuario.ConverterContratoparaViewModel(usuarioContrato);

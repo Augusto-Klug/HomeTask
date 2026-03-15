@@ -361,3 +361,171 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# ============================================================
+# Vue.js / Node.js / Frontend
+# ============================================================
+
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+pnpm-error.log*
+lerna-debug.log*
+
+# Production build
+dist/
+dist-ssr/
+*.local
+
+# Vite cache
+.vite/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE specific Vue files
+*.vue.bak
+
+# Vitest / Unit Testing
+coverage/
+.nyc_output/
+
+# Vue Router history mode
+history.html
+
+# Prettier
+.prettierignore
+.prettierrc
+
+# ============================================================
+# IDE & Editor
+# ============================================================
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# WebStorm / JetBrains
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ============================================================
+# Git / Source Control
+# ============================================================
+
+# Git merge conflicts
+*.orig
+*.rej
+
+# Git temporary files
+*.git-backup
+
+# ============================================================
+# Build & Package Managers
+# ============================================================
+
+# pnpm (used in this project)
+pnpm-lock.yaml
+.pnpm-store/
+
+# npm lock files (if using npm)
+package-lock.json
+
+# yarn lock files (if using yarn)
+yarn.lock
+
+# NuGet
+.nuget/
+
+# ============================================================
+# OS & Temporary Files
+# ============================================================
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*.*~
+
+# System files
+.DS_Store
+.Thumbs.db
+
+# ============================================================
+# Docker
+# ============================================================
+
+# Docker volumes and containers
+.docker/
+docker-volumes/
+
+# ============================================================
+# Logs
+# ============================================================
+
+# Application logs
+logs/
+*.log
+*.logs
+
+# ============================================================
+# Database & Backups
+# ============================================================
+
+# SQLite databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Database backups
+*.sql.bak
+
+# ============================================================
+# Misc / Project Specific
+# ============================================================
+
+# Temporary test files
+*.test-tmp
+
+# User-specific settings (not already covered)
+appsettings.Development.json
+appsettings.Production.json
+
+# wwwroot build output (if auto-generated)
+#wwwroot/js/
+#wwwroot/css/

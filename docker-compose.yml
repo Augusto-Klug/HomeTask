@@ -1,0 +1,19 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: hometask-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456789
+      MYSQL_DATABASE: hometask
+    ports:
+      - "3306:3306"
+    volumes:
+      - hometask_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p123456789"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  hometask_mysql_data:
