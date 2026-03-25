@@ -9,16 +9,16 @@ namespace HomeTask.Domain.Contratos
         public Guid Id { get; set; } = Guid.NewGuid();
 
         [MaxLength(100)]
-        public string Nome { get; set; } = string.Empty;
+        public string Nome { get; set; }
 
         [MaxLength(100)]
-        public string Email { get; set; } = string.Empty;
+        public string Email { get; set; } 
 
         [MaxLength(256)]
         public string? Senha { get; set; }
 
-        [MaxLength(14)]
-        public string Cpf { get; set; } = string.Empty;
+        [RegularExpression(@"^(\d{3}\.?\d{3}\.?\d{3}-?\d{2}|\d{2}\.?\d{3}\.?\d{3}/?\d{4}-?\d{2})$", ErrorMessage = "Documento inválido. Informe um CPF ou CNPJ válido.")]
+        public string Documento { get; set; } 
 
         [MaxLength(15)]
         public string? Telefone { get; set; }

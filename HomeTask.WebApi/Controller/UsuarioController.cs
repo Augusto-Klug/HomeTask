@@ -62,7 +62,7 @@ namespace HomeTask.WebApi.Controller
             if (await _usuarioService.ExisteEmailAsync(viewmodel.Email, cancellationToken))
                 return Conflict("Este e-mail já está cadastrado.");
 
-            if (await _usuarioService.ExisteCpfAsync(viewmodel.Cpf, cancellationToken))
+            if (await _usuarioService.ExisteCpfAsync(viewmodel.Documento, cancellationToken))
                 return Conflict("Este CPF já está cadastrado.");
 
             var usuarioCriado = await _usuarioService.CriarAsync(usuario, senha, cancellationToken);

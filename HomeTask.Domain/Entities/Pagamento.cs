@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using HomeTask.Domain.Enums;
 
 namespace HomeTask.Domain.Entities;
@@ -9,26 +7,20 @@ namespace HomeTask.Domain.Entities;
 /// </summary>
 public class Pagamento
 {
-    [Key]
     public Guid Id { get; set; } = Guid.NewGuid();
 
-    [Required]
     public Guid AgendamentoId { get; set; }
 
-    [ForeignKey(nameof(AgendamentoId))]
     public Agendamento Agendamento { get; set; } = null!;
 
     /// <summary>
     /// Valor do pagamento
     /// </summary>
-    [Required]
-    [Column(TypeName = "decimal(10,2)")]
     public decimal Valor { get; set; }
 
     /// <summary>
     /// Tipo de pagamento (Pix, Débito, Crédito)
     /// </summary>
-    [Required]
     public TipoPagamento TipoPagamento { get; set; }
 
     /// <summary>
@@ -39,7 +31,6 @@ public class Pagamento
     /// <summary>
     /// Identificador da transação no gateway de pagamento
     /// </summary>
-    [MaxLength(100)]
     public string? TransacaoId { get; set; }
 
     public DateTime DataCriacao { get; set; } = DateTime.UtcNow;
@@ -48,6 +39,5 @@ public class Pagamento
 
     public DateTime? DataConfirmacao { get; set; }
 
-    [MaxLength(500)]
     public string? MotivoRecusa { get; set; }
 }

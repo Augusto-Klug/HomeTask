@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using HomeTask.Domain.Enums;
 
 namespace HomeTask.Domain.Entities;
@@ -8,30 +7,18 @@ namespace HomeTask.Domain.Entities;
 /// </summary>
 public class Usuario
 {
-    [Key]
     public Guid Id { get; set; } = Guid.NewGuid();
 
-    [Required]
-    [MaxLength(100)]
-    public string Nome { get; set; } = string.Empty;
+    public string Nome { get; set; }
 
-    [Required]
-    [MaxLength(100)]
-    [EmailAddress]
-    public string Email { get; set; } = string.Empty;
+    public string Email { get; set; } 
 
-    [Required]
-    [MaxLength(256)]
-    public string SenhaHash { get; set; } = string.Empty;
+    public string SenhaHash { get; set; } 
 
-    [Required]
-    [MaxLength(14)]
-    public string Cpf { get; set; } = string.Empty;
+    public string Documento { get; set; } 
 
-    [MaxLength(15)]
     public string? Telefone { get; set; }
 
-    [Required]
     public TipoUsuario Tipo { get; set; }
 
     public DateTime DataCadastro { get; set; } = DateTime.UtcNow;

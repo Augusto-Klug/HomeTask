@@ -65,7 +65,7 @@ public class UsuarioService : IUsuarioService
 
     public async Task<bool> ExisteCpfAsync(string cpf, CancellationToken cancellationToken = default)
     {
-        return await _context.Usuarios.AnyAsync(u => u.Cpf == cpf, cancellationToken);
+        return await _context.Usuarios.AnyAsync(u => u.Documento == cpf, cancellationToken);
     }
 
     private static string HashSenha(string senha)

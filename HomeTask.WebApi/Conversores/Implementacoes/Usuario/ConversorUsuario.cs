@@ -15,7 +15,7 @@ namespace HomeTask.WebApi.Conversores.Implementacoes.Usuario
                 retorno.Id = usuario.Id;
                 retorno.Nome = usuario.Nome;
                 retorno.Email = usuario.Email;
-                retorno.Cpf = usuario.Cpf;
+                retorno.Documento = usuario.Documento;
                 retorno.Telefone = usuario.Telefone;
                 retorno.Tipo = usuario.Tipo;
                 retorno.DataCadastro = usuario.DataCadastro;
@@ -35,7 +35,7 @@ namespace HomeTask.WebApi.Conversores.Implementacoes.Usuario
                 retorno.Id = contrato.Id;
                 retorno.Nome = contrato.Nome;
                 retorno.Email = contrato.Email;
-                retorno.Cpf = contrato.Cpf;
+                retorno.Documento = contrato.Documento;
                 retorno.Telefone = contrato.Telefone;
                 retorno.Tipo = contrato.Tipo;
                 retorno.DataCadastro = contrato.DataCadastro;
@@ -55,7 +55,7 @@ namespace HomeTask.WebApi.Conversores.Implementacoes.Usuario
                 retorno.Nome = contrato.Nome;
                 retorno.Email = contrato.Email;
                 retorno.Senha = contrato.Senha;
-                retorno.Cpf = contrato.Cpf;
+                retorno.Documento = contrato.Documento;
                 retorno.Telefone = contrato.Telefone;
                 retorno.Tipo = contrato.Tipo;
                 retorno.DataCadastro = contrato.DataCadastro;
@@ -77,7 +77,7 @@ namespace HomeTask.WebApi.Conversores.Implementacoes.Usuario
                 retorno.Nome = viewModel.Nome;
                 retorno.Email = viewModel.Email;
                 retorno.Senha = viewModel.Senha;
-                retorno.Cpf = viewModel.Cpf;
+                retorno.Documento = viewModel.Documento;
                 retorno.Telefone = viewModel.Telefone;
                 retorno.Tipo = viewModel.Tipo;
                 retorno.DataCadastro = viewModel.DataCadastro;

@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using HomeTask.Domain.Enums;
 
 namespace HomeTask.Domain.Entities;
@@ -9,31 +7,23 @@ namespace HomeTask.Domain.Entities;
 /// </summary>
 public class Prestador
 {
-    [Key]
     public Guid Id { get; set; } = Guid.NewGuid();
 
-    [Required]
     public Guid UsuarioId { get; set; }
 
-    [ForeignKey(nameof(UsuarioId))]
     public Usuario Usuario { get; set; } = null!;
+    public string Documento { get; set; }
 
-    [MaxLength(1000)]
     public string? Descricao { get; set; }
 
-    [MaxLength(200)]
     public string? Endereco { get; set; }
 
-    [MaxLength(100)]
     public string? Cidade { get; set; }
 
-    [MaxLength(50)]
     public string? Estado { get; set; }
 
-    [MaxLength(10)]
     public string? Cep { get; set; }
 
-    [MaxLength(100)]
     public string? Bairro { get; set; }
 
     /// <summary>
@@ -49,7 +39,6 @@ public class Prestador
     /// <summary>
     /// Média das avaliações recebidas (NEG07)
     /// </summary>
-    [Column(TypeName = "decimal(3,2)")]
     public decimal MediaAvaliacoes { get; set; } = 0;
 
     /// <summary>
