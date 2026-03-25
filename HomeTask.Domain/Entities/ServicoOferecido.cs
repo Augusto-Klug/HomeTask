@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using HomeTask.Domain.Enums;
 
 namespace HomeTask.Domain.Entities;
@@ -9,34 +7,26 @@ namespace HomeTask.Domain.Entities;
 /// </summary>
 public class ServicoOferecido
 {
-    [Key]
     public Guid Id { get; set; } = Guid.NewGuid();
 
-    [Required]
     public Guid PrestadorId { get; set; }
 
-    [ForeignKey(nameof(PrestadorId))]
     public Prestador Prestador { get; set; } = null!;
 
-    [Required]
     public CategoriaServico Categoria { get; set; }
 
-    [MaxLength(100)]
     public string? Titulo { get; set; }
 
-    [MaxLength(500)]
     public string? Descricao { get; set; }
 
     /// <summary>
     /// Preço base do serviço
     /// </summary>
-    [Column(TypeName = "decimal(10,2)")]
     public decimal PrecoBase { get; set; }
 
     /// <summary>
     /// Unidade de cobrança (hora, diária, serviço)
     /// </summary>
-    [MaxLength(20)]
     public string UnidadeCobranca { get; set; } = "hora";
 
     /// <summary>

@@ -1,6 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace HomeTask.Domain.Entities;
 
 /// <summary>
@@ -8,20 +5,14 @@ namespace HomeTask.Domain.Entities;
 /// </summary>
 public class Certificacao
 {
-    [Key]
     public Guid Id { get; set; } = Guid.NewGuid();
 
-    [Required]
     public Guid PrestadorId { get; set; }
 
-    [ForeignKey(nameof(PrestadorId))]
     public Prestador Prestador { get; set; } = null!;
 
-    [Required]
-    [MaxLength(100)]
     public string Nome { get; set; } = string.Empty;
 
-    [MaxLength(100)]
     public string? Instituicao { get; set; }
 
     public DateTime? DataEmissao { get; set; }
@@ -31,7 +22,6 @@ public class Certificacao
     /// <summary>
     /// URL do documento/certificado
     /// </summary>
-    [MaxLength(500)]
     public string? UrlDocumento { get; set; }
 
     public bool Verificada { get; set; } = false;

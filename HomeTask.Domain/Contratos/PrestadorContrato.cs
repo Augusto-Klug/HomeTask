@@ -12,6 +12,9 @@ namespace HomeTask.Domain.Contratos
         [MaxLength(1000)]
         public string? Descricao { get; set; }
 
+        [RegularExpression(@"^(\d{3}\.?\d{3}\.?\d{3}-?\d{2}|\d{2}\.?\d{3}\.?\d{3}/?\d{4}-?\d{2})$", ErrorMessage = "Documento inválido. Informe um CPF ou CNPJ válido.")]
+        public string Documento { get; set; }
+
         [MaxLength(200)]
         public string? Endereco { get; set; }
 

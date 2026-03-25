@@ -9,20 +9,11 @@ namespace HomeTask.Domain.Contratos
     {
         public Guid Id { get; set; } = Guid.NewGuid();
         public Guid UsuarioId { get; set; }
-
-        [MaxLength(200)]
+        public string Documento { get; set; }
         public string? Endereco { get; set; }
-
-        [MaxLength(100)]
         public string? Cidade { get; set; }
-
-        [MaxLength(50)]
         public string? Estado { get; set; }
-
-        [MaxLength(10)]
         public string? Cep { get; set; }
-
-        [MaxLength(100)]
         public string? Bairro { get; set; }
 
     }
