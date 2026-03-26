@@ -1,6 +1,7 @@
+using HomeTask.Domain.Enums;
 using System;
 using System.ComponentModel.DataAnnotations;
-using HomeTask.Domain.Enums;
+using System.Text.Json.Serialization;
 
 namespace HomeTask.Domain.ViewModel
 {
@@ -17,7 +18,8 @@ namespace HomeTask.Domain.ViewModel
             [MaxLength(256)]
             public string? Senha { get; set; }
 
-            [RegularExpression(@"^(\d{3}\.?\d{3}\.?\d{3}-?\d{2}|\d{2}\.?\d{3}\.?\d{3}/?\d{4}-?\d{2})$", ErrorMessage = "Documento inválido. Informe um CPF ou CNPJ válido.")]
+        [JsonPropertyName("cpf")]
+        [RegularExpression(@"^(\d{3}\.?\d{3}\.?\d{3}-?\d{2}|\d{2}\.?\d{3}\.?\d{3}/?\d{4}-?\d{2})$", ErrorMessage = "Documento inválido. Informe um CPF ou CNPJ válido.")]
             public string Documento { get; set; }
 
             [MaxLength(15)]

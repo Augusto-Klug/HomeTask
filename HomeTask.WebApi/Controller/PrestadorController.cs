@@ -11,11 +11,13 @@ namespace HomeTask.WebApi.Controller
     public class PrestadorController : ControllerBase
     {
         private readonly IPrestadorService _prestadorService;
+        private readonly IUsuarioService _usuarioService;
         private readonly IConversorPrestador _conversorPrestador;
 
-        public PrestadorController(IPrestadorService prestadorService, IConversorPrestador conversorPrestador)
+        public PrestadorController(IPrestadorService prestadorService, IUsuarioService usuarioService, IConversorPrestador conversorPrestador)
         {
             _prestadorService = prestadorService;
+            _usuarioService = usuarioService;
             _conversorPrestador = conversorPrestador;
         }
 
@@ -64,6 +66,16 @@ namespace HomeTask.WebApi.Controller
         [HttpPost]
         public async Task<IActionResult> CriarPrestador(PrestadorViewModel viewmodel, CancellationToken cancellationToken)
         {
+            // Se o documento não foi fornecido, buscar do usuário existente
+            if (string.IsNullOrEmpty(viewmodel.Documento))
+            {
+                var usuario = await _usuarioService.ObterPorIdAsync(viewmodel.UsuarioId, cancellationToken);
+                if (usuario == null)
+                    return NotFound("Usuário não encontrado");
+
+                viewmodel.Documento = usuario.Documento;
+            }
+
             var contrato = _conversorPrestador.ConverterViewModelparaContrato(viewmodel);
             var prestador = _conversorPrestador.ConverterContratoparaPrestador(contrato);
 
@@ -80,6 +92,16 @@ namespace HomeTask.WebApi.Controller
         [HttpPut]
         public async Task<IActionResult> AtualizarPrestador(PrestadorViewModel viewmodel, CancellationToken cancellationToken)
         {
+            // Se o documento não foi fornecido, buscar do usuário existente
+            if (string.IsNullOrEmpty(viewmodel.Documento))
+            {
+                var usuario = await _usuarioService.ObterPorIdAsync(viewmodel.UsuarioId, cancellationToken);
+                if (usuario == null)
+                    return NotFound("Usuário não encontrado");
+
+                viewmodel.Documento = usuario.Documento;
+            }
+
             var contrato = _conversorPrestador.ConverterViewModelparaContrato(viewmodel);
             var prestador = _conversorPrestador.ConverterContratoparaPrestador(contrato);
 

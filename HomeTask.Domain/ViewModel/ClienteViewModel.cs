@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace HomeTask.Domain.ViewModel
 {
@@ -10,8 +11,9 @@ namespace HomeTask.Domain.ViewModel
             public Guid Id { get; set; } = Guid.NewGuid();
             public Guid UsuarioId { get; set; }
 
+            [JsonPropertyName("cpf")]
             [RegularExpression(@"^(\d{3}\.?\d{3}\.?\d{3}-?\d{2}|\d{2}\.?\d{3}\.?\d{3}/?\d{4}-?\d{2})$", ErrorMessage = "Documento inválido. Informe um CPF ou CNPJ válido.")]
-            public string Documento { get; set; }
+            public string? Documento { get; set; }
 
             [MaxLength(200)]
             public string? Endereco { get; set; }

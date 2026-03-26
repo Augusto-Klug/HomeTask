@@ -9,11 +9,13 @@ namespace HomeTask.WebApi.Controller
     public class ClienteController : ControllerBase
     {
         private readonly IClienteService _clienteService;
+        private readonly IUsuarioService _usuarioService;
         private readonly IConversorCliente _conversorCliente;
 
-        public ClienteController(IClienteService clienteService, IConversorCliente conversorCliente)
+        public ClienteController(IClienteService clienteService, IUsuarioService usuarioService, IConversorCliente conversorCliente)
         {
             _clienteService = clienteService;
+            _usuarioService = usuarioService;
             _conversorCliente = conversorCliente;
         }
 
@@ -49,6 +51,16 @@ namespace HomeTask.WebApi.Controller
         [HttpPost]
         public async Task<IActionResult> CriarCliente(ClienteViewModel viewmodel, CancellationToken cancellationToken)
         {
+            // Se o documento não foi fornecido, buscar do usuário existente
+            if (string.IsNullOrEmpty(viewmodel.Documento))
+            {
+                var usuario = await _usuarioService.ObterPorIdAsync(viewmodel.UsuarioId, cancellationToken);
+                if (usuario == null)
+                    return NotFound("Usuário não encontrado");
+
+                viewmodel.Documento = usuario.Documento;
+            }
+
             var contrato = _conversorCliente.ConverterViewModelparaContrato(viewmodel);
             var cliente = _conversorCliente.ConverterContratoparaCliente(contrato);
 
@@ -65,6 +77,16 @@ namespace HomeTask.WebApi.Controller
         [HttpPut]
         public async Task<IActionResult> AtualizarCliente(ClienteViewModel viewmodel, CancellationToken cancellationToken)
         {
+            // Se o documento não foi fornecido, buscar do usuário existente
+            if (string.IsNullOrEmpty(viewmodel.Documento))
+            {
+                var usuario = await _usuarioService.ObterPorIdAsync(viewmodel.UsuarioId, cancellationToken);
+                if (usuario == null)
+                    return NotFound("Usuário não encontrado");
+
+                viewmodel.Documento = usuario.Documento;
+            }
+
             var contrato = _conversorCliente.ConverterViewModelparaContrato(viewmodel);
             var cliente = _conversorCliente.ConverterContratoparaCliente(contrato);
 
