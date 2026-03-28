@@ -4,6 +4,7 @@ using HomeTask.Domain.Entities;
 using HomeTask.Infrastructure.Data;
 using System.Security.Cryptography;
 using System.Text;
+using HomeTask.Domain.Enums;
 
 namespace HomeTask.Infrastructure.Services;
 public class UsuarioService : IUsuarioService
@@ -35,6 +36,41 @@ public class UsuarioService : IUsuarioService
     {
         usuario.SenhaHash = HashSenha(senha);
         usuario.DataCadastro = DateTime.UtcNow;
+
+        if (usuario.TipoUsuario == TipoUsuario.Cliente || usuario.TipoUsuario == TipoUsuario.Ambos)
+        {
+            usuario.Cliente ??= new Cliente 
+            { 
+                Documento = usuario.Documento,
+                TipoUsuario = usuario.TipoUsuario,
+                Endereco = usuario.Endereco,
+                Cidade = usuario.Cidade,
+                Estado = usuario.Estado,
+                Cep = usuario.Cep,
+                Bairro = usuario.Bairro,
+            };
+        }
+
+        if (usuario.TipoUsuario == TipoUsuario.Prestador || usuario.TipoUsuario == TipoUsuario.Ambos)
+        {
+            usuario.Prestador ??= new Prestador 
+            { 
+                Documento = usuario.Documento,
+                TipoUsuario = usuario.TipoUsuario,
+                Endereco = usuario.Endereco,
+                Cidade = usuario.Cidade,
+                Estado = usuario.Estado,
+                Cep = usuario.Cep,
+                Bairro = usuario.Bairro,
+                RaioAtendimentoKm = usuario?.RaioAtendimentoKm,
+                Status = usuario?.Status ?? StatusPrestador.EmAnalise,
+                MediaAvaliacoes = usuario?.MediaAvaliacoes ?? 0,
+                TotalAvaliacoes = usuario?.TotalAvaliacoes ?? 0,
+                TotalServicosConcluidos = usuario?.TotalServicosConcluidos ?? 0,
+                DataVerificacao = usuario?.DataVerificacao ?? null
+
+            };
+        }
 
         _context.Usuarios.Add(usuario);
         await _context.SaveChangesAsync(cancellationToken);

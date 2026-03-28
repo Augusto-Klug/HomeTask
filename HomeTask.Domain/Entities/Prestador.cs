@@ -8,49 +8,21 @@ namespace HomeTask.Domain.Entities;
 public class Prestador
 {
     public Guid Id { get; set; } = Guid.NewGuid();
-
     public Guid UsuarioId { get; set; }
-
     public Usuario Usuario { get; set; } = null!;
+    public TipoUsuario TipoUsuario { get; set; }
     public string Documento { get; set; }
-
     public string? Descricao { get; set; }
-
-    public string? Endereco { get; set; }
-
-    public string? Cidade { get; set; }
-
-    public string? Estado { get; set; }
-
-    public string? Cep { get; set; }
-
-    public string? Bairro { get; set; }
-
-    /// <summary>
-    /// Raio de atendimento em km
-    /// </summary>
-    public int RaioAtendimentoKm { get; set; } = 10;
-
-    /// <summary>
-    /// Status atual do prestador (NEG08)
-    /// </summary>
+    public string Endereco { get; set; }
+    public string Cidade { get; set; }
+    public string Estado { get; set; }
+    public string Cep { get; set; }
+    public string Bairro { get; set; }
+    public int? RaioAtendimentoKm { get; set; } = 10;
     public StatusPrestador Status { get; set; } = StatusPrestador.EmAnalise;
-
-    /// <summary>
-    /// Média das avaliações recebidas (NEG07)
-    /// </summary>
     public decimal MediaAvaliacoes { get; set; } = 0;
-
-    /// <summary>
-    /// Total de avaliações recebidas
-    /// </summary>
     public int TotalAvaliacoes { get; set; } = 0;
-
-    /// <summary>
-    /// Total de serviços concluídos
-    /// </summary>
     public int TotalServicosConcluidos { get; set; } = 0;
-
     public DateTime? DataVerificacao { get; set; }
 
     // Navegação

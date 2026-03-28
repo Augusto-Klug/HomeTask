@@ -16,8 +16,9 @@ namespace HomeTask.WebApi.Conversores.Implementacoes.Usuario
                 retorno.Nome = usuario.Nome;
                 retorno.Email = usuario.Email;
                 retorno.Documento = usuario.Documento;
+                retorno.Endereco = usuario.Endereco;
                 retorno.Telefone = usuario.Telefone;
-                retorno.Tipo = usuario.Tipo;
+                retorno.Tipo = usuario.TipoUsuario;
                 retorno.DataCadastro = usuario.DataCadastro;
                 retorno.UltimoAcesso = usuario.UltimoAcesso;
                 retorno.Ativo = usuario.Ativo;
@@ -36,8 +37,9 @@ namespace HomeTask.WebApi.Conversores.Implementacoes.Usuario
                 retorno.Nome = contrato.Nome;
                 retorno.Email = contrato.Email;
                 retorno.Documento = contrato.Documento;
+                retorno.Endereco = contrato.Endereco;
                 retorno.Telefone = contrato.Telefone;
-                retorno.Tipo = contrato.Tipo;
+                retorno.TipoUsuario = contrato.Tipo;
                 retorno.DataCadastro = contrato.DataCadastro;
                 retorno.UltimoAcesso = contrato.UltimoAcesso;
                 retorno.Ativo = contrato.Ativo;
@@ -56,6 +58,7 @@ namespace HomeTask.WebApi.Conversores.Implementacoes.Usuario
                 retorno.Email = contrato.Email;
                 retorno.Senha = contrato.Senha;
                 retorno.Documento = contrato.Documento;
+                retorno.Endereco = contrato.Endereco;
                 retorno.Telefone = contrato.Telefone;
                 retorno.Tipo = contrato.Tipo;
                 retorno.DataCadastro = contrato.DataCadastro;
@@ -74,8 +77,10 @@ namespace HomeTask.WebApi.Conversores.Implementacoes.Usuario
                 var retorno = new UsuarioContrato();
 
                 retorno.Id = viewModel.Id;
+                retorno.Tipo = viewModel.TipoUsuario;
                 retorno.Nome = viewModel.Nome;
                 retorno.Email = viewModel.Email;
+                retorno.Endereco = viewModel.Endereco;
                 retorno.Senha = viewModel.Senha;
                 retorno.Documento = viewModel.Documento;
                 retorno.Telefone = viewModel.Telefone;

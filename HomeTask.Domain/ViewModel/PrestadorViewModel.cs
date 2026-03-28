@@ -8,6 +8,7 @@ namespace HomeTask.Domain.ViewModel
     {
             public Guid Id { get; set; } = Guid.NewGuid();
             public Guid UsuarioId { get; set; }
+            public TipoUsuario TipoUsuario { get; set; }
 
             [MaxLength(1000)]
             public string? Descricao { get; set; }
@@ -30,7 +31,7 @@ namespace HomeTask.Domain.ViewModel
             [MaxLength(100)]
             public string? Bairro { get; set; }
 
-            public int RaioAtendimentoKm { get; set; } = 10;
+            public int? RaioAtendimentoKm { get; set; }
 
             public StatusPrestador Status { get; set; }
 

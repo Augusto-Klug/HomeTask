@@ -93,7 +93,7 @@ namespace HomeTask.WebApi.Controller
             return Ok(viewModel);
         }
 
-        [HttpPost]
+        [HttpDelete]
         public async Task<IActionResult> RemoverServico(ServicoOferecidoViewModel viewmodel, CancellationToken cancellationToken)
         {
             var contrato = _conversorServico.ConverterViewModelparaContrato(viewmodel);

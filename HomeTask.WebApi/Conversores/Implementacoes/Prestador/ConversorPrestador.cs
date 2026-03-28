@@ -14,6 +14,7 @@ namespace HomeTask.WebApi.Conversores.Implementacoes.Prestador
             var retorno = new PrestadorContrato();
                 retorno.Id = prestador.Id;
                 retorno.UsuarioId = prestador.UsuarioId;
+                retorno.TipoUsuario = prestador.TipoUsuario;
                 retorno.Descricao = prestador.Descricao;
                 retorno.Endereco = prestador.Endereco;
                 retorno.Cidade = prestador.Cidade;
@@ -40,6 +41,7 @@ namespace HomeTask.WebApi.Conversores.Implementacoes.Prestador
                 retorno.Id = contrato.Id;
                 retorno.UsuarioId = contrato.UsuarioId;
                 retorno.Descricao = contrato.Descricao;
+                retorno.TipoUsuario = contrato.TipoUsuario;
                 retorno.Endereco = contrato.Endereco;
                 retorno.Cidade = contrato.Cidade;
                 retorno.Estado = contrato.Estado;
@@ -63,6 +65,7 @@ namespace HomeTask.WebApi.Conversores.Implementacoes.Prestador
 
                 retorno.Id = contrato.Id;
                 retorno.UsuarioId = contrato.UsuarioId;
+                retorno.TipoUsuario = contrato.TipoUsuario;
                 retorno.Descricao = contrato.Descricao;
                 retorno.Endereco = contrato.Endereco;
                 retorno.Cidade = contrato.Cidade;
@@ -89,6 +92,7 @@ namespace HomeTask.WebApi.Conversores.Implementacoes.Prestador
 
                 retorno.Id = viewModel.Id;
                 retorno.UsuarioId = viewModel.UsuarioId;
+                retorno.TipoUsuario = viewModel.TipoUsuario;
                 retorno.Descricao = viewModel.Descricao;
                 retorno.Endereco = viewModel.Endereco;
                 retorno.Cidade = viewModel.Cidade;

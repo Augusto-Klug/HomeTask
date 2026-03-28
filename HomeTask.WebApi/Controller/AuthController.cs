@@ -34,7 +34,7 @@ namespace HomeTask.WebApi.Controller
             if (usuario == null)
                 return Unauthorized("Usuário não encontrado.");
 
-            var token = GerarToken(usuario.Id, usuario.Email, usuario.Nome, (int)usuario.Tipo);
+            var token = GerarToken(usuario.Id, usuario.Email, usuario.Nome, (int)usuario.TipoUsuario);
 
             return Ok(new LoginResponse
             {
@@ -42,7 +42,7 @@ namespace HomeTask.WebApi.Controller
                 UserId = usuario.Id,
                 Nome = usuario.Nome,
                 Email = usuario.Email,
-                Tipo = (int)usuario.Tipo
+                Tipo = (int)usuario.TipoUsuario
             });
         }
 

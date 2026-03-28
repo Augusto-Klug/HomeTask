@@ -33,6 +33,7 @@ namespace HomeTask.WebApi.Conversores.Implementacoes.Cliente
 
                 retorno.Id = contrato.Id;
                 retorno.UsuarioId = contrato.UsuarioId;
+                retorno.TipoUsuario = contrato.TipoUsuario;
                 retorno.Documento = contrato.Documento;
                 retorno.Endereco = contrato.Endereco;
                 retorno.Cidade = contrato.Cidade;
@@ -51,6 +52,7 @@ namespace HomeTask.WebApi.Conversores.Implementacoes.Cliente
 
                 retorno.Id = contrato.Id;
                 retorno.UsuarioId = contrato.UsuarioId;
+                retorno.TipoUsuario = contrato.TipoUsuario;
                 retorno.Documento = contrato.Documento;
                 retorno.Endereco = contrato.Endereco;
                 retorno.Cidade = contrato.Cidade;
@@ -71,6 +73,7 @@ namespace HomeTask.WebApi.Conversores.Implementacoes.Cliente
 
                 retorno.Id = viewModel.Id;
                 retorno.UsuarioId = viewModel.UsuarioId;
+                retorno.TipoUsuario = viewModel.TipoUsuario;
                 retorno.Documento = viewModel.Documento;
                 retorno.Endereco = viewModel.Endereco;
                 retorno.Cidade = viewModel.Cidade;
