@@ -50,9 +50,12 @@ export interface CadastroForm {
   tipoUsuario: string
   nome: string
   email: string
-  cpf: string
+  documento: string
   telefone: string
   senha: string
+  cep: string
+  endereco: string
+  bairro: string
   cidade: string
   estado: string
   raioAtendimentoKm: number

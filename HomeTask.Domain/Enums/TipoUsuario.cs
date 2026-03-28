@@ -7,7 +7,7 @@ namespace HomeTask.Domain.Enums;
 /// </summary>
 public enum TipoUsuario
 {
-    Cliente   = 1,
-    Prestador = 2,
-    Ambos     = 3
+    Cliente = 1,
+    Prestador,
+    Ambos
 }

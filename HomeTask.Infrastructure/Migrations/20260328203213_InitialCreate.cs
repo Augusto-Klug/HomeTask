@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -25,11 +25,27 @@ namespace HomeTask.Infrastructure.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     SenhaHash = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Cpf = table.Column<string>(type: "varchar(14)", maxLength: 14, nullable: false)
+                    Documento = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    Endereco = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Cidade = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Estado = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Cep = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Bairro = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    RaioAtendimentoKm = table.Column<int>(type: "int", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: true),
+                    MediaAvaliacoes = table.Column<decimal>(type: "decimal(65,30)", nullable: true),
+                    TotalAvaliacoes = table.Column<int>(type: "int", nullable: true),
+                    TotalServicosConcluidos = table.Column<int>(type: "int", nullable: true),
+                    DataVerificacao = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     Telefone = table.Column<string>(type: "varchar(15)", maxLength: 15, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Tipo = table.Column<int>(type: "int", nullable: false),
+                    TipoUsuario = table.Column<int>(type: "int", nullable: false),
                     DataCadastro = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     UltimoAcesso = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     Ativo = table.Column<bool>(type: "tinyint(1)", nullable: false)
@@ -46,6 +62,9 @@ namespace HomeTask.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     UsuarioId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    TipoUsuario = table.Column<int>(type: "int", nullable: false),
+                    Documento = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     Endereco = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Cidade = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
@@ -75,19 +94,22 @@ namespace HomeTask.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     UsuarioId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    TipoUsuario = table.Column<int>(type: "int", nullable: false),
+                    Documento = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     Descricao = table.Column<string>(type: "varchar(1000)", maxLength: 1000, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Endereco = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: true)
+                    Endereco = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Cidade = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
+                    Cidade = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Estado = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true)
+                    Estado = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Cep = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: true)
+                    Cep = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Bairro = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
+                    Bairro = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    RaioAtendimentoKm = table.Column<int>(type: "int", nullable: false),
+                    RaioAtendimentoKm = table.Column<int>(type: "int", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false),
                     MediaAvaliacoes = table.Column<decimal>(type: "decimal(3,2)", nullable: false),
                     TotalAvaliacoes = table.Column<int>(type: "int", nullable: false),
@@ -403,6 +425,12 @@ namespace HomeTask.Infrastructure.Migrations
                 column: "PrestadorId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Clientes_Documento",
+                table: "Clientes",
+                column: "Documento",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Clientes_UsuarioId",
                 table: "Clientes",
                 column: "UsuarioId",
@@ -440,6 +468,12 @@ namespace HomeTask.Infrastructure.Migrations
                 column: "PrestadorId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Prestadores_Documento",
+                table: "Prestadores",
+                column: "Documento",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Prestadores_UsuarioId",
                 table: "Prestadores",
                 column: "UsuarioId",
@@ -451,9 +485,9 @@ namespace HomeTask.Infrastructure.Migrations
                 column: "PrestadorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Usuarios_Cpf",
+                name: "IX_Usuarios_Documento",
                 table: "Usuarios",
-                column: "Cpf",
+                column: "Documento",
                 unique: true);
 
             migrationBuilder.CreateIndex(

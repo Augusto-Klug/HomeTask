@@ -17,26 +17,34 @@ public class PrestadorMap : IEntityTypeConfiguration<Prestador>
             .HasForeignKey<Prestador>(p => p.UsuarioId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder.Property(p => p.TipoUsuario)
+            .IsRequired();  
+
         builder.Property(p => p.Descricao)
             .HasMaxLength(1000);
 
-        builder.Property(p => p.Endereco)
-            .HasMaxLength(200);
-
-        builder.Property(p => p.Cidade)
-            .HasMaxLength(100);
-
-        builder.Property(p => p.Estado)
-            .HasMaxLength(50);
-
-        builder.Property(p => p.Cep)
-            .HasMaxLength(10);
-
-        builder.Property(u => u.Documento)
+        builder.Property(p => p.Documento)
             .IsRequired()
             .HasMaxLength(20);
 
+        builder.Property(p => p.Endereco)
+            .IsRequired()
+            .HasMaxLength(200);
+
+        builder.Property(p => p.Cidade)
+            .IsRequired()
+            .HasMaxLength(100);
+
+        builder.Property(p => p.Estado)
+            .IsRequired()
+            .HasMaxLength(50);
+
+        builder.Property(p => p.Cep)
+            .IsRequired()
+            .HasMaxLength(10);
+
         builder.Property(p => p.Bairro)
+            .IsRequired()
             .HasMaxLength(100);
 
         builder.Property(p => p.MediaAvaliacoes)

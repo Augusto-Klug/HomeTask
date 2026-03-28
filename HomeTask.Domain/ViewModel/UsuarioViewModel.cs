@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using HomeTask.Domain.Enums;
 
 namespace HomeTask.Domain.ViewModel
@@ -10,6 +11,10 @@ namespace HomeTask.Domain.ViewModel
 
             [MaxLength(100)]
             public string Nome { get; set; }
+            
+            public string Endereco { get; set; }
+
+            public TipoUsuario TipoUsuario { get; set; }
 
             [MaxLength(100)]
             public string Email { get; set; } 
@@ -22,13 +27,9 @@ namespace HomeTask.Domain.ViewModel
 
             [MaxLength(15)]
             public string? Telefone { get; set; }
-
             public TipoUsuario Tipo { get; set; }
-
             public DateTime DataCadastro { get; set; }
-
             public DateTime? UltimoAcesso { get; set; }
-
             public bool Ativo { get; set; } = true;
     }
 }

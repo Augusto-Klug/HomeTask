@@ -32,7 +32,30 @@ public class UsuarioMap : IEntityTypeConfiguration<Usuario>
         builder.Property(u => u.Telefone)
             .HasMaxLength(15);
 
-        builder.Property(u => u.Tipo)
+        builder.Property(u => u.TipoUsuario)
             .IsRequired();
+
+        builder.Property(u => u.Endereco)
+            .IsRequired(false)
+            .HasMaxLength(200);
+
+        builder.Property(u => u.Cidade)
+            .IsRequired(false)
+            .HasMaxLength(100);
+
+        builder.Property(u => u.Estado)
+            .IsRequired(false)
+            .HasMaxLength(50);
+
+        builder.Property(u => u.Cep)
+            .IsRequired(false)
+            .HasMaxLength(10);
+
+        builder.Property(u => u.Bairro)
+            .IsRequired(false)
+            .HasMaxLength(100);
+
+        builder.Property(u => u.UltimoAcesso)
+            .IsRequired(false);
     }
 }

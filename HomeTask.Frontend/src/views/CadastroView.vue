@@ -31,8 +31,8 @@
         label E-mail
 
       .field.label.border
-        input(v-model="form.cpf" type="text" required)
-        label CPF
+        input(v-model="form.documento" type="text" required maxlength="20")
+        label Documento
 
       .field.label.border
         input(v-model="form.telefone" type="tel")
@@ -42,22 +42,30 @@
         input(v-model="form.senha" type="password" required minlength="6")
         label Senha
 
+      .field.label.border
+        input(v-model="form.cep" type="cep" required maxlength="10")
+        label CEP
+
+      .field.label.border.max
+            input(v-model="form.endereco" type="text" required)
+            label Endereço
+
+      .field.label.border
+        input(v-model="form.cidade" type="text" required)
+        label Cidade
+
+      .field.label.border
+          input(v-model="form.bairro" type="text" required)
+          label Bairro
+
+      .field.label.border.max
+        input(v-model="form.estado" type="text" maxlength="2" required)
+        label Estado
+
       //- Dados de prestador
       template(v-if="form.tipoUsuario === '2' || form.tipoUsuario === '3'")
         .divider
         p.bold.small Dados profissionais
-
-        .field.label.border
-          input(v-model="form.cidade" type="text" required)
-          label Cidade
-
-        .row
-          .field.label.border.max
-            input(v-model="form.estado" type="text" maxlength="2" required)
-            label Estado
-          .field.label.border.max
-            input(v-model.number="form.raioAtendimentoKm" type="number" min="1" required)
-            label Raio (km)
 
         .field.label.textarea.border
           textarea(v-model="form.descricao" rows="3")
@@ -85,9 +93,12 @@ const form = reactive<CadastroForm>({
   tipoUsuario: '1',
   nome: '',
   email: '',
-  cpf: '',
+  documento: '',
   telefone: '',
   senha: '',
+  cep: '',
+  endereco: '',
+  bairro: '',
   cidade: '',
   estado: '',
   raioAtendimentoKm: 10,
@@ -104,10 +115,15 @@ async function handleCadastro() {
     const { data: usuario } = await api.post('/api/Usuario/CriarUsuario', {
       nome: form.nome,
       email: form.email,
-      cpf: form.cpf,
+      documento: form.documento,
       telefone: form.telefone,
       senha: form.senha,
       tipo: parseInt(form.tipoUsuario),
+      cep: form.cep,
+      endereco: form.endereco,
+      bairro: form.bairro,
+      cidade: form.cidade,
+      estado: form.estado,
     })
 
     if (form.tipoUsuario === '1' || form.tipoUsuario === '3') {
@@ -117,8 +133,6 @@ async function handleCadastro() {
     if (form.tipoUsuario === '2' || form.tipoUsuario === '3') {
       await api.post('/api/Prestador/CriarPrestador', {
         usuarioId: usuario.id,
-        cidade: form.cidade,
-        estado: form.estado,
         raioAtendimentoKm: form.raioAtendimentoKm,
         descricao: form.descricao,
       })
@@ -130,7 +144,7 @@ async function handleCadastro() {
     const status = e.response?.status
     const msg = e.response?.data
     if (status === 409) {
-      erro.value = typeof msg === 'string' ? msg : 'E-mail ou CPF já cadastrado.'
+      erro.value = typeof msg === 'string' ? msg : 'E-mail ou Documento já cadastrado.'
     } else if (status === 400) {
       erro.value = typeof msg === 'string' ? msg : 'Dados inválidos. Verifique o formulário.'
     } else {

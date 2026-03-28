@@ -1,3 +1,5 @@
+using HomeTask.Domain.Enums;
+
 namespace HomeTask.Domain.Entities;
 
 /// <summary>
@@ -7,7 +9,7 @@ public class Cliente
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public Guid UsuarioId { get; set; }
-
+    public TipoUsuario TipoUsuario { get; set; }
     public Usuario Usuario { get; set; } = null!;
     public string Documento { get; set; }
     public string? Endereco { get; set; }

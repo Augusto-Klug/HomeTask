@@ -16,6 +16,9 @@ public class ClienteMap : IEntityTypeConfiguration<Cliente>
             .HasForeignKey<Cliente>(c => c.UsuarioId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder.Property(c => c.TipoUsuario)
+            .IsRequired();
+
         builder.Property(c => c.Documento)
             .IsRequired()
             .HasMaxLength(20);
