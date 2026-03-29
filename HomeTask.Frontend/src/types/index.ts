@@ -47,7 +47,7 @@ export interface AgendamentoForm {
 }
 
 export interface CadastroForm {
-  tipoUsuario: string
+  tipoUsuario: number
   nome: string
   email: string
   documento: string

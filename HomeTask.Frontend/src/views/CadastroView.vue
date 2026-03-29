@@ -118,7 +118,7 @@ async function handleCadastro() {
       documento: form.documento,
       telefone: form.telefone,
       senha: form.senha,
-      tipo: parseInt(form.tipoUsuario),
+      tipo: Number(form.tipoUsuario),
       cep: form.cep,
       endereco: form.endereco,
       bairro: form.bairro,

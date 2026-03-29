@@ -6,7 +6,7 @@ namespace HomeTask.Domain.Enums;
 public enum StatusPrestador
 {
     EmAnalise = 1,
-    Ativo = 2,
-    Suspenso = 3,
-    Inativo = 4
+    Ativo,
+    Suspenso,
+    Inativo
 }

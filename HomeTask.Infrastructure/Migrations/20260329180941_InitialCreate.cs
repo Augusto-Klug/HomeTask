@@ -27,19 +27,19 @@ namespace HomeTask.Infrastructure.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Documento = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Endereco = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: true)
+                    Endereco = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Cidade = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
+                    Cidade = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Estado = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true)
+                    Estado = table.Column<string>(type: "varchar(2)", maxLength: 2, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Cep = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: true)
+                    Cep = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Bairro = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
+                    Bairro = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     RaioAtendimentoKm = table.Column<int>(type: "int", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: true),
-                    MediaAvaliacoes = table.Column<decimal>(type: "decimal(65,30)", nullable: true),
+                    MediaAvaliacoes = table.Column<decimal>(type: "decimal(3,2)", nullable: true),
                     TotalAvaliacoes = table.Column<int>(type: "int", nullable: true),
                     TotalServicosConcluidos = table.Column<int>(type: "int", nullable: true),
                     DataVerificacao = table.Column<DateTime>(type: "datetime(6)", nullable: true),
@@ -67,13 +67,13 @@ namespace HomeTask.Infrastructure.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Endereco = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Cidade = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
+                    Cidade = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Estado = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true)
+                    Estado = table.Column<string>(type: "varchar(2)", maxLength: 2, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Cep = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Bairro = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
+                    Bairro = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
@@ -101,13 +101,13 @@ namespace HomeTask.Infrastructure.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Endereco = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Cidade = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
+                    Cidade = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Estado = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
+                    Estado = table.Column<string>(type: "varchar(2)", maxLength: 2, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Cep = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Bairro = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
+                    Bairro = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     RaioAtendimentoKm = table.Column<int>(type: "int", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false),

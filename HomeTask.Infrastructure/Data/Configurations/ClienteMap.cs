@@ -24,18 +24,23 @@ public class ClienteMap : IEntityTypeConfiguration<Cliente>
             .HasMaxLength(20);
 
         builder.Property(c => c.Endereco)
+            .IsRequired(false)
             .HasMaxLength(200);
 
         builder.Property(c => c.Cidade)
-            .HasMaxLength(100);
-
-        builder.Property(c => c.Estado)
+            .IsRequired(false)
             .HasMaxLength(50);
 
+        builder.Property(c => c.Estado)
+            .IsRequired(false)
+            .HasMaxLength(2);
+
         builder.Property(c => c.Cep)
+            .IsRequired(false)
             .HasMaxLength(10);
 
         builder.Property(c => c.Bairro)
-            .HasMaxLength(100);
+            .IsRequired(false)
+            .HasMaxLength(50);
     }
 }
