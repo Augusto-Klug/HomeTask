@@ -1,10 +1,6 @@
 using HomeTask.Domain.Enums;
 
 namespace HomeTask.Domain.Entities;
-
-/// <summary>
-/// Entidade base para usuários da plataforma HomeTask (RF01)
-/// </summary>
 public class Usuario
 {
     public Guid Id { get; set; } = Guid.NewGuid();
@@ -23,7 +19,6 @@ public class Usuario
     public int? TotalAvaliacoes { get; set; }
     public int? TotalServicosConcluidos { get; set; }
     public DateTime? DataVerificacao { get; set; }
-
     public string? Telefone { get; set; }
     public TipoUsuario TipoUsuario { get; set; }
     public DateTime DataCadastro { get; set; }

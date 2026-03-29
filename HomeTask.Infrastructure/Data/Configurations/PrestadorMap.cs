@@ -33,11 +33,11 @@ public class PrestadorMap : IEntityTypeConfiguration<Prestador>
 
         builder.Property(p => p.Cidade)
             .IsRequired()
-            .HasMaxLength(100);
+            .HasMaxLength(50);
 
         builder.Property(p => p.Estado)
             .IsRequired()
-            .HasMaxLength(50);
+            .HasMaxLength(2);
 
         builder.Property(p => p.Cep)
             .IsRequired()
@@ -45,7 +45,7 @@ public class PrestadorMap : IEntityTypeConfiguration<Prestador>
 
         builder.Property(p => p.Bairro)
             .IsRequired()
-            .HasMaxLength(100);
+            .HasMaxLength(50);
 
         builder.Property(p => p.MediaAvaliacoes)
             .HasColumnType("decimal(3,2)");

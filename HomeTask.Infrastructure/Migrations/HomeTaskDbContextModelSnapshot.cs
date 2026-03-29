@@ -169,16 +169,16 @@ namespace HomeTask.Infrastructure.Migrations
                         .HasColumnType("char(36)");
 
                     b.Property<string>("Bairro")
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("Cep")
                         .HasMaxLength(10)
                         .HasColumnType("varchar(10)");
 
                     b.Property<string>("Cidade")
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("Documento")
                         .IsRequired()
@@ -190,8 +190,8 @@ namespace HomeTask.Infrastructure.Migrations
                         .HasColumnType("varchar(200)");
 
                     b.Property<string>("Estado")
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
+                        .HasMaxLength(2)
+                        .HasColumnType("varchar(2)");
 
                     b.Property<int>("TipoUsuario")
                         .HasColumnType("int");
@@ -364,8 +364,8 @@ namespace HomeTask.Infrastructure.Migrations
 
                     b.Property<string>("Bairro")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("Cep")
                         .IsRequired()
@@ -374,8 +374,8 @@ namespace HomeTask.Infrastructure.Migrations
 
                     b.Property<string>("Cidade")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<DateTime?>("DataVerificacao")
                         .HasColumnType("datetime(6)");
@@ -396,8 +396,8 @@ namespace HomeTask.Infrastructure.Migrations
 
                     b.Property<string>("Estado")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
+                        .HasMaxLength(2)
+                        .HasColumnType("varchar(2)");
 
                     b.Property<decimal>("MediaAvaliacoes")
                         .HasColumnType("decimal(3,2)");
@@ -485,16 +485,19 @@ namespace HomeTask.Infrastructure.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Bairro")
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("Cep")
+                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("varchar(10)");
 
                     b.Property<string>("Cidade")
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<DateTime>("DataCadastro")
                         .HasColumnType("datetime(6)");
@@ -513,15 +516,17 @@ namespace HomeTask.Infrastructure.Migrations
                         .HasColumnType("varchar(100)");
 
                     b.Property<string>("Endereco")
+                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("varchar(200)");
 
                     b.Property<string>("Estado")
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
+                        .IsRequired()
+                        .HasMaxLength(2)
+                        .HasColumnType("varchar(2)");
 
                     b.Property<decimal?>("MediaAvaliacoes")
-                        .HasColumnType("decimal(65,30)");
+                        .HasColumnType("decimal(3,2)");
 
                     b.Property<string>("Nome")
                         .IsRequired()

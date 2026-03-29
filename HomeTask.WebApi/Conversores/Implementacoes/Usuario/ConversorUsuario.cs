@@ -17,8 +17,18 @@ namespace HomeTask.WebApi.Conversores.Implementacoes.Usuario
                 retorno.Email = usuario.Email;
                 retorno.Documento = usuario.Documento;
                 retorno.Endereco = usuario.Endereco;
+                retorno.Cidade = usuario.Cidade;
+                retorno.Estado = usuario.Estado;
+                retorno.Cep = usuario.Cep;
+                retorno.Bairro = usuario.Bairro;
+                retorno.RaioAtendimentoKm = usuario.RaioAtendimentoKm;
+                retorno.Status = usuario.Status;
+                retorno.MediaAvaliacoes = usuario.MediaAvaliacoes;
+                retorno.TotalAvaliacoes = usuario.TotalAvaliacoes;
+                retorno.TotalServicosConcluidos = usuario.TotalServicosConcluidos;
+                retorno.DataVerificacao = usuario.DataVerificacao;
                 retorno.Telefone = usuario.Telefone;
-                retorno.Tipo = usuario.TipoUsuario;
+                retorno.TipoUsuario = usuario.TipoUsuario;
                 retorno.DataCadastro = usuario.DataCadastro;
                 retorno.UltimoAcesso = usuario.UltimoAcesso;
                 retorno.Ativo = usuario.Ativo;
@@ -28,8 +38,7 @@ namespace HomeTask.WebApi.Conversores.Implementacoes.Usuario
 
         public Domain.Entities.Usuario? ConverterContratoparaUsuario(UsuarioContrato contrato)
         {
-            if (contrato == null)
-                throw new ArgumentNullException(nameof(contrato));
+            ArgumentNullException.ThrowIfNull(contrato);
 
             var retorno = new Domain.Entities.Usuario();
 
@@ -38,8 +47,18 @@ namespace HomeTask.WebApi.Conversores.Implementacoes.Usuario
                 retorno.Email = contrato.Email;
                 retorno.Documento = contrato.Documento;
                 retorno.Endereco = contrato.Endereco;
+                retorno.Cidade = contrato.Cidade;
+                retorno.Estado = contrato.Estado;
+                retorno.Cep = contrato.Cep;
+                retorno.Bairro = contrato.Bairro;
+                retorno.RaioAtendimentoKm = contrato.RaioAtendimentoKm;
+                retorno.Status = contrato.Status;
+                retorno.MediaAvaliacoes = contrato.MediaAvaliacoes;
+                retorno.TotalAvaliacoes = contrato.TotalAvaliacoes;
+                retorno.TotalServicosConcluidos = contrato.TotalServicosConcluidos;
+                retorno.DataVerificacao = contrato.DataVerificacao;
                 retorno.Telefone = contrato.Telefone;
-                retorno.TipoUsuario = contrato.Tipo;
+                retorno.TipoUsuario = contrato.TipoUsuario;
                 retorno.DataCadastro = contrato.DataCadastro;
                 retorno.UltimoAcesso = contrato.UltimoAcesso;
                 retorno.Ativo = contrato.Ativo;
@@ -59,8 +78,18 @@ namespace HomeTask.WebApi.Conversores.Implementacoes.Usuario
                 retorno.Senha = contrato.Senha;
                 retorno.Documento = contrato.Documento;
                 retorno.Endereco = contrato.Endereco;
+                retorno.Cidade = contrato.Cidade;
+                retorno.Estado = contrato.Estado;
+                retorno.Cep = contrato.Cep;
+                retorno.Bairro = contrato.Bairro;
+                retorno.RaioAtendimentoKm = contrato.RaioAtendimentoKm;
+                retorno.Status = contrato.Status;
+                retorno.MediaAvaliacoes = contrato.MediaAvaliacoes;
+                retorno.TotalAvaliacoes = contrato.TotalAvaliacoes;
+                retorno.TotalServicosConcluidos = contrato.TotalServicosConcluidos;
+                retorno.DataVerificacao = contrato.DataVerificacao;
                 retorno.Telefone = contrato.Telefone;
-                retorno.Tipo = contrato.Tipo;
+                retorno.TipoUsuario = contrato.TipoUsuario;
                 retorno.DataCadastro = contrato.DataCadastro;
                 retorno.UltimoAcesso = contrato.UltimoAcesso;
                 retorno.Ativo = contrato.Ativo;
@@ -77,14 +106,23 @@ namespace HomeTask.WebApi.Conversores.Implementacoes.Usuario
                 var retorno = new UsuarioContrato();
 
                 retorno.Id = viewModel.Id;
-                retorno.Tipo = viewModel.TipoUsuario;
                 retorno.Nome = viewModel.Nome;
                 retorno.Email = viewModel.Email;
-                retorno.Endereco = viewModel.Endereco;
                 retorno.Senha = viewModel.Senha;
                 retorno.Documento = viewModel.Documento;
+                retorno.Endereco = viewModel.Endereco;
+                retorno.Cidade = viewModel.Cidade;
+                retorno.Estado = viewModel.Estado;
+                retorno.Cep = viewModel.Cep;
+                retorno.Bairro = viewModel.Bairro;
+                retorno.RaioAtendimentoKm = viewModel.RaioAtendimentoKm;
+                retorno.Status = viewModel.Status;
+                retorno.MediaAvaliacoes = viewModel.MediaAvaliacoes;
+                retorno.TotalAvaliacoes = viewModel.TotalAvaliacoes;
+                retorno.TotalServicosConcluidos = viewModel.TotalServicosConcluidos;
+                retorno.DataVerificacao = viewModel.DataVerificacao;
                 retorno.Telefone = viewModel.Telefone;
-                retorno.Tipo = viewModel.Tipo;
+                retorno.TipoUsuario = viewModel.TipoUsuario;
                 retorno.DataCadastro = viewModel.DataCadastro;
                 retorno.UltimoAcesso = viewModel.UltimoAcesso;
                 retorno.Ativo = viewModel.Ativo;

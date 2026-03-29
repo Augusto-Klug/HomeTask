@@ -36,26 +36,29 @@ public class UsuarioMap : IEntityTypeConfiguration<Usuario>
             .IsRequired();
 
         builder.Property(u => u.Endereco)
-            .IsRequired(false)
+            .IsRequired()
             .HasMaxLength(200);
 
         builder.Property(u => u.Cidade)
-            .IsRequired(false)
-            .HasMaxLength(100);
-
-        builder.Property(u => u.Estado)
-            .IsRequired(false)
+            .IsRequired()
             .HasMaxLength(50);
 
+        builder.Property(u => u.Estado)
+            .IsRequired()
+            .HasMaxLength(2);
+
         builder.Property(u => u.Cep)
-            .IsRequired(false)
+            .IsRequired()
             .HasMaxLength(10);
 
         builder.Property(u => u.Bairro)
-            .IsRequired(false)
-            .HasMaxLength(100);
+            .IsRequired()
+            .HasMaxLength(50);
 
         builder.Property(u => u.UltimoAcesso)
             .IsRequired(false);
+
+        builder.Property(u => u.MediaAvaliacoes)
+            .HasColumnType("decimal(3,2)");
     }
 }
