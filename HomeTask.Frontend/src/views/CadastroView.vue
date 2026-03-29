@@ -42,25 +42,28 @@
         input(v-model="form.senha" type="password" required minlength="6")
         label Senha
 
-      .field.label.border
-        input(v-model="form.cep" type="cep" required maxlength="10")
-        label CEP
+      .divider
+      p.bold.small Endereço
 
-      .field.label.border.max
-            input(v-model="form.endereco" type="text" required)
-            label Endereço
+        .field.label.border
+          input(v-model="form.cep" type="cep" required maxlength="10")
+          label CEP
 
-      .field.label.border
-        input(v-model="form.cidade" type="text" required)
-        label Cidade
+        .field.label.border.max
+          input(v-model="form.endereco" type="text" required)
+          label Logradouro
 
-      .field.label.border
+        .field.label.border
           input(v-model="form.bairro" type="text" required)
           label Bairro
 
-      .field.label.border.max
-        input(v-model="form.estado" type="text" maxlength="2" required)
-        label Estado
+        .field.label.border
+          input(v-model="form.cidade" type="text" required)
+          label Cidade
+
+        .field.label.border.max
+          input(v-model="form.estado" type="text" maxlength="2" required)
+          label Estado
 
       //- Dados de prestador
       template(v-if="form.tipoUsuario === '2' || form.tipoUsuario === '3'")
