@@ -129,7 +129,7 @@ async function handleCadastro() {
       estado: form.estado,
     })
 
-    if (form.tipoUsuario === '1' || form.tipoUsuario === '3') {
+    /*if (form.tipoUsuario === '1' || form.tipoUsuario === '3') {
       await api.post('/api/Cliente/CriarCliente', { usuarioId: usuario.id })
     }
 
@@ -139,7 +139,7 @@ async function handleCadastro() {
         raioAtendimentoKm: form.raioAtendimentoKm,
         descricao: form.descricao,
       })
-    }
+    }*/
 
     router.push('/cadastro-sucesso')
   } catch (err: unknown) {
