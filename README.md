@@ -1,4 +1,4 @@
-# 🐳 HomeTask WebApi - Guia de Execução (Docker & Kubernetes)
+# HomeTask WebApi - Guia de Execução (Docker & Kubernetes)
 
 Este repositório agora está totalmente conteinerizado! Isso significa que você não precisa mais instalar o MySQL separadamente na sua máquina ou configurar o ambiente manualmente para rodar a API.
 
@@ -6,13 +6,13 @@ Abaixo estão as instruções de como rodar a aplicação no seu dia a dia.
 
 ---
 
-## ⚙️ Pré-requisitos
+## Pré-requisitos
 1. **[Docker Desktop](https://www.docker.com/products/docker-desktop/)** instalado e rodando.
 2. (Opcional, mas recomendado) **Kubernetes** ativado *dentro do próprio Docker Desktop* (Vá em Configurações > Kubernetes > *Enable Kubernetes*).
 
 ---
 
-## 🏃 Opção 1: Docker Compose (Recomendado para o Dia a Dia)
+## Opção 1: Docker Compose (Recomendado para o Dia a Dia)
 Ideal para desenvolvimento local rápido. Ele sobe a API e o Banco de Dados em containers e gerencia a conexão entre eles.
 
 ### Como rodar:
@@ -39,7 +39,7 @@ docker compose down
 
 ---
 
-## 🚢 Opção 2: Kubernetes (Simulando Produção/Orquestração)
+## Opção 2: Kubernetes (Simulando Produção/Orquestração)
 Se você quer testar a aplicação em um ambiente orquestrado com **Pods**, balanceamento de carga e *self-healing*, use os manifestos da pasta `/k8s`.
 
 ### Como rodar:
@@ -67,13 +67,9 @@ kubectl delete -f k8s/
 
 ---
 
-## 🔄 CI/CD Automatizado
+## CI/CD Automatizado
 Temos um workflow configurado no GitHub Actions (`.github/workflows/ci-cd.yml`).
 Sempre que um **Push** ou **Pull Request** for aberto em qualquer branch, o GitHub irá:
 1. Fazer o Build e validar toda a Solução (.NET 10).
 2. Fazer o Build da Imagem Docker.
 3. Publicar automaticamente a imagem no **GitHub Container Registry (GHCR)**.
-
-> **Dica:** Você pode continuar usando a interface Git do Visual Studio normalmente. O Actions roda na nuvem após você fazer o push!
-
-Bom código! 🚀
