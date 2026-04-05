@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hometask-api-deployment
+spec:
+  replicas: 2 # 2 Pods da API para suportar mais tráfego
+  selector:
+    matchLabels:
+      app: hometask-api
+  template:
+    metadata:
+      labels:
+        app: hometask-api
+    spec:
+      containers:
+        - name: hometask-api
+          image: hometaskwebapi:latest
+          # Imagem não está num repositório na nuvem ainda, forçando ele a usar a imagem local
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Development"
+            - name: ConnectionStrings__DefaultConnection
+              # O nome 'mysql' aqui faz o DNS do Kubernetes procurar o Service mysql criado
+              value: "Server=mysql;Port=3306;Database=hometask;Uid=root;Pwd=123456789;"

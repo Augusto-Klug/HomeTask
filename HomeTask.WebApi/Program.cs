@@ -1,4 +1,5 @@
 using System.Text;
+using HomeTask.Infrastructure.Data;
 using HomeTask.Infrastructure.DI;
 using HomeTask.WebApi.Conversores.Implementacoes.Agendamento;
 using HomeTask.WebApi.Conversores.Implementacoes.Avaliacao;
@@ -17,6 +18,7 @@ using HomeTask.WebApi.Conversores.Interfaces.Prestador;
 using HomeTask.WebApi.Conversores.Interfaces.ServicoOferecido;
 using HomeTask.WebApi.Conversores.Interfaces.Usuario;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -53,6 +55,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddControllers();
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddScoped<IConversorCliente, ConversorCliente>();
@@ -65,6 +70,17 @@ builder.Services.AddScoped<IConversorMensagem, ConversorMensagem>();
 builder.Services.AddScoped<IConversorServicoOferecido, ConversorServicoOferecido>();
 
 var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+using var scope = app.Services.CreateScope();
+var dbContext = scope.ServiceProvider.GetRequiredService<HomeTaskDbContext>();
+dbContext.Database.Migrate();
 
 if (!app.Environment.IsDevelopment())
 {
