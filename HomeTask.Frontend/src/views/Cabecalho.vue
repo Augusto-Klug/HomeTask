@@ -1,42 +1,112 @@
-<template lang="pug">
-header.no-padding
-  nav.primary-container
-    SidebarTelaInicial
-    button.transparent.circle.left-margin.small-margin(data-ui="#sidebarTelaInicial")
-      i menu
-    router-link.transparent(to="/")
-      h5.no-margin HomeTask
-    .max
-    router-link.button.transparent.circle(to="/servicos/buscar")
-      i search
-    TemaPagina
-    .right-margin.small-margin(v-if="auth.isLoggedIn")
-      button.transparent.circle(data-ui="#user-menu")
-        i account_circle
-      menu.left#user-menu
-        li
-          a.no-hover
-            i person
-            span {{ auth.user?.nome }}
-        li.divider
-        li
-          a(@click="handleLogout")
-            i logout
-            span Sair
-    .right-margin(v-else)
-      router-link.button.transparent.small-round.no-padding(to="login")
-        i person
-</template>
-<script lang="ts" setup>
-import router from "@/router";
-import TemaPagina from "@/shared/components/TemaPagina.vue";
-import { useAuthStore } from "@/stores/auth";
-import SidebarTelaInicial from "./telaInicial/SidebarTelaInicial.vue";
+<template>
+  <header class="sticky top-0 z-30 h-14 border-b border-border bg-card/95 backdrop-blur-sm">
+    <div class="flex items-center h-full px-3 gap-2">
+      <!-- Botão menu (mobile) -->
+      <button
+        type="button"
+        class="p-2 rounded-lg text-muted hover:text-foreground hover:bg-surface transition-colors"
+        @click="sidebarOpen = true"
+      >
+        <span class="material-symbols-rounded text-xl">menu</span>
+      </button>
 
-const auth = useAuthStore();
+      <!-- Logo -->
+      <router-link
+        to="/"
+        class="text-title font-bold text-primary"
+      >
+        HomeTask
+      </router-link>
+
+      <div class="flex-1" />
+
+      <!-- Buscar -->
+      <router-link
+        to="/servicos/buscar"
+        class="p-2 rounded-lg text-muted hover:text-foreground hover:bg-surface transition-colors"
+        title="Buscar serviços"
+      >
+        <span class="material-symbols-rounded text-xl">search</span>
+      </router-link>
+
+      <!-- Tema -->
+      <TemaPagina />
+
+      <!-- Usuário logado -->
+      <template v-if="auth.isLoggedIn">
+        <div class="relative" ref="userMenuContainer">
+          <button
+            type="button"
+            class="p-2 rounded-lg text-muted hover:text-foreground hover:bg-surface transition-colors"
+            @click="userMenuOpen = !userMenuOpen"
+          >
+            <span class="material-symbols-rounded text-xl">account_circle</span>
+          </button>
+
+          <!-- Dropdown menu -->
+          <div
+            v-if="userMenuOpen"
+            class="absolute right-0 top-12 w-52 rounded-xl border border-border bg-card shadow-lg z-50 py-1"
+          >
+            <div class="px-4 py-2.5 border-b border-border">
+              <p class="text-xs text-muted">Logado como</p>
+              <p class="text-sm font-medium text-foreground truncate">{{ auth.user?.nome }}</p>
+            </div>
+            <button
+              type="button"
+              class="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-foreground hover:bg-surface transition-colors"
+              @click="handleLogout"
+            >
+              <span class="material-symbols-rounded text-base">logout</span>
+              Sair
+            </button>
+          </div>
+        </div>
+      </template>
+
+      <!-- Não logado -->
+      <template v-else>
+        <router-link
+          to="/login"
+          class="p-2 rounded-lg text-muted hover:text-foreground hover:bg-surface transition-colors"
+          title="Entrar"
+        >
+          <span class="material-symbols-rounded text-xl">person</span>
+        </router-link>
+      </template>
+    </div>
+
+    <!-- Sidebar -->
+    <SidebarTelaInicial v-model:open="sidebarOpen" />
+  </header>
+</template>
+
+<script lang="ts" setup>
+import { ref, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+import TemaPagina from '@/shared/components/TemaPagina.vue'
+import SidebarTelaInicial from './telaInicial/SidebarTelaInicial.vue'
+
+const auth = useAuthStore()
+const router = useRouter()
+
+const sidebarOpen = ref(false)
+const userMenuOpen = ref(false)
+const userMenuContainer = ref<HTMLElement | null>(null)
+
+function handleClickOutside(e: MouseEvent) {
+  if (userMenuContainer.value && !userMenuContainer.value.contains(e.target as Node)) {
+    userMenuOpen.value = false
+  }
+}
+
+onMounted(() => document.addEventListener('click', handleClickOutside))
+onUnmounted(() => document.removeEventListener('click', handleClickOutside))
 
 async function handleLogout() {
-  await auth.logout();
-  router.push("/login");
+  userMenuOpen.value = false
+  await auth.logout()
+  router.push('/login')
 }
 </script>

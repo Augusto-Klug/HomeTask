@@ -1,20 +1,12 @@
-import ui from "beercss";
-
+/** Utilitários de sidenav — controle via ref/emit, sem dependência de BeerCSS */
 export default {
-  fecharSidenav(idElemento: string) {
-    const elemento = document.getElementById(idElemento);
-    console.log(elemento);
-    if (elemento?.classList.contains("active")) {
-      ui(`#${idElemento}`);
-    }
+  fecharSidenav(setter: (v: boolean) => void) {
+    setter(false)
   },
-  abiriSidenav(idElemento: string) {
-    const elemento = document.getElementById(idElemento);
-    if (!elemento?.classList.contains("active")) {
-      ui(`#${idElemento}`);
-    }
+  abrirSidenav(setter: (v: boolean) => void) {
+    setter(true)
   },
-  fecharOuAbrirSidenav(idElemento: string) {
-    ui(`#${idElemento}`);
+  toggleSidenav(setter: (v: boolean) => void, current: boolean) {
+    setter(!current)
   },
-};
+}

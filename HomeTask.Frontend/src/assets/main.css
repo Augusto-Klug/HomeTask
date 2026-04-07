@@ -1,104 +1,136 @@
-:root,
-body.light {
-  --primary: #1349eb;
-  --on-primary: #ffffff;
-  --primary-container: #c7d4fa;
-  --on-primary-container: #001060;
-  --secondary: #4d5d9e;
-  --on-secondary: #ffffff;
-  --secondary-container: #dde3ff;
-  --on-secondary-container: #0a1657;
-  --tertiary: #0077b3;
-  --on-tertiary: #ffffff;
-  --tertiary-container: #c9e6ff;
-  --on-tertiary-container: #001e30;
-  --error: #ba1a1a;
-  --on-error: #ffffff;
-  --error-container: #ffdad6;
-  --on-error-container: #410002;
-  --background: #f8f9ff;
-  --on-background: #1a1b22;
-  --surface: #f5f7ff;
-  --on-surface: #1a1b22;
-  --surface-variant: #dfe3f4;
-  --on-surface-variant: #424659;
-  --outline: #737588;
-  --outline-variant: #c3c5d8;
-  --shadow: #000000;
-  --scrim: #000000;
-  --inverse-surface: #2f3042;
-  --inverse-on-surface: #f0f0f9;
-  --inverse-primary: #b3c5ff;
-  --surface-dim: #d7d9e7;
-  --surface-bright: #f5f7ff;
-  --surface-container-lowest: #ffffff;
-  --surface-container-low: #f0f2fb;
-  --surface-container: #eaedf5;
-  --surface-container-high: #e4e7f0;
-  --surface-container-highest: #dee1ea;
+@import "tailwindcss";
+
+/* Dark mode: acionado pela classe body.dark */
+@custom-variant dark (body.dark &);
+
+/* ─── Tokens HSL ─────────────────────────────────────────── */
+:root {
+  /* Primário: azul claro */
+  --ht-primary:        214 76% 52%;
+  --ht-primary-fg:     0 0% 100%;
+  --ht-primary-hover:  214 76% 44%;
+  --ht-primary-light:  214 80% 95%;
+
+  /* Background / Surface */
+  --ht-bg:             0 0% 100%;
+  --ht-surface:        214 40% 98%;
+  --ht-card:           0 0% 100%;
+
+  /* Texto */
+  --ht-fg:             214 25% 14%;
+  --ht-muted:          214 12% 52%;
+
+  /* Borda */
+  --ht-border:         214 22% 88%;
+
+  /* Erro */
+  --ht-error:          0 72% 51%;
+  --ht-error-fg:       0 0% 100%;
+  --ht-error-light:    0 72% 96%;
+
+  /* Sucesso */
+  --ht-success:        142 71% 40%;
+  --ht-success-fg:     0 0% 100%;
+  --ht-success-light:  142 71% 95%;
+
+  /* Sidebar */
+  --ht-sidebar-w:      260px;
 }
 
 body.dark {
-  --primary: #adc4ff;
-  --on-primary: #002282;
-  --primary-container: #23489f;
-  --on-primary-container: #dce5ff;
-  --secondary: #bac3ea;
-  --on-secondary: #232d52;
-  --secondary-container: #3a446a;
-  --on-secondary-container: #dde3ff;
-  --tertiary: #87ceff;
-  --on-tertiary: #003350;
-  --tertiary-container: #004b73;
-  --on-tertiary-container: #c9e6ff;
-  --error: #ffb4ab;
-  --on-error: #690005;
-  --error-container: #93000a;
-  --on-error-container: #ffb4ab;
-  --background: #1c1f2e;
-  --on-background: #e4e3eb;
-  --surface: #141620;
-  --on-surface: #e4e3eb;
-  --surface-variant: #3e4159;
-  --on-surface-variant: #c3c5d8;
-  --outline: #8d8fa3;
-  --outline-variant: #3e4159;
-  --shadow: #000000;
-  --scrim: #000000;
-  --inverse-surface: #e4e3eb;
-  --inverse-on-surface: #2f3042;
-  --inverse-primary: #1349eb;
-  --surface-dim: #141620;
-  --surface-bright: #3a3d53;
-  --surface-container-lowest: #0f1019;
-  --surface-container-low: #1c1f2e;
-  --surface-container: #202334;
-  --surface-container-high: #2b2e3f;
-  --surface-container-highest: #363952;
+  --ht-primary:        214 70% 62%;
+  --ht-primary-fg:     222 22% 10%;
+  --ht-primary-hover:  214 70% 70%;
+  --ht-primary-light:  214 50% 20%;
+
+  --ht-bg:             222 22% 11%;
+  --ht-surface:        222 22% 15%;
+  --ht-card:           222 22% 17%;
+
+  --ht-fg:             214 20% 92%;
+  --ht-muted:          214 14% 54%;
+
+  --ht-border:         222 22% 24%;
+
+  --ht-error:          0 70% 62%;
+  --ht-error-fg:       0 0% 100%;
+  --ht-error-light:    0 50% 18%;
+
+  --ht-success:        142 55% 52%;
+  --ht-success-fg:     222 22% 10%;
+  --ht-success-light:  142 40% 18%;
 }
 
-/* Hero section na Home */
-.hero {
-  padding: 5rem 1.5rem;
+/* ─── Tema Tailwind ──────────────────────────────────────── */
+@theme inline {
+  --color-primary:       hsl(var(--ht-primary));
+  --color-primary-fg:    hsl(var(--ht-primary-fg));
+  --color-primary-hover: hsl(var(--ht-primary-hover));
+  --color-primary-light: hsl(var(--ht-primary-light));
+
+  --color-background:    hsl(var(--ht-bg));
+  --color-surface:       hsl(var(--ht-surface));
+  --color-card:          hsl(var(--ht-card));
+
+  --color-foreground:    hsl(var(--ht-fg));
+  --color-muted:         hsl(var(--ht-muted));
+
+  --color-border:        hsl(var(--ht-border));
+
+  --color-error:         hsl(var(--ht-error));
+  --color-error-fg:      hsl(var(--ht-error-fg));
+  --color-error-light:   hsl(var(--ht-error-light));
+
+  --color-success:       hsl(var(--ht-success));
+  --color-success-fg:    hsl(var(--ht-success-fg));
+  --color-success-light: hsl(var(--ht-success-light));
+
+  /* Tipografia */
+  --text-xs:   12px;
+  --text-sm:   13px;
+  --text-base: 14px;
+  --text-title: 16px;
+  --text-lg:   18px;
+  --text-xl:   20px;
+  --text-2xl:  24px;
+  --text-3xl:  30px;
 }
 
-/* Card de categoria na Home — cursor pointer */
-.categoria-card {
-  cursor: pointer;
-  transition: transform var(--speed2);
-}
-.categoria-card:hover {
-  transform: translateY(-2px);
+/* ─── Base ───────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-/* Separador visual para links do sidenav */
-nav.left a {
-  text-decoration: none;
+html {
+  font-size: 14px;
 }
 
-/* RouterLink ativo no sidenav */
-nav.left a.router-link-exact-active,
-nav.left .router-link-exact-active {
-  color: var(--primary);
-  font-weight: 700;
+body {
+  font-family: 'Inter', 'Roboto', system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  background-color: hsl(var(--ht-bg));
+  color: hsl(var(--ht-fg));
+  transition: background-color 0.25s, color 0.25s;
+  margin: 0;
+}
+
+h1, h2, h3 { font-size: 24px; font-weight: 700; }
+h4, h5, h6  { font-size: 16px; font-weight: 600; }
+
+a { color: inherit; text-decoration: none; }
+
+/* Material Symbols */
+.material-symbols-rounded {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  user-select: none;
+}
+
+/* ─── RouterLink ativo no sidenav ────────────────────────── */
+.ht-sidenav-link.router-link-exact-active {
+  color: hsl(var(--ht-primary));
+  background-color: hsl(var(--ht-primary-light));
+  font-weight: 600;
 }

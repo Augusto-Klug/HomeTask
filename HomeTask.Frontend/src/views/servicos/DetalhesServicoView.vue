@@ -1,53 +1,82 @@
-<template lang="pug">
-.padding
-  .center-align.padding(v-if="carregando")
-    .progress.circle
+<template>
+  <div class="max-w-3xl mx-auto px-4 py-8">
 
-  .center-align.padding(v-else-if="!servico")
-    i.extra error
-    p Serviço não encontrado.
-    router-link.button(to="/servicos/buscar") Voltar à busca
+    <!-- Loading -->
+    <div v-if="carregando" class="flex justify-center py-20">
+      <HtSpinner size="lg" class="text-primary" />
+    </div>
 
-  template(v-else)
-    .row.padding
-      router-link.button.transparent.circle(to="/servicos/buscar")
-        i arrow_back
+    <!-- Não encontrado -->
+    <div v-else-if="!servico" class="text-center py-16 flex flex-col items-center gap-4">
+      <span class="material-symbols-rounded text-5xl text-error">error</span>
+      <p class="text-sm text-muted">Serviço não encontrado.</p>
+      <router-link to="/servicos/buscar">
+        <HtButton variant="outline">Voltar à busca</HtButton>
+      </router-link>
+    </div>
 
-    article.padding
-      .row.wrap
-        .max
-          h4 {{ servico.titulo }}
-          p {{ servico.prestadorNome }}
-        span.chip {{ servico.categoria }}
+    <template v-else>
+      <!-- Voltar -->
+      <router-link
+        to="/servicos/buscar"
+        class="inline-flex items-center gap-1.5 text-sm text-muted hover:text-primary mb-6 transition-colors"
+      >
+        <span class="material-symbols-rounded text-base">arrow_back</span>
+        Voltar à busca
+      </router-link>
 
-      .divider
-      .row
-        i location_on
-        span {{ servico.cidade }}/{{ servico.estado }}
-      .row.padding-top
-        h5 R$ {{ formatarPreco(servico.preco) }}/h
-        .max
-        span {{ estrelas(servico.mediaAvaliacoes) }}
+      <!-- Detalhes -->
+      <HtCard class="mb-6">
+        <div class="flex flex-wrap items-start justify-between gap-3 mb-4">
+          <div>
+            <h1 class="text-xl font-bold text-foreground">{{ servico.titulo }}</h1>
+            <p class="text-sm text-muted mt-0.5">{{ servico.prestadorNome }}</p>
+          </div>
+          <HtBadge variant="primary">{{ servico.categoria }}</HtBadge>
+        </div>
 
-      p.padding-top {{ servico.descricao }}
+        <HtDivider />
 
-      button.padding-top(v-if="auth.isLoggedIn" @click="irParaAgendamento")
-        i calendar_month
-        span Agendar
-      router-link.button.border.padding-top(v-else :to="`/login?redirect=/servicos/detalhes/${id}`")
-        i login
-        span Faça login para agendar
+        <div class="flex items-center gap-2 text-sm text-muted mb-2">
+          <span class="material-symbols-rounded text-base">location_on</span>
+          {{ servico.cidade }}/{{ servico.estado }}
+        </div>
 
-    //- Avaliações
-    .padding-top(v-if="avaliacoes.length")
-      h5 Avaliações
-      article.padding.margin(v-for="av in avaliacoes" :key="av.id")
-        .row
-          span.bold {{ av.clienteNome }}
-          .max
-          span {{ estrelas(av.nota) }}
-        p.small {{ av.comentario }}
-        p.small {{ formatarData(av.data) }}
+        <div class="flex items-center justify-between mb-4">
+          <span class="text-lg font-bold text-primary">R$ {{ formatarPreco(servico.preco) }}/h</span>
+          <span class="text-sm text-yellow-500">{{ estrelas(servico.mediaAvaliacoes) }}</span>
+        </div>
+
+        <p v-if="servico.descricao" class="text-sm text-foreground mb-4">{{ servico.descricao }}</p>
+
+        <HtButton v-if="auth.isLoggedIn" @click="irParaAgendamento">
+          <span class="material-symbols-rounded text-base">calendar_month</span>
+          Agendar
+        </HtButton>
+        <router-link v-else :to="`/login?redirect=/servicos/detalhes/${props.id}`">
+          <HtButton variant="outline">
+            <span class="material-symbols-rounded text-base">login</span>
+            Faça login para agendar
+          </HtButton>
+        </router-link>
+      </HtCard>
+
+      <!-- Avaliações -->
+      <div v-if="avaliacoes.length">
+        <h2 class="text-title font-semibold text-foreground mb-4">Avaliações</h2>
+        <div class="flex flex-col gap-3">
+          <HtCard v-for="av in avaliacoes" :key="av.id">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-sm font-semibold text-foreground">{{ av.clienteNome }}</span>
+              <span class="text-sm text-yellow-500">{{ estrelas(av.nota) }}</span>
+            </div>
+            <p class="text-sm text-foreground mb-1">{{ av.comentario }}</p>
+            <p class="text-xs text-muted">{{ formatarData(av.data) }}</p>
+          </HtCard>
+        </div>
+      </div>
+    </template>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -56,6 +85,11 @@ import { useRouter } from 'vue-router'
 import api from '@/services/api'
 import { useAuthStore } from '@/stores/auth'
 import type { Servico, Avaliacao } from '@/types'
+import HtButton from '@/components/ui/HtButton.vue'
+import HtCard from '@/components/ui/HtCard.vue'
+import HtBadge from '@/components/ui/HtBadge.vue'
+import HtSpinner from '@/components/ui/HtSpinner.vue'
+import HtDivider from '@/components/ui/HtDivider.vue'
 
 const props = defineProps<{ id: string }>()
 
