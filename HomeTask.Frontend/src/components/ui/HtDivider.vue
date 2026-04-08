@@ -1,3 +1,3 @@
 <template>
-  <hr class="border-0 border-t border-border my-4" />
+  <div class="divider my-2" />
 </template>

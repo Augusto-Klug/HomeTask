@@ -2,10 +2,9 @@
   <div
     v-if="show"
     role="alert"
-    class="flex items-start gap-3 rounded-lg border px-4 py-3 text-sm"
-    :class="variantClass"
+    :class="['alert alert-soft', variantClass]"
   >
-    <span class="material-symbols-rounded text-lg shrink-0 mt-0.5">{{ icon }}</span>
+    <span class="material-symbols-rounded text-lg shrink-0">{{ icon }}</span>
     <div class="flex-1">
       <p v-if="title" class="font-semibold mb-0.5">{{ title }}</p>
       <slot>{{ message }}</slot>
@@ -13,7 +12,7 @@
     <button
       v-if="dismissible"
       type="button"
-      class="shrink-0 p-0.5 hover:opacity-70 transition-opacity"
+      class="btn btn-ghost btn-xs btn-square shrink-0"
       @click="show = false"
     >
       <span class="material-symbols-rounded text-sm">close</span>
@@ -38,10 +37,10 @@ const show = ref(true)
 
 const variantClass = computed(() => {
   switch (props.variant) {
-    case 'success': return 'border-success/30 bg-success-light text-success'
-    case 'info':    return 'border-primary/30 bg-primary-light text-primary'
-    case 'warning': return 'border-yellow-400/30 bg-yellow-50 text-yellow-800'
-    default:        return 'border-error/30 bg-error-light text-error'
+    case 'success': return 'alert-success'
+    case 'info':    return 'alert-info'
+    case 'warning': return 'alert-warning'
+    default:        return 'alert-error'
   }
 })
 

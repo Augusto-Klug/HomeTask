@@ -2,7 +2,7 @@
   <button
     type="button"
     :title="'Tema: ' + modeLabel"
-    class="p-2 rounded-lg text-muted hover:text-foreground hover:bg-surface transition-colors"
+    class="btn btn-ghost btn-sm btn-square"
     @click="cycleMode"
   >
     <span class="material-symbols-rounded text-xl">{{ modeIcon }}</span>

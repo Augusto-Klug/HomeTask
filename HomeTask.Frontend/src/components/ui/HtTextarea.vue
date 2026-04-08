@@ -3,7 +3,7 @@
     <label
       v-if="label"
       :for="fieldId"
-      class="text-sm font-medium text-foreground"
+      class="fieldset-legend text-sm font-medium"
       :class="{ 'text-error': hasError }"
     >{{ label }}<span v-if="required" class="text-error ml-0.5">*</span></label>
 
@@ -14,14 +14,8 @@
       :disabled="disabled"
       :placeholder="placeholder"
       :rows="rows"
-      class="w-full px-3 py-2 rounded-lg border bg-card text-foreground text-sm
-             placeholder:text-muted transition-colors resize-y
-             focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary
-             disabled:opacity-50 disabled:cursor-not-allowed"
-      :class="{
-        'border-border': !hasError,
-        'border-error ring-1 ring-error': hasError,
-      }"
+      class="textarea textarea-bordered w-full resize-y"
+      :class="{ 'textarea-error': hasError }"
       @input="emit('update:modelValue', ($event.target as HTMLTextAreaElement).value)"
       @blur="required && validar()"
     />
@@ -30,7 +24,7 @@
       <span class="material-symbols-rounded text-sm">error</span>
       {{ erroAtual }}
     </p>
-    <p v-else-if="hint" class="text-xs text-muted">{{ hint }}</p>
+    <p v-else-if="hint" class="text-xs opacity-60">{{ hint }}</p>
   </div>
 </template>
 

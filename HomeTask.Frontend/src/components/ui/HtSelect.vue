@@ -3,90 +3,44 @@
     <label
       v-if="label"
       :for="fieldId"
-      class="text-sm font-medium text-foreground"
+      class="fieldset-legend text-sm font-medium"
       :class="{ 'text-error': hasError }"
     >{{ label }}<span v-if="required" class="text-error ml-0.5">*</span></label>
 
-    <SelectRoot
-      :model-value="modelValue"
+    <select
+      :id="fieldId"
+      :value="modelValue"
       :disabled="disabled"
-      @update:model-value="onSelect"
+      class="select select-bordered w-full"
+      :class="{ 'select-error': hasError }"
+      @change="onSelect"
+      @blur="required && validar()"
     >
-      <SelectTrigger
-        :id="fieldId"
-        class="flex items-center justify-between h-10 w-full px-3 rounded-lg border bg-card text-sm
-               text-foreground transition-colors cursor-pointer
-               focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary
-               disabled:opacity-50 disabled:cursor-not-allowed"
-        :class="{
-          'border-border': !hasError,
-          'border-error ring-1 ring-error': hasError,
-        }"
-        @blur="required && validar()"
-      >
-        <SelectValue :placeholder="placeholder ?? 'Selecione...'" class="text-left" />
-        <SelectIcon>
-          <span class="material-symbols-rounded text-muted text-lg">expand_more</span>
-        </SelectIcon>
-      </SelectTrigger>
+      <!-- Placeholder desabilitado (apenas se não houver opção com value vazio) -->
+      <option
+        v-if="!hasEmptyOption && placeholder"
+        value=""
+        disabled
+        :selected="!modelValue"
+      >{{ placeholder }}</option>
 
-      <SelectPortal>
-        <SelectContent
-          class="z-50 min-w-[var(--reka-select-trigger-width)] rounded-lg border border-border
-                 bg-card shadow-lg overflow-hidden py-1"
-          position="popper"
-          :side-offset="4"
-        >
-          <SelectScrollUpButton class="flex items-center justify-center h-6 text-muted cursor-default">
-            <span class="material-symbols-rounded text-sm">expand_less</span>
-          </SelectScrollUpButton>
-
-          <SelectViewport>
-            <SelectItem
-              v-for="opt in options"
-              :key="opt.value"
-              :value="String(opt.value)"
-              class="relative flex items-center h-9 px-3 text-sm text-foreground cursor-pointer select-none
-                     data-[highlighted]:bg-primary-light data-[highlighted]:text-primary outline-none"
-            >
-              <SelectItemText>{{ opt.label }}</SelectItemText>
-              <SelectItemIndicator class="absolute right-3">
-                <span class="material-symbols-rounded text-primary text-sm">check</span>
-              </SelectItemIndicator>
-            </SelectItem>
-          </SelectViewport>
-
-          <SelectScrollDownButton class="flex items-center justify-center h-6 text-muted cursor-default">
-            <span class="material-symbols-rounded text-sm">expand_more</span>
-          </SelectScrollDownButton>
-        </SelectContent>
-      </SelectPortal>
-    </SelectRoot>
+      <option
+        v-for="opt in options"
+        :key="opt.value"
+        :value="String(opt.value)"
+      >{{ opt.label }}</option>
+    </select>
 
     <p v-if="hasError" class="text-xs text-error flex items-center gap-1">
       <span class="material-symbols-rounded text-sm">error</span>
       {{ erroAtual }}
     </p>
-    <p v-else-if="hint" class="text-xs text-muted">{{ hint }}</p>
+    <p v-else-if="hint" class="text-xs opacity-60">{{ hint }}</p>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import {
-  SelectRoot,
-  SelectTrigger,
-  SelectValue,
-  SelectIcon,
-  SelectPortal,
-  SelectContent,
-  SelectScrollUpButton,
-  SelectScrollDownButton,
-  SelectViewport,
-  SelectItem,
-  SelectItemText,
-  SelectItemIndicator,
-} from 'reka-ui'
+import { ref, computed } from 'vue'
 
 defineOptions({ inheritAttrs: false })
 
@@ -112,8 +66,14 @@ const fieldId = `ht-select-${++counter}`
 const hasError = ref(false)
 const erroAtual = ref('')
 
-function onSelect(v: string) {
-  emit('update:modelValue', v)
+// Verifica se já existe uma opção com value vazio na lista
+const hasEmptyOption = computed(() =>
+  props.options.some(o => String(o.value) === ''),
+)
+
+function onSelect(e: Event) {
+  const value = (e.target as HTMLSelectElement).value
+  emit('update:modelValue', value)
   if (hasError.value) validar()
 }
 

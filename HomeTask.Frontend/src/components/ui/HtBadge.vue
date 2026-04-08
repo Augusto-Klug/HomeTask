@@ -1,8 +1,5 @@
 <template>
-  <span
-    class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"
-    :class="variantClass"
-  >
+  <span :class="['badge', variantClass]">
     <slot />
   </span>
 </template>
@@ -17,11 +14,11 @@ const props = withDefaults(
 
 const variantClass = computed(() => {
   switch (props.variant) {
-    case 'primary': return 'bg-primary-light text-primary'
-    case 'success': return 'bg-success-light text-success'
-    case 'error':   return 'bg-error-light text-error'
-    case 'outline': return 'border border-border text-foreground'
-    default:        return 'bg-surface text-muted'
+    case 'primary': return 'badge-primary badge-soft'
+    case 'success': return 'badge-success badge-soft'
+    case 'error':   return 'badge-error badge-soft'
+    case 'outline': return 'badge-outline'
+    default:        return 'badge-neutral badge-soft'
   }
 })
 </script>

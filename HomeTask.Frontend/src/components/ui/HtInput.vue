@@ -3,15 +3,19 @@
     <label
       v-if="label"
       :for="inputId"
-      class="text-sm font-medium text-foreground"
+      class="fieldset-legend text-sm font-medium"
       :class="{ 'text-error': hasError }"
     >{{ label }}<span v-if="required" class="text-error ml-0.5">*</span></label>
 
-    <div class="relative">
-      <!-- Slot de ícone à esquerda -->
+    <!-- Wrapper com suporte a ícones prefix/suffix -->
+    <label
+      :for="inputId"
+      class="input input-bordered flex items-center gap-2 w-full cursor-text"
+      :class="{ 'input-error': hasError, 'opacity-50 pointer-events-none': disabled }"
+    >
       <span
         v-if="$slots.prefix"
-        class="absolute left-3 top-1/2 -translate-y-1/2 text-muted material-symbols-rounded text-lg"
+        class="material-symbols-rounded text-lg opacity-50 shrink-0"
       >
         <slot name="prefix" />
       </span>
@@ -25,16 +29,7 @@
         :disabled="disabled"
         :placeholder="placeholder"
         :maxlength="maxlength"
-        class="w-full h-10 px-3 rounded-lg border bg-card text-foreground text-sm
-               placeholder:text-muted transition-colors
-               focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary
-               disabled:opacity-50 disabled:cursor-not-allowed"
-        :class="{
-          'pl-9': $slots.prefix,
-          'pr-10': type === 'password' || $slots.suffix,
-          'border-border': !hasError,
-          'border-error ring-1 ring-error': hasError,
-        }"
+        class="grow bg-transparent border-none outline-none text-sm"
         @input="handleInput"
         @blur="handleBlur"
       />
@@ -44,28 +39,27 @@
         v-if="type === 'password'"
         type="button"
         tabindex="-1"
-        class="absolute right-2 top-1/2 -translate-y-1/2 text-muted hover:text-foreground p-1"
+        class="btn btn-ghost btn-xs btn-square shrink-0"
         @click="showPassword = !showPassword"
       >
-        <span class="material-symbols-rounded text-lg">
+        <span class="material-symbols-rounded text-base opacity-60">
           {{ showPassword ? 'visibility_off' : 'visibility' }}
         </span>
       </button>
 
-      <!-- Slot de ícone à direita -->
       <span
         v-else-if="$slots.suffix"
-        class="absolute right-3 top-1/2 -translate-y-1/2 text-muted material-symbols-rounded text-lg"
+        class="material-symbols-rounded text-lg opacity-50 shrink-0"
       >
         <slot name="suffix" />
       </span>
-    </div>
+    </label>
 
     <p v-if="hasError" class="text-xs text-error flex items-center gap-1">
       <span class="material-symbols-rounded text-sm">error</span>
       {{ erroAtual }}
     </p>
-    <p v-else-if="hint" class="text-xs text-muted">{{ hint }}</p>
+    <p v-else-if="hint" class="text-xs opacity-60">{{ hint }}</p>
   </div>
 </template>
 
@@ -130,7 +124,6 @@ const inputType = computed(() => {
   return props.type
 })
 
-// Aplica máscara de acordo com a regra
 function aplicarMascara(v: string): string {
   switch (props.regra) {
     case 'cpf':       return mascaraCPF(v)
@@ -147,7 +140,6 @@ function handleInput(e: Event) {
   const masked = aplicarMascara(raw)
   emit('update:modelValue', masked)
 
-  // Atualiza o valor visual se a máscara alterou
   if (masked !== raw && inputEl.value) {
     inputEl.value.value = masked
   }
@@ -159,11 +151,9 @@ function handleBlur() {
   if (props.regra || props.required) validar()
 }
 
-// ─── Validar (exposto via defineExpose) ───────────────────────────────────
 function validar(): boolean {
   const v = props.modelValue?.trim() ?? ''
 
-  // Campo vazio
   if (!v) {
     if (props.required || props.regra) {
       setError(props.mensagemErro ?? mensagensPadrao['required'])
@@ -173,10 +163,8 @@ function validar(): boolean {
     return true
   }
 
-  // Validação por regra
   if (props.regra) {
     let ok = true
-
     switch (props.regra) {
       case 'email':     ok = validarEmail(v);     break
       case 'cpf':       ok = validarCPF(v);       break

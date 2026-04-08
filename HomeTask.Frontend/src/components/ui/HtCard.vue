@@ -1,6 +1,6 @@
 <template>
   <div
-    class="rounded-xl border border-border bg-card"
+    class="card card-border bg-base-100"
     :class="[padding ? 'p-5' : '', shadow ? 'shadow-sm' : '', $attrs.class]"
     v-bind="{ ...$attrs, class: undefined }"
   >

@@ -16,7 +16,8 @@ function applyMode(m: ThemeMode) {
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
   const isDark = m === 'dark' || (m === 'auto' && prefersDark)
 
-  document.body.classList.toggle('dark', isDark)
+  // DaisyUI usa data-theme no elemento <html>
+  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light')
 }
 
 function cycleMode() {

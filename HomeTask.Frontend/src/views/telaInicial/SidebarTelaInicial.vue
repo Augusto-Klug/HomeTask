@@ -2,51 +2,82 @@
   <HtSidenav v-model:open="open">
     <template #title>HomeTask</template>
 
-    <nav class="flex flex-col gap-1 px-3">
-      <router-link
-        to="/"
-        class="ht-sidenav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-foreground hover:bg-surface transition-colors"
-        @click="open = false"
-      >
-        <span class="material-symbols-rounded text-xl">home</span>
-        Início
-      </router-link>
+    <ul class="menu menu-sm px-2">
+      <li>
+        <router-link
+          to="/"
+          class="ht-sidenav-link"
+          @click="open = false"
+        >
+          <span class="material-symbols-rounded text-xl">home</span>
+          Início
+        </router-link>
+      </li>
 
-      <router-link
-        to="/servicos/buscar"
-        class="ht-sidenav-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-foreground hover:bg-surface transition-colors"
-        @click="open = false"
-      >
-        <span class="material-symbols-rounded text-xl">search</span>
-        Buscar Serviços
-      </router-link>
-    </nav>
+      <li>
+        <router-link
+          to="/servicos/buscar"
+          class="ht-sidenav-link"
+          @click="open = false"
+        >
+          <span class="material-symbols-rounded text-xl">search</span>
+          Buscar Serviços
+        </router-link>
+      </li>
+
+      <!-- Links para usuários logados -->
+      <template v-if="auth.isLoggedIn">
+        <!-- Cliente ou Ambos (tipo 1 ou 3) -->
+        <li v-if="auth.user?.tipo === 1 || auth.user?.tipo === 3">
+          <router-link
+            to="/servicos/novo-cliente"
+            class="ht-sidenav-link"
+            @click="open = false"
+          >
+            <span class="material-symbols-rounded text-xl">campaign</span>
+            Anunciar Serviço
+          </router-link>
+        </li>
+
+        <!-- Prestador ou Ambos (tipo 2 ou 3) -->
+        <li v-if="auth.user?.tipo === 2 || auth.user?.tipo === 3">
+          <router-link
+            to="/servicos/novo-prestador"
+            class="ht-sidenav-link"
+            @click="open = false"
+          >
+            <span class="material-symbols-rounded text-xl">work</span>
+            Oferecer Serviço
+          </router-link>
+        </li>
+      </template>
+    </ul>
 
     <template #footer>
       <template v-if="auth.isLoggedIn">
-        <div class="flex items-center gap-3 px-1 mb-3">
-          <span class="material-symbols-rounded text-xl text-muted">account_circle</span>
-          <span class="text-sm font-medium text-foreground truncate">{{ auth.user?.nome }}</span>
+        <div class="flex items-center gap-3 mb-3">
+          <span class="material-symbols-rounded text-xl text-base-content/50">account_circle</span>
+          <span class="text-sm font-medium text-base-content truncate">{{ auth.user?.nome }}</span>
         </div>
-        <HtButton variant="outline" size="sm" class="w-full" @click="handleLogout">
+        <button class="btn btn-outline btn-sm w-full" @click="handleLogout">
           <span class="material-symbols-rounded text-base">logout</span>
           Sair
-        </HtButton>
+        </button>
       </template>
 
       <template v-else>
         <div class="flex flex-col gap-2">
           <router-link to="/login" @click="open = false">
-            <HtButton variant="outline" size="sm" class="w-full">
+            <button class="btn btn-outline btn-sm w-full">
               <span class="material-symbols-rounded text-base">login</span>
               Entrar
-            </HtButton>
+            </button>
           </router-link>
           <router-link to="/cadastro" @click="open = false">
-            <HtButton size="sm" class="w-full">
+            <button class="btn btn-primary btn-sm w-full">
               <span class="material-symbols-rounded text-base">person_add</span>
               Cadastrar
-            </HtButton>
+            </button>
           </router-link>
         </div>
       </template>
@@ -59,7 +90,6 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import HtSidenav from '@/components/ui/HtSidenav.vue'
-import HtButton from '@/components/ui/HtButton.vue'
 
 const open = defineModel<boolean>('open', { default: false })
 

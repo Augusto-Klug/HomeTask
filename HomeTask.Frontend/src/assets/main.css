@@ -1,99 +1,108 @@
 @import "tailwindcss";
+@plugin "daisyui";
 
-/* Dark mode: acionado pela classe body.dark */
-@custom-variant dark (body.dark &);
-
-/* ─── Tokens HSL ─────────────────────────────────────────── */
-:root {
-  /* Primário: azul claro */
-  --ht-primary:        214 76% 52%;
-  --ht-primary-fg:     0 0% 100%;
-  --ht-primary-hover:  214 76% 44%;
-  --ht-primary-light:  214 80% 95%;
-
-  /* Background / Surface */
-  --ht-bg:             0 0% 100%;
-  --ht-surface:        214 40% 98%;
-  --ht-card:           0 0% 100%;
-
-  /* Texto */
-  --ht-fg:             214 25% 14%;
-  --ht-muted:          214 12% 52%;
-
-  /* Borda */
-  --ht-border:         214 22% 88%;
-
-  /* Erro */
-  --ht-error:          0 72% 51%;
-  --ht-error-fg:       0 0% 100%;
-  --ht-error-light:    0 72% 96%;
-
-  /* Sucesso */
-  --ht-success:        142 71% 40%;
-  --ht-success-fg:     0 0% 100%;
-  --ht-success-light:  142 71% 95%;
-
-  /* Sidebar */
-  --ht-sidebar-w:      260px;
+/* ─── Tema Light ─────────────────────────────────────────── */
+@plugin "daisyui/theme" {
+  name: "light";
+  default: true;
+  prefersdark: false;
+  color-scheme: "light";
+  --color-base-100: oklch(97% 0.014 254.604);
+  --color-base-200: oklch(93% 0.032 255.585);
+  --color-base-300: oklch(88% 0.059 254.128);
+  --color-base-content: oklch(37% 0.146 265.522);
+  --color-primary: oklch(0% 0 0);
+  --color-primary-content: oklch(100% 0 0);
+  --color-secondary: oklch(54% 0.245 262.881);
+  --color-secondary-content: oklch(97% 0.014 254.604);
+  --color-accent: oklch(51% 0.262 276.966);
+  --color-accent-content: oklch(96% 0.018 272.314);
+  --color-neutral: oklch(54% 0.245 262.881);
+  --color-neutral-content: oklch(97% 0.014 254.604);
+  --color-info: oklch(78% 0.154 211.53);
+  --color-info-content: oklch(30% 0.056 229.695);
+  --color-success: oklch(77% 0.152 181.912);
+  --color-success-content: oklch(27% 0.046 192.524);
+  --color-warning: oklch(85% 0.199 91.936);
+  --color-warning-content: oklch(28% 0.066 53.813);
+  --color-error: oklch(70% 0.191 22.216);
+  --color-error-content: oklch(25% 0.092 26.042);
+  --radius-selector: 0.25rem;
+  --radius-field: 2rem;
+  --radius-box: 0.25rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
 }
 
-body.dark {
-  --ht-primary:        214 70% 62%;
-  --ht-primary-fg:     222 22% 10%;
-  --ht-primary-hover:  214 70% 70%;
-  --ht-primary-light:  214 50% 20%;
-
-  --ht-bg:             222 22% 11%;
-  --ht-surface:        222 22% 15%;
-  --ht-card:           222 22% 17%;
-
-  --ht-fg:             214 20% 92%;
-  --ht-muted:          214 14% 54%;
-
-  --ht-border:         222 22% 24%;
-
-  --ht-error:          0 70% 62%;
-  --ht-error-fg:       0 0% 100%;
-  --ht-error-light:    0 50% 18%;
-
-  --ht-success:        142 55% 52%;
-  --ht-success-fg:     222 22% 10%;
-  --ht-success-light:  142 40% 18%;
+/* ─── Tema Dark ──────────────────────────────────────────── */
+@plugin "daisyui/theme" {
+  name: "dark";
+  default: false;
+  prefersdark: false;
+  color-scheme: "dark";
+  --color-base-100: oklch(12% 0.042 264.695);
+  --color-base-200: oklch(20% 0.042 265.755);
+  --color-base-300: oklch(27% 0.041 260.031);
+  --color-base-content: oklch(96% 0.007 247.896);
+  --color-primary: oklch(55% 0.027 264.364);
+  --color-primary-content: oklch(98% 0.002 247.839);
+  --color-secondary: oklch(76% 0.233 130.85);
+  --color-secondary-content: oklch(98% 0.031 120.757);
+  --color-accent: oklch(79% 0.184 86.047);
+  --color-accent-content: oklch(98% 0.026 102.212);
+  --color-neutral: oklch(20% 0.042 265.755);
+  --color-neutral-content: oklch(98% 0.003 247.858);
+  --color-info: oklch(60% 0.126 221.723);
+  --color-info-content: oklch(98% 0.019 200.873);
+  --color-success: oklch(59% 0.145 163.225);
+  --color-success-content: oklch(97% 0.021 166.113);
+  --color-warning: oklch(66% 0.179 58.318);
+  --color-warning-content: oklch(98% 0.022 95.277);
+  --color-error: oklch(59% 0.249 0.584);
+  --color-error-content: oklch(97% 0.014 343.198);
+  --radius-selector: 0.5rem;
+  --radius-field: 2rem;
+  --radius-box: 0rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 1;
 }
 
-/* ─── Tema Tailwind ──────────────────────────────────────── */
+/* ─── Aliases de compatibilidade com tokens anteriores ──────
+   Permite que as views existentes continuem usando classes
+   como text-foreground, bg-surface, border-border etc.      */
 @theme inline {
-  --color-primary:       hsl(var(--ht-primary));
-  --color-primary-fg:    hsl(var(--ht-primary-fg));
-  --color-primary-hover: hsl(var(--ht-primary-hover));
-  --color-primary-light: hsl(var(--ht-primary-light));
+  --color-foreground:    var(--color-base-content);
+  --color-muted:         color-mix(in oklch, var(--color-base-content) 55%, transparent);
+  --color-border:        var(--color-base-300);
+  --color-surface:       var(--color-base-200);
+  --color-card:          var(--color-base-100);
+  --color-background:    var(--color-base-100);
 
-  --color-background:    hsl(var(--ht-bg));
-  --color-surface:       hsl(var(--ht-surface));
-  --color-card:          hsl(var(--ht-card));
+  --color-primary-fg:    var(--color-primary-content);
+  --color-primary-hover: color-mix(in oklch, var(--color-primary) 85%, black);
+  --color-primary-light: color-mix(in oklch, var(--color-primary) 12%, var(--color-base-100));
 
-  --color-foreground:    hsl(var(--ht-fg));
-  --color-muted:         hsl(var(--ht-muted));
+  --color-error-fg:      var(--color-error-content);
+  --color-error-light:   color-mix(in oklch, var(--color-error) 12%, var(--color-base-100));
 
-  --color-border:        hsl(var(--ht-border));
-
-  --color-error:         hsl(var(--ht-error));
-  --color-error-fg:      hsl(var(--ht-error-fg));
-  --color-error-light:   hsl(var(--ht-error-light));
-
-  --color-success:       hsl(var(--ht-success));
-  --color-success-fg:    hsl(var(--ht-success-fg));
-  --color-success-light: hsl(var(--ht-success-light));
+  --color-success-fg:    var(--color-success-content);
+  --color-success-light: color-mix(in oklch, var(--color-success) 12%, var(--color-base-100));
 
   /* Tipografia */
-  --text-xs:   12px;
-  --text-sm:   13px;
-  --text-base: 14px;
+  --text-xs:    12px;
+  --text-sm:    13px;
+  --text-base:  14px;
   --text-title: 16px;
-  --text-lg:   18px;
-  --text-xl:   20px;
-  --text-2xl:  24px;
-  --text-3xl:  30px;
+  --text-lg:    18px;
+  --text-xl:    20px;
+  --text-2xl:   24px;
+  --text-3xl:   30px;
 }
 
 /* ─── Base ───────────────────────────────────────────────── */
@@ -111,14 +120,8 @@ body {
   font-family: 'Inter', 'Roboto', system-ui, -apple-system, sans-serif;
   font-size: 14px;
   line-height: 1.5;
-  background-color: hsl(var(--ht-bg));
-  color: hsl(var(--ht-fg));
-  transition: background-color 0.25s, color 0.25s;
   margin: 0;
 }
-
-h1, h2, h3 { font-size: 24px; font-weight: 700; }
-h4, h5, h6  { font-size: 16px; font-weight: 600; }
 
 a { color: inherit; text-decoration: none; }
 
@@ -130,7 +133,26 @@ a { color: inherit; text-decoration: none; }
 
 /* ─── RouterLink ativo no sidenav ────────────────────────── */
 .ht-sidenav-link.router-link-exact-active {
-  color: hsl(var(--ht-primary));
-  background-color: hsl(var(--ht-primary-light));
+  color: var(--color-primary);
+  background-color: color-mix(in oklch, var(--color-primary) 12%, var(--color-base-100));
   font-weight: 600;
+}
+
+/* ─── Transições do HtSidenav ────────────────────────────── */
+.ht-fade-enter-active,
+.ht-fade-leave-active {
+  transition: opacity 0.25s ease;
+}
+.ht-fade-enter-from,
+.ht-fade-leave-to {
+  opacity: 0;
+}
+
+.ht-slide-enter-active,
+.ht-slide-leave-active {
+  transition: transform 0.3s ease;
+}
+.ht-slide-enter-from,
+.ht-slide-leave-to {
+  transform: translateX(-100%);
 }

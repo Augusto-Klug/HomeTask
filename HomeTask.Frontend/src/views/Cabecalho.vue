@@ -1,20 +1,17 @@
 <template>
-  <header class="sticky top-0 z-30 h-14 border-b border-border bg-card/95 backdrop-blur-sm">
+  <header class="sticky top-0 z-30 h-14 border-b border-base-300 bg-base-100/95 backdrop-blur-sm">
     <div class="flex items-center h-full px-3 gap-2">
       <!-- Botão menu (mobile) -->
       <button
         type="button"
-        class="p-2 rounded-lg text-muted hover:text-foreground hover:bg-surface transition-colors"
+        class="btn btn-ghost btn-sm btn-square"
         @click="sidebarOpen = true"
       >
         <span class="material-symbols-rounded text-xl">menu</span>
       </button>
 
       <!-- Logo -->
-      <router-link
-        to="/"
-        class="text-title font-bold text-primary"
-      >
+      <router-link to="/" class="text-title font-bold text-primary">
         HomeTask
       </router-link>
 
@@ -23,7 +20,7 @@
       <!-- Buscar -->
       <router-link
         to="/servicos/buscar"
-        class="p-2 rounded-lg text-muted hover:text-foreground hover:bg-surface transition-colors"
+        class="btn btn-ghost btn-sm btn-square"
         title="Buscar serviços"
       >
         <span class="material-symbols-rounded text-xl">search</span>
@@ -37,7 +34,7 @@
         <div class="relative" ref="userMenuContainer">
           <button
             type="button"
-            class="p-2 rounded-lg text-muted hover:text-foreground hover:bg-surface transition-colors"
+            class="btn btn-ghost btn-sm btn-square"
             @click="userMenuOpen = !userMenuOpen"
           >
             <span class="material-symbols-rounded text-xl">account_circle</span>
@@ -46,15 +43,17 @@
           <!-- Dropdown menu -->
           <div
             v-if="userMenuOpen"
-            class="absolute right-0 top-12 w-52 rounded-xl border border-border bg-card shadow-lg z-50 py-1"
+            class="absolute right-0 top-12 w-52 rounded-box border border-base-300 bg-base-100 shadow-lg z-50 py-1"
           >
-            <div class="px-4 py-2.5 border-b border-border">
-              <p class="text-xs text-muted">Logado como</p>
-              <p class="text-sm font-medium text-foreground truncate">{{ auth.user?.nome }}</p>
+            <div class="px-4 py-2.5 border-b border-base-300">
+              <p class="text-xs text-base-content/50">Logado como</p>
+              <p class="text-sm font-medium text-base-content truncate">
+                {{ auth.user?.nome }}
+              </p>
             </div>
             <button
               type="button"
-              class="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-foreground hover:bg-surface transition-colors"
+              class="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-base-content hover:bg-base-200 transition-colors"
               @click="handleLogout"
             >
               <span class="material-symbols-rounded text-base">logout</span>
@@ -68,7 +67,7 @@
       <template v-else>
         <router-link
           to="/login"
-          class="p-2 rounded-lg text-muted hover:text-foreground hover:bg-surface transition-colors"
+          class="btn btn-ghost btn-sm btn-square"
           title="Entrar"
         >
           <span class="material-symbols-rounded text-xl">person</span>
@@ -82,31 +81,34 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
-import TemaPagina from '@/shared/components/TemaPagina.vue'
-import SidebarTelaInicial from './telaInicial/SidebarTelaInicial.vue'
+import { ref, onMounted, onUnmounted } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
+import TemaPagina from "@/shared/components/TemaPagina.vue";
+import SidebarTelaInicial from "./telaInicial/SidebarTelaInicial.vue";
 
-const auth = useAuthStore()
-const router = useRouter()
+const auth = useAuthStore();
+const router = useRouter();
 
-const sidebarOpen = ref(false)
-const userMenuOpen = ref(false)
-const userMenuContainer = ref<HTMLElement | null>(null)
+const sidebarOpen = ref(false);
+const userMenuOpen = ref(false);
+const userMenuContainer = ref<HTMLElement | null>(null);
 
 function handleClickOutside(e: MouseEvent) {
-  if (userMenuContainer.value && !userMenuContainer.value.contains(e.target as Node)) {
-    userMenuOpen.value = false
+  if (
+    userMenuContainer.value &&
+    !userMenuContainer.value.contains(e.target as Node)
+  ) {
+    userMenuOpen.value = false;
   }
 }
 
-onMounted(() => document.addEventListener('click', handleClickOutside))
-onUnmounted(() => document.removeEventListener('click', handleClickOutside))
+onMounted(() => document.addEventListener("click", handleClickOutside));
+onUnmounted(() => document.removeEventListener("click", handleClickOutside));
 
 async function handleLogout() {
-  userMenuOpen.value = false
-  await auth.logout()
-  router.push('/login')
+  userMenuOpen.value = false;
+  await auth.logout();
+  router.push("/login");
 }
 </script>

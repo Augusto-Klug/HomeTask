@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col min-h-screen bg-background text-foreground">
+  <div class="flex flex-col min-h-screen bg-base-100 text-base-content">
     <Cabecalho />
     <main class="flex-1">
       <RouterView />

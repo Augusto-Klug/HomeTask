@@ -1,7 +1,6 @@
 <template>
   <span
-    class="inline-block rounded-full border-2 border-current border-t-transparent animate-spin"
-    :class="sizeClass"
+    :class="['loading loading-spinner', sizeClass]"
     role="status"
     aria-label="Carregando"
   />
@@ -15,9 +14,11 @@ const props = withDefaults(
   { size: 'md' },
 )
 
-const sizeClass = computed(() => ({
-  'w-3 h-3 border': props.size === 'sm',
-  'w-4 h-4 border-2': props.size === 'md',
-  'w-6 h-6 border-2': props.size === 'lg',
-}))
+const sizeClass = computed(() => {
+  switch (props.size) {
+    case 'sm': return 'loading-sm'
+    case 'lg': return 'loading-lg'
+    default:   return 'loading-md'
+  }
+})
 </script>
