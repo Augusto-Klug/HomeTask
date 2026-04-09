@@ -3,6 +3,7 @@ import { useAuthStore } from "@/stores/auth";
 
 const router = createRouter({
   history: createWebHistory(),
+  scrollBehavior: () => ({ top: 0 }),
   routes: [
     // Rota raiz → Home
     {
@@ -52,6 +53,20 @@ const router = createRouter({
       name: "servicos-detalhes",
       component: () => import("@/views/servicos/DetalhesServicoView.vue"),
       props: true,
+    },
+    {
+      path: "/servicos/novo-cliente",
+      name: "servicos-novo-cliente",
+      component: () =>
+        import("@/views/servicos/CadastrarServicoClienteView.vue"),
+      meta: { requiresAuth: false },
+    },
+    {
+      path: "/servicos/novo-prestador",
+      name: "servicos-novo-prestador",
+      component: () =>
+        import("@/views/servicos/CadastrarServicoPrestadorView.vue"),
+      meta: { requiresAuth: false },
     },
     // Agendamento
     {

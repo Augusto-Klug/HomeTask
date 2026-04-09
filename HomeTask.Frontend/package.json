@@ -12,11 +12,11 @@
     "type-check": "vue-tsc --build"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.2.2",
     "axios": "^1.13.6",
-    "beercss": "^4.0.16",
-    "material-dynamic-colors": "^1.1.4",
     "pinia": "^3.0.4",
     "pug": "^3.0.3",
+    "tailwindcss": "^4.2.2",
     "vue": "^3.5.29",
     "vue-router": "^5.0.3"
   },
@@ -28,6 +28,7 @@
     "@vue/language-plugin-pug": "^3.2.5",
     "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.8.1",
+    "daisyui": "^5.5.19",
     "jsdom": "^28.1.0",
     "npm-run-all2": "^8.0.4",
     "typescript": "~5.9.3",

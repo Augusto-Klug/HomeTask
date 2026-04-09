@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm test:unit --reporter=verbose)",
+      "Bash(pnpm run:*)",
+      "Bash(pnpm test:unit)",
+      "WebFetch(domain:daisyui.com)",
+      "Bash(pnpm remove:*)",
+      "Bash(pnpm add:*)",
+      "Bash(npm remove:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Bash(node -e \"const p=require\\('./package.json'\\); console.log\\('reka-ui:', p.dependencies['reka-ui']\\); console.log\\('daisyui:', p.devDependencies['daisyui']\\)\")"
+    ]
+  }
+}

@@ -1,56 +1,88 @@
-<template lang="pug">
-.padding.center-align(style="min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;")
-  router-link.bold.large(to="/") HomeTask
-  p.small.padding-bottom Recuperação de senha
+<template>
+  <div class="min-h-[calc(100vh-7rem)] flex items-center justify-center px-4 py-12">
+    <div class="w-full max-w-sm">
+      <div class="text-center mb-8">
+        <router-link to="/" class="text-2xl font-bold text-primary">HomeTask</router-link>
+        <p class="text-sm text-muted mt-1">Recuperação de senha</p>
+      </div>
 
-  article.padding(style="width: 100%; max-width: 400px;")
-    template(v-if="!enviado")
-      p.padding-bottom Informe seu e-mail e enviaremos um link para redefinir sua senha.
+      <HtCard>
+        <!-- Sucesso -->
+        <template v-if="enviado">
+          <div class="text-center py-4 flex flex-col items-center gap-3">
+            <span class="material-symbols-rounded text-5xl text-success">mark_email_read</span>
+            <h2 class="text-title font-semibold text-foreground">Link enviado!</h2>
+            <p class="text-sm text-muted">Verifique sua caixa de entrada e clique no link para redefinir sua senha.</p>
+            <router-link to="/login">
+              <HtButton variant="outline" class="mt-2">Voltar para o login</HtButton>
+            </router-link>
+          </div>
+        </template>
 
-      .field.border(v-if="erro")
-        p.error {{ erro }}
+        <!-- Formulário -->
+        <template v-else>
+          <p class="text-sm text-muted mb-4">Informe seu e-mail e enviaremos um link para redefinir sua senha.</p>
 
-      form(@submit.prevent="handleEnviar")
-        .field.label.border
-          input(v-model="email" type="email" required)
-          label E-mail
+          <HtAlert v-if="erro" :message="erro" class="mb-4" />
 
-        button.responsive(:disabled="carregando" type="submit")
-          .progress.circle.small(v-if="carregando")
-          span(v-else) Enviar link de recuperação
+          <form class="flex flex-col gap-4" @submit.prevent="handleEnviar">
+            <HtInput
+              ref="inputEmail"
+              v-model="email"
+              label="E-mail"
+              type="email"
+              regra="email"
+              placeholder="seu@email.com"
+              required
+            />
 
-      .center-align.small.padding-top
-        router-link(to="/login") Voltar para o login
+            <HtButton type="submit" :loading="carregando" class="w-full">
+              Enviar link de recuperação
+            </HtButton>
+          </form>
 
-    template(v-else)
-      i.extra.primary mark_email_read
-      h5.padding-top Link enviado!
-      p Verifique sua caixa de entrada e clique no link para redefinir sua senha.
-      router-link.button.padding-top(to="/login") Voltar para o login
+          <HtDivider />
+
+          <div class="text-center">
+            <router-link to="/login" class="text-sm text-primary hover:underline">
+              Voltar para o login
+            </router-link>
+          </div>
+        </template>
+      </HtCard>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 import api from '@/services/api'
+import { validarCampos } from '@/shared/validacao'
+import HtInput from '@/components/ui/HtInput.vue'
+import HtButton from '@/components/ui/HtButton.vue'
+import HtCard from '@/components/ui/HtCard.vue'
+import HtAlert from '@/components/ui/HtAlert.vue'
+import HtDivider from '@/components/ui/HtDivider.vue'
 
 const email = ref('')
 const carregando = ref(false)
 const erro = ref<string | null>(null)
 const enviado = ref(false)
+const inputEmail = ref<InstanceType<typeof HtInput> | null>(null)
 
 async function handleEnviar() {
+  if (!validarCampos([inputEmail.value])) return
+
   erro.value = null
   carregando.value = true
   try {
     await api.post('/api/Auth/EsqueciSenha', { email: email.value })
     enviado.value = true
   } catch (err: unknown) {
-    const e = err as { response?: { status?: number; data?: unknown } }
-    if (e.response?.status === 404) {
-      erro.value = 'E-mail não encontrado.'
-    } else {
-      erro.value = 'Erro ao enviar o e-mail. Tente novamente.'
-    }
+    const e = err as { response?: { status?: number } }
+    erro.value = e.response?.status === 404
+      ? 'E-mail não encontrado.'
+      : 'Erro ao enviar o e-mail. Tente novamente.'
   } finally {
     carregando.value = false
   }

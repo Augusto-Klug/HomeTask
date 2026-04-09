@@ -1,96 +1,175 @@
-<template lang="pug">
-.padding.center-align(style="min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;")
-  router-link.bold.large(to="/") HomeTask
-  p.small.padding-bottom Crie sua conta gratuitamente
+<template>
+  <div class="min-h-[calc(100vh-7rem)] flex items-center justify-center px-4 py-12">
+    <div class="w-full max-w-lg">
+      <!-- Logo -->
+      <div class="text-center mb-8">
+        <router-link to="/" class="text-2xl font-bold text-primary">HomeTask</router-link>
+        <p class="text-sm text-muted mt-1">Crie sua conta gratuitamente</p>
+      </div>
 
-  article.padding(style="width: 100%; max-width: 520px;")
-    .field.border(v-if="erro")
-      p.error {{ erro }}
+      <HtCard>
+        <HtAlert v-if="erro" :message="erro" class="mb-5" />
 
-    form(@submit.prevent="handleCadastro")
-      //- Tipo de conta
-      p.bold Tipo de conta
-      .row.wrap.padding-bottom
-        label.radio
-          input(type="radio" v-model="form.tipoUsuario" value="1")
-          span 🏠 Cliente
-        label.radio
-          input(type="radio" v-model="form.tipoUsuario" value="2")
-          span 🔧 Prestador
-        label.radio
-          input(type="radio" v-model="form.tipoUsuario" value="3")
-          span ⭐ Ambos
+        <form class="flex flex-col gap-5" @submit.prevent="handleCadastro">
 
-      //- Dados básicos
-      .field.label.border
-        input(v-model="form.nome" type="text" required)
-        label Nome completo
+          <!-- Tipo de conta -->
+          <div>
+            <p class="text-sm font-semibold text-foreground mb-2">Tipo de conta</p>
+            <div class="flex flex-wrap gap-4">
+              <label v-for="tipo in tipos" :key="tipo.value" class="flex items-center gap-2 cursor-pointer">
+                <input type="radio" v-model="form.tipoUsuario" :value="tipo.value" class="accent-primary" />
+                <span class="text-sm text-foreground">{{ tipo.label }}</span>
+              </label>
+            </div>
+          </div>
 
-      .field.label.border
-        input(v-model="form.email" type="email" required)
-        label E-mail
+          <HtDivider />
 
-      .field.label.border
-        input(v-model="form.documento" type="text" required maxlength="20")
-        label Documento
+          <!-- Dados básicos -->
+          <HtInput
+            ref="inputNome"
+            v-model="form.nome"
+            label="Nome completo"
+            placeholder="Seu nome completo"
+            regra="required"
+            required
+          />
 
-      .field.label.border
-        input(v-model="form.telefone" type="tel")
-        label Telefone
+          <HtInput
+            ref="inputEmail"
+            v-model="form.email"
+            label="E-mail"
+            type="email"
+            regra="email"
+            placeholder="seu@email.com"
+            required
+          />
 
-      .field.label.border
-        input(v-model="form.senha" type="password" required minlength="6")
-        label Senha
+          <HtInput
+            ref="inputDocumento"
+            v-model="form.documento"
+            label="CPF ou CNPJ"
+            regra="documento"
+            placeholder="000.000.000-00"
+            required
+          />
 
-      .divider
-      p.bold.small Endereço
+          <HtInput
+            ref="inputTelefone"
+            v-model="form.telefone"
+            label="Telefone"
+            regra="telefone"
+            placeholder="(00) 00000-0000"
+          />
 
-        .field.label.border
-          input(v-model="form.cep" type="cep" required maxlength="10")
-          label CEP
+          <HtInput
+            ref="inputSenha"
+            v-model="form.senha"
+            label="Senha"
+            type="password"
+            regra="senha"
+            placeholder="Mínimo 6 caracteres"
+            required
+          />
 
-        .field.label.border.max
-          input(v-model="form.endereco" type="text" required)
-          label Logradouro
+          <HtDivider />
+          <p class="text-sm font-semibold text-foreground -mb-2">Endereço</p>
 
-        .field.label.border
-          input(v-model="form.bairro" type="text" required)
-          label Bairro
+          <HtInput
+            ref="inputCep"
+            v-model="form.cep"
+            label="CEP"
+            regra="cep"
+            placeholder="00000-000"
+            required
+          />
 
-        .field.label.border
-          input(v-model="form.cidade" type="text" required)
-          label Cidade
+          <HtInput
+            ref="inputEndereco"
+            v-model="form.endereco"
+            label="Logradouro"
+            regra="required"
+            placeholder="Rua, Avenida..."
+            required
+          />
 
-        .field.label.border.max
-          input(v-model="form.estado" type="text" maxlength="2" required)
-          label Estado
+          <div class="grid grid-cols-2 gap-4">
+            <HtInput
+              ref="inputBairro"
+              v-model="form.bairro"
+              label="Bairro"
+              regra="required"
+              required
+            />
+            <HtInput
+              ref="inputCidade"
+              v-model="form.cidade"
+              label="Cidade"
+              regra="required"
+              required
+            />
+          </div>
 
-      //- Dados de prestador
-      template(v-if="form.tipoUsuario === '2' || form.tipoUsuario === '3'")
-        .divider
-        p.bold.small Dados profissionais
+          <HtInput
+            ref="inputEstado"
+            v-model="form.estado"
+            label="Estado (UF)"
+            regra="required"
+            placeholder="SP"
+            :maxlength="2"
+            required
+          />
 
-        .field.label.textarea.border
-          textarea(v-model="form.descricao" rows="3")
-          label Descrição profissional
+          <!-- Dados de prestador -->
+          <template v-if="form.tipoUsuario === '2' || form.tipoUsuario === '3'">
+            <HtDivider />
+            <p class="text-sm font-semibold text-foreground -mb-2">Dados profissionais</p>
 
-      button.responsive.padding-top(:disabled="carregando" type="submit")
-        .progress.circle.small(v-if="carregando")
-        span(v-else) Criar Conta
+            <HtTextarea
+              ref="inputDescricao"
+              v-model="form.descricao"
+              label="Descrição profissional"
+              placeholder="Descreva sua experiência e serviços..."
+              :rows="4"
+            />
+          </template>
 
-    .divider
-    .center-align.small
-      | Já tem conta?&nbsp;
-      router-link(to="/login") Entrar
+          <HtButton type="submit" :loading="carregando" class="w-full mt-2">
+            Criar Conta
+          </HtButton>
+        </form>
+
+        <HtDivider />
+
+        <p class="text-center text-sm text-muted">
+          Já tem conta?
+          <router-link to="/login" class="text-primary font-medium hover:underline">Entrar</router-link>
+        </p>
+      </HtCard>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/services/api'
+import { validarCampos } from '@/shared/validacao'
 import type { CadastroForm } from '@/types'
+import HtInput from '@/components/ui/HtInput.vue'
+import HtTextarea from '@/components/ui/HtTextarea.vue'
+import HtButton from '@/components/ui/HtButton.vue'
+import HtCard from '@/components/ui/HtCard.vue'
+import HtAlert from '@/components/ui/HtAlert.vue'
+import HtDivider from '@/components/ui/HtDivider.vue'
 
 const router = useRouter()
+
+const tipos = [
+  { value: '1', label: '🏠 Cliente' },
+  { value: '2', label: '🔧 Prestador' },
+  { value: '3', label: '⭐ Ambos' },
+]
 
 const form = reactive<CadastroForm>({
   tipoUsuario: '1',
@@ -111,48 +190,53 @@ const form = reactive<CadastroForm>({
 const carregando = ref(false)
 const erro = ref<string | null>(null)
 
+// Refs dos campos
+const inputNome      = ref<InstanceType<typeof HtInput> | null>(null)
+const inputEmail     = ref<InstanceType<typeof HtInput> | null>(null)
+const inputDocumento = ref<InstanceType<typeof HtInput> | null>(null)
+const inputTelefone  = ref<InstanceType<typeof HtInput> | null>(null)
+const inputSenha     = ref<InstanceType<typeof HtInput> | null>(null)
+const inputCep       = ref<InstanceType<typeof HtInput> | null>(null)
+const inputEndereco  = ref<InstanceType<typeof HtInput> | null>(null)
+const inputBairro    = ref<InstanceType<typeof HtInput> | null>(null)
+const inputCidade    = ref<InstanceType<typeof HtInput> | null>(null)
+const inputEstado    = ref<InstanceType<typeof HtInput> | null>(null)
+const inputDescricao = ref<InstanceType<typeof HtInput> | null>(null)
+
 async function handleCadastro() {
+  const camposBase = [
+    inputNome.value, inputEmail.value, inputDocumento.value,
+    inputSenha.value, inputCep.value, inputEndereco.value,
+    inputBairro.value, inputCidade.value, inputEstado.value,
+  ]
+  if (form.tipoUsuario !== '1') camposBase.push(inputDescricao.value as any)
+
+  if (!validarCampos(camposBase)) return
+
   erro.value = null
   carregando.value = true
   try {
-    const { data: usuario } = await api.post('/api/Usuario/CriarUsuario', {
-      nome: form.nome,
-      email: form.email,
+    await api.post('/api/Usuario/CriarUsuario', {
+      nome:      form.nome,
+      email:     form.email,
       documento: form.documento,
-      telefone: form.telefone,
-      senha: form.senha,
-      tipo: Number(form.tipoUsuario),
-      cep: form.cep,
-      endereco: form.endereco,
-      bairro: form.bairro,
-      cidade: form.cidade,
-      estado: form.estado,
+      telefone:  form.telefone,
+      senha:     form.senha,
+      tipo:      Number(form.tipoUsuario),
+      cep:       form.cep,
+      endereco:  form.endereco,
+      bairro:    form.bairro,
+      cidade:    form.cidade,
+      estado:    form.estado,
     })
-
-    /*if (form.tipoUsuario === '1' || form.tipoUsuario === '3') {
-      await api.post('/api/Cliente/CriarCliente', { usuarioId: usuario.id })
-    }
-
-    if (form.tipoUsuario === '2' || form.tipoUsuario === '3') {
-      await api.post('/api/Prestador/CriarPrestador', {
-        usuarioId: usuario.id,
-        raioAtendimentoKm: form.raioAtendimentoKm,
-        descricao: form.descricao,
-      })
-    }*/
-
     router.push('/cadastro-sucesso')
   } catch (err: unknown) {
     const e = err as { response?: { status?: number; data?: unknown } }
     const status = e.response?.status
     const msg = e.response?.data
-    if (status === 409) {
-      erro.value = typeof msg === 'string' ? msg : 'E-mail ou Documento já cadastrado.'
-    } else if (status === 400) {
-      erro.value = typeof msg === 'string' ? msg : 'Dados inválidos. Verifique o formulário.'
-    } else {
-      erro.value = 'Erro ao cadastrar. Tente novamente em instantes.'
-    }
+    if (status === 409)      erro.value = typeof msg === 'string' ? msg : 'E-mail ou Documento já cadastrado.'
+    else if (status === 400) erro.value = typeof msg === 'string' ? msg : 'Dados inválidos. Verifique o formulário.'
+    else                     erro.value = 'Erro ao cadastrar. Tente novamente em instantes.'
   } finally {
     carregando.value = false
   }

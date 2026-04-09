@@ -68,3 +68,36 @@ export interface BuscarFiltro {
   precoMaximo: number | null
   avaliacaoMinima: number
 }
+
+export const CATEGORIAS_SERVICO = [
+  { value: '1',  label: 'Faxina' },
+  { value: '2',  label: 'Jardinagem' },
+  { value: '3',  label: 'Reparos' },
+  { value: '4',  label: 'Lavanderia' },
+  { value: '5',  label: 'Passadoria' },
+  { value: '6',  label: 'Babysitter' },
+  { value: '7',  label: 'Cuidador de Idosos' },
+  { value: '8',  label: 'Pet Sitter' },
+  { value: '9',  label: 'Cozinheiro' },
+  { value: '10', label: 'Serviços Gerais' },
+] as const
+
+export type TipoValorCliente = 'por_hora' | 'total' | 'a_combinar'
+export type TipoValorPrestador = 'por_hora' | 'total'
+
+export interface ServicoClienteForm {
+  descricao: string
+  categoria: string
+  tipoValor: TipoValorCliente | ''
+  valor: string
+  data: string
+}
+
+export interface ServicoPrestadorForm {
+  titulo: string
+  descricao: string
+  categoria: string
+  tipoValor: TipoValorPrestador | ''
+  valor: string
+  aceitaPagamentoAposFinalizacao: boolean
+}

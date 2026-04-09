@@ -1,51 +1,104 @@
-<template lang="pug">
-dialog.left#sidebarTelaInicial
-  header
-    nav
-      h4.max HomeTask
-      button.transparent.circle.large(data-ui="#sidebarTelaInicial")
-        i close
-  ul.list
-    li.wave.round(@click="utils.fecharSidenav('sidebarTelaInicial')")
-      router-link.small-padding(to="/")
-        i home
-        span Início
-    li.wave.round(@click="utils.fecharSidenav('sidebarTelaInicial')")
-      router-link.small-padding(to="/servicos/buscar")
-        i search
-        span Buscar Serviços
-    .space
-    .divider
-    template(v-if="auth.isLoggedIn")
-      li
-        button.transparent.no-hover
-          i person
-          span {{ auth.user?.nome }}
-        button.transparent(@click="handleLogout")
-          i.right-padding.small-padding logout
-          span Sair
-    template(v-else)
-      li
-        button.transparent(@click="utils.fecharSidenav('sidebarTelaInicial')")
-          router-link(to="/login")
-            i.right-padding.small-padding login
-            span Entrar
-        button.transparent(@click="utils.fecharSidenav('sidebarTelaInicial')")
-          router-link(to="/cadastro")
-            i.right-padding.small-padding person_add
-            span Cadastrar
-</template>
-<script setup lang="ts">
-import { useAuthStore } from "@/stores/auth";
-import utils from "../../shared/utils";
-import { useRouter } from "vue-router";
+<template>
+  <HtSidenav v-model:open="open">
+    <template #title>HomeTask</template>
 
-const auth = useAuthStore();
-const router = useRouter();
+    <ul class="menu menu-sm px-2">
+      <li>
+        <router-link
+          to="/"
+          class="ht-sidenav-link"
+          @click="open = false"
+        >
+          <span class="material-symbols-rounded text-xl">home</span>
+          Início
+        </router-link>
+      </li>
+
+      <li>
+        <router-link
+          to="/servicos/buscar"
+          class="ht-sidenav-link"
+          @click="open = false"
+        >
+          <span class="material-symbols-rounded text-xl">search</span>
+          Buscar Serviços
+        </router-link>
+      </li>
+
+      <!-- Links para usuários logados -->
+      <template v-if="auth.isLoggedIn">
+        <!-- Cliente ou Ambos (tipo 1 ou 3) -->
+        <li v-if="auth.user?.tipo === 1 || auth.user?.tipo === 3">
+          <router-link
+            to="/servicos/novo-cliente"
+            class="ht-sidenav-link"
+            @click="open = false"
+          >
+            <span class="material-symbols-rounded text-xl">campaign</span>
+            Anunciar Serviço
+          </router-link>
+        </li>
+
+        <!-- Prestador ou Ambos (tipo 2 ou 3) -->
+        <li v-if="auth.user?.tipo === 2 || auth.user?.tipo === 3">
+          <router-link
+            to="/servicos/novo-prestador"
+            class="ht-sidenav-link"
+            @click="open = false"
+          >
+            <span class="material-symbols-rounded text-xl">work</span>
+            Oferecer Serviço
+          </router-link>
+        </li>
+      </template>
+    </ul>
+
+    <template #footer>
+      <template v-if="auth.isLoggedIn">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="material-symbols-rounded text-xl text-base-content/50">account_circle</span>
+          <span class="text-sm font-medium text-base-content truncate">{{ auth.user?.nome }}</span>
+        </div>
+        <button class="btn btn-outline btn-sm w-full" @click="handleLogout">
+          <span class="material-symbols-rounded text-base">logout</span>
+          Sair
+        </button>
+      </template>
+
+      <template v-else>
+        <div class="flex flex-col gap-2">
+          <router-link to="/login" @click="open = false">
+            <button class="btn btn-outline btn-sm w-full">
+              <span class="material-symbols-rounded text-base">login</span>
+              Entrar
+            </button>
+          </router-link>
+          <router-link to="/cadastro" @click="open = false">
+            <button class="btn btn-primary btn-sm w-full">
+              <span class="material-symbols-rounded text-base">person_add</span>
+              Cadastrar
+            </button>
+          </router-link>
+        </div>
+      </template>
+    </template>
+  </HtSidenav>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+import HtSidenav from '@/components/ui/HtSidenav.vue'
+
+const open = defineModel<boolean>('open', { default: false })
+
+const auth = useAuthStore()
+const router = useRouter()
 
 async function handleLogout() {
-  utils.fecharSidenav("sidebarTelaInicial");
-  await auth.logout();
-  router.push("/login");
+  open.value = false
+  await auth.logout()
+  router.push('/login')
 }
 </script>

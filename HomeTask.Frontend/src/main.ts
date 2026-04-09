@@ -1,5 +1,3 @@
-import 'beercss'
-import 'material-dynamic-colors'
 import './assets/main.css'
 
 import { createApp } from 'vue'
@@ -16,5 +14,4 @@ app.use(router)
 
 app.mount('#app')
 
-// Aplica o modo (auto/light/dark) salvo
 initTheme()
