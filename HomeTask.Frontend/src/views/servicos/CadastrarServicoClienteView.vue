@@ -35,6 +35,15 @@
         <HtAlert v-if="erro" :message="erro" class="mb-4" />
 
         <form class="flex flex-col gap-4" @submit.prevent="handleSubmit">
+          <!-- Titulo do serviço -->
+          <HtInput
+            ref="refTitulo"
+            v-model="form.titulo"
+            label="Título do serviço"
+            placeholder="Ex: Faxina mensal na residência"
+            required
+            regra="required"
+          />
           <!-- Descrição -->
           <HtTextarea
             ref="refDescricao"
@@ -59,7 +68,7 @@
           <!-- Tipo de remuneração -->
           <HtSelect
             ref="refTipoValor"
-            v-model="form.tipoValor"
+            v-model="form.unidadeCobranca"
             :options="tiposValorOpcoes"
             label="Tipo de remuneração"
             placeholder="Como deseja pagar?"
@@ -68,20 +77,20 @@
 
           <!-- Valor (condicional) -->
           <HtInput
-            v-if="form.tipoValor && form.tipoValor !== 'a_combinar'"
+            v-if="form.unidadeCobranca && form.unidadeCobranca !== 'a_combinar'"
             ref="refValor"
             v-model="form.valor"
             label="Valor (R$)"
             type="number"
-            :placeholder="form.tipoValor === 'por_hora' ? 'Ex: 80,00 por hora' : 'Ex: 250,00 total'"
-            :hint="form.tipoValor === 'por_hora' ? 'Valor por hora de trabalho' : 'Valor total do serviço'"
+            :placeholder="form.unidadeCobranca === 'por_hora' ? 'Ex: 80,00 por hora' : 'Ex: 250,00 total'"
+            :hint="form.unidadeCobranca === 'por_hora' ? 'Valor por hora de trabalho' : 'Valor total do serviço'"
             required
             regra="required"
           />
 
           <!-- Informação sobre valor a combinar -->
           <HtAlert
-            v-if="form.tipoValor === 'a_combinar'"
+            v-if="form.unidadeCobranca === 'a_combinar'"
             variant="info"
             message="O prestador poderá fazer uma oferta com o valor e horário que desejar. Você receberá uma notificação com a proposta."
           />
@@ -135,14 +144,16 @@ const tiposValorOpcoes = [
 ]
 
 const form = reactive<ServicoClienteForm>({
+  titulo: '',
   descricao: '',
   categoria: '',
-  tipoValor: '',
+  unidadeCobranca: '',
   valor: '',
   data: '',
 })
 
-const refDescricao = ref<InstanceType<typeof HtTextarea> | null>(null)
+const refTitulo     = ref<InstanceType<typeof HtInput>   | null>(null)
+const refDescricao  = ref<InstanceType<typeof HtTextarea>| null>(null)
 const refCategoria  = ref<InstanceType<typeof HtSelect>  | null>(null)
 const refTipoValor  = ref<InstanceType<typeof HtSelect>  | null>(null)
 const refValor      = ref<InstanceType<typeof HtInput>   | null>(null)
@@ -152,26 +163,27 @@ const erro       = ref<string | null>(null)
 const sucesso    = ref(false)
 
 async function handleSubmit() {
-  const campos: Array<CampoValidavel | null> = [refDescricao.value, refCategoria.value, refTipoValor.value]
-  if (form.tipoValor && form.tipoValor !== 'a_combinar') campos.push(refValor.value)
+  const campos: Array<CampoValidavel | null> = [refTitulo.value, refDescricao.value, refCategoria.value, refTipoValor.value]
+  if (form.unidadeCobranca && form.unidadeCobranca !== 'a_combinar') campos.push(refValor.value)
   if (!validarCampos(campos)) return
 
   erro.value = null
   carregando.value = true
   try {
     const payload: Record<string, unknown> = {
+      titulo:      form.titulo,
       descricao:   form.descricao,
       categoriaId: Number(form.categoria),
-      tipoValor:   form.tipoValor,
+      unidadeCobranca:   form.unidadeCobranca,
     }
-    if (form.tipoValor !== 'a_combinar' && form.valor) {
+    if (form.unidadeCobranca !== 'a_combinar' && form.valor) {
       payload.valor = Number(form.valor)
     }
     if (form.data) {
       payload.dataDesejada = form.data
     }
 
-    await api.post('/api/ServicoSolicitado/Criar', payload)
+    await api.post('/api/ServicoOferecido/CriarServico', payload)
     sucesso.value = true
   } catch (err: unknown) {
     const e = err as { response?: { data?: unknown } }
@@ -185,9 +197,10 @@ async function handleSubmit() {
 }
 
 function reiniciar() {
+  form.titulo = ''
   form.descricao = ''
   form.categoria = ''
-  form.tipoValor = ''
+  form.unidadeCobranca = ''
   form.valor = ''
   form.data = ''
   erro.value = null

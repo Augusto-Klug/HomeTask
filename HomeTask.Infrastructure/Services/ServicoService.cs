@@ -84,12 +84,12 @@ public class ServicoService : IServicoService
 
         if (precoMaximo.HasValue)
         {
-            query = query.Where(s => s.PrecoBase <= precoMaximo.Value);
+            query = query.Where(s => s.Valor <= precoMaximo.Value);
         }
 
         return await query
             .OrderByDescending(s => s.Prestador.MediaAvaliacoes)
-            .ThenBy(s => s.PrecoBase)
+            .ThenBy(s => s.Valor)
             .ToListAsync(cancellationToken);
     }
 }

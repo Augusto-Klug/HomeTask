@@ -21,10 +21,32 @@ public class ServicoOferecidoMap : IEntityTypeConfiguration<ServicoOferecido>
         builder.Property(s => s.Descricao)
             .HasMaxLength(500);
 
-        builder.Property(s => s.PrecoBase)
+        builder.Property(s => s.Valor)
             .HasColumnType("decimal(10,2)");
+
+        builder.Property(s => s.Categoria)
+            .HasColumnType("int")
+            .IsRequired();
 
         builder.Property(s => s.UnidadeCobranca)
             .HasMaxLength(20);
+
+        builder.Property(s => s.DataAgendamento)
+            .HasColumnType("date")
+            .IsRequired(false);
+
+        builder.Property(s => s.AceitaPagamentoAposFinalizacao)
+            .HasColumnType("bit")
+            .IsRequired(false);
+
+        builder.Property(s => s.DataCriacao)
+            .HasColumnType("datetime")
+            .IsRequired();
+
+        builder.Property(s => s.Ativo)
+            .HasColumnType("bit")
+            .IsRequired();
+
+
     }
 }

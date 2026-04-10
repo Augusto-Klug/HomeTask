@@ -1,13 +1,13 @@
 using HomeTask.Domain.Contratos;
 using HomeTask.Domain.ViewModel;
 
-namespace HomeTask.WebApi.Conversores.Interfaces.ServicoOferecido
+namespace HomeTask.WebApi.Conversores.Interfaces
 {
     public interface IConversorServicoOferecido
     {
         public ServicoOferecidoContrato ConverterViewModelparaContrato(ServicoOferecidoViewModel viewModel);
         public ServicoOferecidoViewModel? ConverterContratoparaViewModel(ServicoOferecidoContrato contrato);
-        public HomeTask.Domain.Entities.ServicoOferecido? ConverterContratoparaServicoOferecido(ServicoOferecidoContrato contrato);
-        public ServicoOferecidoContrato ConverterServicoOferecidoparaContrato(HomeTask.Domain.Entities.ServicoOferecido? servico);
+        public Domain.Entities.ServicoOferecido? ConverterContratoparaServicoOferecido(ServicoOferecidoContrato contrato);
+        public ServicoOferecidoContrato ConverterServicoOferecidoparaContrato(Domain.Entities.ServicoOferecido? servico);
     }
 }

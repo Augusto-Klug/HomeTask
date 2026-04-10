@@ -1,8 +1,8 @@
 using HomeTask.Domain.Contratos;
 using HomeTask.Domain.ViewModel;
-using HomeTask.WebApi.Conversores.Interfaces.Agendamento;
+using HomeTask.WebApi.Conversores.Interfaces;
 
-namespace HomeTask.WebApi.Conversores.Implementacoes.Agendamento
+namespace HomeTask.WebApi.Conversores.Implementacoes
 {
     public class ConversorAgendamento : IConversorAgendamento
     {

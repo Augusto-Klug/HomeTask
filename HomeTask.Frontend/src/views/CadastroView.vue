@@ -121,7 +121,7 @@
           />
 
           <!-- Dados de prestador -->
-          <template v-if="form.tipoUsuario === '2' || form.tipoUsuario === '3'">
+          <template v-if="form.tipoUsuario === 2 || form.tipoUsuario === 3">
             <HtDivider />
             <p class="text-sm font-semibold text-foreground -mb-2">Dados profissionais</p>
 
@@ -166,13 +166,13 @@ import HtDivider from '@/components/ui/HtDivider.vue'
 const router = useRouter()
 
 const tipos = [
-  { value: '1', label: '🏠 Cliente' },
-  { value: '2', label: '🔧 Prestador' },
-  { value: '3', label: '⭐ Ambos' },
+  { value: 1, label: '🏠 Cliente' },
+  { value: 2, label: '🔧 Prestador' },
+  { value: 3, label: '⭐ Ambos' },
 ]
 
 const form = reactive<CadastroForm>({
-  tipoUsuario: '1',
+  tipoUsuario: 1,
   nome: '',
   email: '',
   documento: '',
@@ -209,7 +209,7 @@ async function handleCadastro() {
     inputSenha.value, inputCep.value, inputEndereco.value,
     inputBairro.value, inputCidade.value, inputEstado.value,
   ]
-  if (form.tipoUsuario !== '1') camposBase.push(inputDescricao.value as any)
+  if (form.tipoUsuario !== 1) camposBase.push(inputDescricao.value as any)
 
   if (!validarCampos(camposBase)) return
 

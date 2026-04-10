@@ -1,8 +1,8 @@
 using HomeTask.Domain.Contratos;
 using HomeTask.Domain.ViewModel;
-using HomeTask.WebApi.Conversores.Interfaces.Pagamento;
+using HomeTask.WebApi.Conversores.Interfaces;
 
-namespace HomeTask.WebApi.Conversores.Implementacoes.Pagamento
+namespace HomeTask.WebApi.Conversores.Implementacoes
 {
     public class ConversorPagamento : IConversorPagamento
     {

@@ -1,6 +1,6 @@
 using HomeTask.Application.Interfaces;
 using HomeTask.Domain.ViewModel;
-using HomeTask.WebApi.Conversores.Interfaces.Usuario;
+using HomeTask.WebApi.Conversores.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HomeTask.WebApi.Controller

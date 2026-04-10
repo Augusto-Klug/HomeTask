@@ -86,9 +86,10 @@ export type TipoValorCliente = 'por_hora' | 'total' | 'a_combinar'
 export type TipoValorPrestador = 'por_hora' | 'total'
 
 export interface ServicoClienteForm {
+  titulo: string
   descricao: string
   categoria: string
-  tipoValor: TipoValorCliente | ''
+  unidadeCobranca: TipoValorCliente | ''
   valor: string
   data: string
 }
@@ -97,7 +98,7 @@ export interface ServicoPrestadorForm {
   titulo: string
   descricao: string
   categoria: string
-  tipoValor: TipoValorPrestador | ''
+  unidadeCobranca: TipoValorPrestador | ''
   valor: string
   aceitaPagamentoAposFinalizacao: boolean
 }
