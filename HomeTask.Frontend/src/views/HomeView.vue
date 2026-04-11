@@ -6,7 +6,7 @@
     >
       <div class="max-w-2xl mx-auto">
         <h1 class="text-3xl font-bold text-foreground mb-3">
-          Encontre o profissional ideal para sua cas
+          Encontre o profissional ideal para sua casa
         </h1>
         <p class="text-base text-muted mb-8">
           Conectamos você aos melhores prestadores de serviços domésticos da sua

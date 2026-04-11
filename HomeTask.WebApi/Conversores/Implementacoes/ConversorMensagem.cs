@@ -1,8 +1,8 @@
 using HomeTask.Domain.Contratos;
 using HomeTask.Domain.ViewModel;
-using HomeTask.WebApi.Conversores.Interfaces.Mensagem;
+using HomeTask.WebApi.Conversores.Interfaces;
 
-namespace HomeTask.WebApi.Conversores.Implementacoes.Mensagem
+namespace HomeTask.WebApi.Conversores.Implementacoes
 {
     public class ConversorMensagem : IConversorMensagem
     {

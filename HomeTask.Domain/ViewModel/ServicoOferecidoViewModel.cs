@@ -6,26 +6,41 @@ namespace HomeTask.Domain.ViewModel
 {
     public class ServicoOferecidoViewModel
     {
-            public Guid Id { get; set; } = Guid.NewGuid();
-            public Guid PrestadorId { get; set; }
+        #region Controle
+        public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid? PrestadorId { get; set; }
+        public DateTime DataCriacao { get; set; }
+        public bool Ativo { get; set; }
 
-            public CategoriaServico Categoria { get; set; }
+        #endregion Controle
 
-            [MaxLength(100)]
-            public string? Titulo { get; set; }
+        #region Dados gerais
 
-            [MaxLength(500)]
-            public string? Descricao { get; set; }
+        [MaxLength(100)]
+        public string Titulo { get; set; }
 
-            public decimal PrecoBase { get; set; }
+        [MaxLength(500)]
+        public string Descricao { get; set; }
 
-            [MaxLength(20)]
-            public string UnidadeCobranca { get; set; } = "hora";
+        public CategoriaServico Categoria { get; set; }
 
-            public int DuracaoEstimadaMinutos { get; set; }
+        public decimal? Valor { get; set; }
 
-            public bool Ativo { get; set; } = true;
+        [MaxLength(20)]
+        public string UnidadeCobranca { get; set; }
 
-            public DateTime DataCriacao { get; set; }
+        #endregion Dados gerais
+   
+        #region Agendamento cliente
+        public DateOnly? DataAgendamento { get; set; }
+
+        #endregion Agendamento cliente
+
+        #region Agendamento prestador 
+
+        public bool? AceitaPagamentoAposFinalizacao { get; set; }
+
+        #endregion Agendamento prestador
     }
+
 }

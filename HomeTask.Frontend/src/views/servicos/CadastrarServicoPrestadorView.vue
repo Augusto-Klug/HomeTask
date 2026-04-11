@@ -66,7 +66,7 @@
           <!-- Modalidade de cobrança -->
           <HtSelect
             ref="refTipoValor"
-            v-model="form.tipoValor"
+            v-model="form.unidadeCobranca"
             :options="tiposValorOpcoes"
             label="Modalidade de cobrança"
             placeholder="Como você cobra pelo serviço?"
@@ -79,8 +79,8 @@
             v-model="form.valor"
             label="Valor (R$)"
             type="number"
-            :placeholder="form.tipoValor === 'total' ? 'Ex: 250,00 total' : 'Ex: 80,00 por hora'"
-            :hint="form.tipoValor === 'total' ? 'Valor total pelo serviço' : 'Valor cobrado por hora de trabalho'"
+            :placeholder="form.unidadeCobranca === 'total' ? 'Ex: 250,00 total' : 'Ex: 80,00 por hora'"
+            :hint="form.unidadeCobranca === 'total' ? 'Valor total pelo serviço' : 'Valor cobrado por hora de trabalho'"
             required
             regra="required"
           />
@@ -144,7 +144,7 @@ const form = reactive<ServicoPrestadorForm>({
   titulo: '',
   descricao: '',
   categoria: '',
-  tipoValor: '',
+  unidadeCobranca: '',
   valor: '',
   aceitaPagamentoAposFinalizacao: false,
 })
@@ -165,11 +165,11 @@ async function handleSubmit() {
   erro.value = null
   carregando.value = true
   try {
-    await api.post('/api/ServicoOferecido/Criar', {
+    await api.post('/api/ServicoOferecido/CriarServico', {
       titulo:                          form.titulo,
       descricao:                       form.descricao,
       categoriaId:                     Number(form.categoria),
-      tipoValor:                       form.tipoValor,
+      UnidadeCobranca:                 form.unidadeCobranca,
       valor:                           Number(form.valor),
       aceitaPagamentoAposFinalizacao:  form.aceitaPagamentoAposFinalizacao,
     })
@@ -189,7 +189,7 @@ function reiniciar() {
   form.titulo = ''
   form.descricao = ''
   form.categoria = ''
-  form.tipoValor = ''
+  form.unidadeCobranca = ''
   form.valor = ''
   form.aceitaPagamentoAposFinalizacao = false
   erro.value = null

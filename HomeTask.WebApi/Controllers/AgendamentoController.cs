@@ -1,7 +1,7 @@
 using HomeTask.Application.Interfaces;
 using HomeTask.Domain.Enums;
 using HomeTask.Domain.ViewModel;
-using HomeTask.WebApi.Conversores.Interfaces.Agendamento;
+using HomeTask.WebApi.Conversores.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

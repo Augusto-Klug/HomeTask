@@ -1,8 +1,8 @@
 using HomeTask.Domain.Contratos;
 using HomeTask.Domain.ViewModel;
-using HomeTask.WebApi.Conversores.Interfaces.Avaliacao;
+using HomeTask.WebApi.Conversores.Interfaces;
 
-namespace HomeTask.WebApi.Conversores.Implementacoes.Avaliacao
+namespace HomeTask.WebApi.Conversores.Implementacoes
 {
     public class ConversorAvaliacao : IConversorAvaliacao
     {
