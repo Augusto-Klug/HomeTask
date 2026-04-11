@@ -5,8 +5,8 @@ public class ServicoOferecido
 {
     #region Controle
     public Guid Id { get; set; }
-    public Guid PrestadorId { get; set; }
-    public Prestador Prestador { get; set; }
+    public Guid? PrestadorId { get; set; }
+    public Prestador? Prestador { get; set; }
     public DateTime DataCriacao { get; set; }
     public bool Ativo { get; set; }
 

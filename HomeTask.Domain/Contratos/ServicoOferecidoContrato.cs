@@ -8,7 +8,7 @@ namespace HomeTask.Domain.Contratos
     {
         #region Controle
         public Guid Id { get; set; }
-        public Guid PrestadorId { get; set; }
+        public Guid? PrestadorId { get; set; }
         public DateTime DataCriacao { get; set; } 
         public bool Ativo { get; set; }
 

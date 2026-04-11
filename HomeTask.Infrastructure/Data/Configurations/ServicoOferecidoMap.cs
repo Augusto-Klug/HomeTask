@@ -13,6 +13,7 @@ public class ServicoOferecidoMap : IEntityTypeConfiguration<ServicoOferecido>
         builder.HasOne(s => s.Prestador)
             .WithMany(p => p.ServicosOferecidos)
             .HasForeignKey(s => s.PrestadorId)
+            .IsRequired(false)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.Property(s => s.Titulo)
