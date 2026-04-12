@@ -28,3 +28,8 @@ spec:
                 secretKeyRef:
                   name: hometask-secrets
                   key: connection-string
+            - name: Jwt__Key
+              valueFrom:
+                secretKeyRef:
+                  name: hometask-secrets
+                  key: jwt-secret-key

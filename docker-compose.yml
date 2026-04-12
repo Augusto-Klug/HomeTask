@@ -10,6 +10,8 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       # Conecta a API ao banco mysql usando o container e as credenciais abaixo
       - ConnectionStrings__DefaultConnection=${CONNECTION_STRING}
+      # Chave secreta do JWT
+      - Jwt__Key=${JWT_SECRET_KEY}
     depends_on:
       mysql:
         condition: service_healthy
