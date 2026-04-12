@@ -1,3 +1,5 @@
+using HomeTask.Domain.Entidades;
+
 namespace HomeTask.Domain.Entities;
 
 /// <summary>
@@ -14,12 +16,8 @@ public class Mensagem
 
     public Usuario Remetente { get; set; } = null!;
 
-    /// <summary>
-    /// Usuário que recebeu a mensagem
-    /// </summary>
-    public Guid DestinatarioId { get; set; }
-
-    public Usuario Destinatario { get; set; } = null!;
+    public Guid ConversaId { get; set; }
+    public Conversa Conversa { get; set; } = null!;
 
     /// <summary>
     /// Agendamento relacionado à conversa (opcional)

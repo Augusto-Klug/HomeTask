@@ -9,6 +9,8 @@ namespace HomeTask.Domain.ViewModel
         #region Controle
         public Guid Id { get; set; } = Guid.NewGuid();
         public Guid? PrestadorId { get; set; }
+        public Guid? ClienteId { get; set; }
+        public Guid CategoriaId { get; set; }
         public DateTime DataCriacao { get; set; }
         public bool Ativo { get; set; }
 
@@ -22,19 +24,13 @@ namespace HomeTask.Domain.ViewModel
         [MaxLength(500)]
         public string Descricao { get; set; }
 
-        public CategoriaServico Categoria { get; set; }
-
-        public decimal? Valor { get; set; }
-
         [MaxLength(20)]
         public string UnidadeCobranca { get; set; }
+        public decimal PrecoBase { get; set; }
+        public int? DuracaoEstimadaMinutos { get; set; }
+        public TipoAnuncio TipoAnuncio { get; set; }
 
         #endregion Dados gerais
-   
-        #region Agendamento cliente
-        public DateOnly? DataAgendamento { get; set; }
-
-        #endregion Agendamento cliente
 
         #region Agendamento prestador 
 

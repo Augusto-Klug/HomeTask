@@ -14,11 +14,11 @@ public class MensagemMap : IEntityTypeConfiguration<Mensagem>
             .WithMany()
             .HasForeignKey(m => m.RemetenteId)
             .OnDelete(DeleteBehavior.Restrict);
-
-        builder.HasOne(m => m.Destinatario)
-            .WithMany()
-            .HasForeignKey(m => m.DestinatarioId)
-            .OnDelete(DeleteBehavior.Restrict);
+        
+        builder.HasOne(m => m.Conversa)
+            .WithMany(c => c.Mensagens)
+            .HasForeignKey(m => m.ConversaId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(m => m.Agendamento)
             .WithMany()

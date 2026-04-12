@@ -1,4 +1,5 @@
-using HomeTask.Application.Interfaces;
+    using HomeTask.Application.Interfaces;
+using HomeTask.Domain.Entidades;
 using HomeTask.Domain.Enums;
 using HomeTask.Domain.ViewModel;
 using HomeTask.WebApi.Conversores.Interfaces;
@@ -48,9 +49,9 @@ namespace HomeTask.WebApi.Controller
         }
 
         [HttpGet]
-        public async Task<IActionResult> BuscarServicos(CategoriaServico? categoria, string? cidade, decimal? precoMaximo, CancellationToken cancellationToken)
+        public async Task<IActionResult> BuscarServicos(Guid? categoriaId, string? cidade, decimal? precoMaximo, CancellationToken cancellationToken)
         {
-            var servicos = await _servicoService.BuscarAsync(categoria, cidade, precoMaximo, cancellationToken);
+            var servicos = await _servicoService.BuscarAsync(categoriaId, cidade, precoMaximo, cancellationToken);
 
             var viewModels = servicos.Select(s =>
             {

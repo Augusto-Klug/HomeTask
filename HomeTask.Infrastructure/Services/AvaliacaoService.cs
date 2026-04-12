@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using HomeTask.Application.Interfaces;
 using HomeTask.Domain.Entities;
+using HomeTask.Domain.Entidades;
 using HomeTask.Domain.Enums;
 using HomeTask.Infrastructure.Data;
 
@@ -65,7 +66,8 @@ public class AvaliacaoService : IAvaliacaoService
             .Include(a => a.Cliente)
                 .ThenInclude(c => c.Usuario)
             .Include(a => a.Agendamento)
-                .ThenInclude(ag => ag.ServicoOferecido)
+                .ThenInclude(ag => ag.AgendamentoServicos)
+                    .ThenInclude(ag => ag.ServicoOferecido)
             .Where(a => a.PrestadorId == prestadorId && a.Visivel)
             .OrderByDescending(a => a.DataAvaliacao)
             .ToListAsync(cancellationToken);
@@ -77,7 +79,8 @@ public class AvaliacaoService : IAvaliacaoService
             .Include(a => a.Prestador)
                 .ThenInclude(p => p.Usuario)
             .Include(a => a.Agendamento)
-                .ThenInclude(ag => ag.ServicoOferecido)
+                .ThenInclude(ag => ag.AgendamentoServicos)
+                    .ThenInclude(ags => ags.ServicoOferecido)
             .Where(a => a.ClienteId == clienteId)
             .OrderByDescending(a => a.DataAvaliacao)
             .ToListAsync(cancellationToken);

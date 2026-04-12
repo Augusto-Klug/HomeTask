@@ -56,7 +56,7 @@ export interface CadastroForm {
   cep: string
   endereco: string
   bairro: string
-  cidade: string
+  cidadeId: string
   estado: string
   raioAtendimentoKm: number
   descricao: string

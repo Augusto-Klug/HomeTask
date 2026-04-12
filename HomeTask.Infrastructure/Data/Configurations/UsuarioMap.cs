@@ -35,30 +35,13 @@ public class UsuarioMap : IEntityTypeConfiguration<Usuario>
         builder.Property(u => u.TipoUsuario)
             .IsRequired();
 
-        builder.Property(u => u.Endereco)
-            .IsRequired()
-            .HasMaxLength(200);
-
-        builder.Property(u => u.Cidade)
-            .IsRequired()
-            .HasMaxLength(50);
-
-        builder.Property(u => u.Estado)
-            .IsRequired()
-            .HasMaxLength(2);
-
-        builder.Property(u => u.Cep)
-            .IsRequired()
-            .HasMaxLength(10);
-
-        builder.Property(u => u.Bairro)
-            .IsRequired()
-            .HasMaxLength(50);
 
         builder.Property(u => u.UltimoAcesso)
             .IsRequired(false);
 
-        builder.Property(u => u.MediaAvaliacoes)
-            .HasColumnType("decimal(3,2)");
+        builder.HasMany(u => u.Enderecos)
+             .WithOne(e => e.Usuario)
+            .HasForeignKey(e => e.UsuarioId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

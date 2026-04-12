@@ -33,9 +33,9 @@ namespace HomeTask.WebApi.Controller
         }
 
         [HttpGet]
-        public async Task<IActionResult> ObterConversa([FromQuery] Guid remetenteId, [FromQuery] Guid destinatarioId, CancellationToken cancellationToken)
+        public async Task<IActionResult> ObterConversa([FromQuery] Guid conversaId, CancellationToken cancellationToken)
         {
-            var mensagens = await _mensagemService.ObterConversaAsync(remetenteId, destinatarioId, cancellationToken);
+            var mensagens = await _mensagemService.ObterConversaAsync(conversaId, cancellationToken);
 
             var viewModels = mensagens.Select(m =>
             {

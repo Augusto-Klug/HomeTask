@@ -46,7 +46,8 @@ public class ClienteService : IClienteService
         return await _context.Agendamentos
             .Include(a => a.Prestador)
                 .ThenInclude(p => p.Usuario)
-            .Include(a => a.ServicoOferecido)
+            .Include(a => a.AgendamentoServicos)
+                .ThenInclude(s => s.ServicoOferecido)
             .Include(a => a.Avaliacao)
             .Include(a => a.Pagamento)
             .Where(a => a.ClienteId == clienteId)
