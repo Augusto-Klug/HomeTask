@@ -529,3 +529,8 @@ appsettings.Production.json
 # wwwroot build output (if auto-generated)
 #wwwroot/js/
 #wwwroot/css/
+# Environment Variables
+.env
+.env.local
+
+*secret*.yaml

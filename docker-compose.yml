@@ -9,7 +9,9 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       # Conecta a API ao banco mysql usando o container e as credenciais abaixo
-      - ConnectionStrings__DefaultConnection=Server=mysql;Port=3306;Database=hometask;Uid=root;Pwd=123456789;
+      - ConnectionStrings__DefaultConnection=${CONNECTION_STRING}
+      # Chave secreta do JWT
+      - Jwt__Key=${JWT_SECRET_KEY}
     depends_on:
       mysql:
         condition: service_healthy
@@ -18,14 +20,14 @@ services:
     image: mysql:8.0
     container_name: hometask-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: 123456789
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: hometask
     ports:
       - "3307:3306"
     volumes:
       - hometask_mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p123456789"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD}"]
       interval: 10s
       timeout: 5s
       retries: 5

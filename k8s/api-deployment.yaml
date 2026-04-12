@@ -24,4 +24,12 @@ spec:
               value: "Development"
             - name: ConnectionStrings__DefaultConnection
               # O nome 'mysql' aqui faz o DNS do Kubernetes procurar o Service mysql criado
-              value: "Server=mysql;Port=3306;Database=hometask;Uid=root;Pwd=123456789;"
+              valueFrom:
+                secretKeyRef:
+                  name: hometask-secrets
+                  key: connection-string
+            - name: Jwt__Key
+              valueFrom:
+                secretKeyRef:
+                  name: hometask-secrets
+                  key: jwt-secret-key
