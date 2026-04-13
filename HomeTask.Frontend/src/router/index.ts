@@ -66,15 +66,16 @@ const router = createRouter({
       name: "servicos-novo-prestador",
       component: () =>
         import("@/views/servicos/CadastrarServicoPrestadorView.vue"),
-      meta: { requiresAuth: false },
+      // meta: { requiresAuth: false },
     },
     // Agendamento
     {
-      path: "/agendamento/novo",
+      path: "/agendamento/novo/:servicoId",
       name: "agendamento-novo",
-      // servicoId e prestadorId chegam via query: ?servicoId=x&prestadorId=y
+      // servicoId no path; prestadorId chega via query: ?prestadorId=y
       component: () => import("@/views/agendamento/NovoAgendamentoView.vue"),
-      meta: { requiresAuth: true },
+      props: true,
+      // meta: { requiresAuth: true },
     },
     {
       path: "/agendamento/sucesso",

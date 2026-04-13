@@ -125,7 +125,8 @@ onMounted(async () => {
 function irParaAgendamento() {
   router.push({
     name: 'agendamento-novo',
-    query: { servicoId: props.id, prestadorId: servico.value?.prestadorId },
+    params: { servicoId: props.id },
+    query: { prestadorId: servico.value?.prestadorId },
   })
 }
 

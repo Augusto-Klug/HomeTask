@@ -1,14 +1,18 @@
 <template>
   <div class="max-w-2xl mx-auto px-4 py-8">
     <!-- Parâmetros inválidos -->
-    <div v-if="!servicoId || !prestadorId" class="text-center py-16 flex flex-col items-center gap-4">
+    <div
+      v-if="!servico?.id || !servico.prestadorId"
+      class="text-center py-16 flex flex-col items-center gap-4"
+    >
       <p class="text-sm text-muted">Parâmetros inválidos.</p>
+      <pre>{{ servico }}</pre>
       <router-link to="/servicos/buscar">
         <HtButton variant="outline">Voltar à busca</HtButton>
       </router-link>
     </div>
 
-    <template v-else>
+    <template v-else-if="props.servicoId">
       <!-- Voltar -->
       <router-link
         to="/servicos/buscar"
@@ -18,7 +22,9 @@
         Voltar
       </router-link>
 
-      <h1 class="text-title font-semibold text-foreground mb-6">Novo Agendamento</h1>
+      <h1 class="text-title font-semibold text-foreground mb-6">
+        Novo Agendamento
+      </h1>
 
       <!-- Loading serviço -->
       <div v-if="carregandoServico" class="flex justify-center py-16">
@@ -28,8 +34,13 @@
       <HtCard v-else-if="servico">
         <!-- Info do serviço -->
         <div class="mb-4">
-          <h2 class="text-base font-semibold text-foreground">{{ servico.titulo }}</h2>
-          <p class="text-sm text-muted">{{ servico.prestadorNome }} · R$ {{ formatarPreco(servico.preco) }}/h</p>
+          <h2 class="text-base font-semibold text-foreground">
+            {{ servico.titulo }}
+          </h2>
+          <p class="text-sm text-muted">
+            {{ servico.prestadorNome }} · R$
+            {{ formatarPreco(servico.preco) }}/h
+          </p>
         </div>
 
         <HtDivider />
@@ -84,91 +95,101 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import api from '@/services/api'
-import { useAuthStore } from '@/stores/auth'
-import { validarCampos } from '@/shared/validacao'
-import type { Servico, AgendamentoForm } from '@/types'
-import HtInput from '@/components/ui/HtInput.vue'
-import HtTextarea from '@/components/ui/HtTextarea.vue'
-import HtButton from '@/components/ui/HtButton.vue'
-import HtCard from '@/components/ui/HtCard.vue'
-import HtAlert from '@/components/ui/HtAlert.vue'
-import HtSpinner from '@/components/ui/HtSpinner.vue'
-import HtDivider from '@/components/ui/HtDivider.vue'
+import { ref, reactive, onMounted, computed } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import api from "@/services/api";
+import { useAuthStore } from "@/stores/auth";
+import { validarCampos } from "@/shared/validacao";
+import type { Servico, AgendamentoForm } from "@/types";
+import HtInput from "@/components/ui/HtInput.vue";
+import HtTextarea from "@/components/ui/HtTextarea.vue";
+import HtButton from "@/components/ui/HtButton.vue";
+import HtCard from "@/components/ui/HtCard.vue";
+import HtAlert from "@/components/ui/HtAlert.vue";
+import HtSpinner from "@/components/ui/HtSpinner.vue";
+import HtDivider from "@/components/ui/HtDivider.vue";
 
-const route = useRoute()
-const router = useRouter()
-const auth = useAuthStore()
+const props = defineProps<{ servicoId: string }>();
 
-const servicoId = computed(() => route.query.servicoId as string | undefined)
-const prestadorId = computed(() => route.query.prestadorId as string | undefined)
+const route = useRoute();
+const router = useRouter();
+const auth = useAuthStore();
 
-const servico = ref<Servico | null>(null)
-const carregandoServico = ref(true)
-const carregando = ref(false)
-const erro = ref<string | null>(null)
+const prestadorId = computed(
+  () => route.query.prestadorId as string | undefined,
+);
+
+const servico = ref<Servico | null>(null);
+const carregandoServico = ref(true);
+const carregando = ref(false);
+const erro = ref<string | null>(null);
 
 const form = reactive<AgendamentoForm>({
-  data: '',
-  hora: '',
-  endereco: '',
-  observacoes: '',
-})
+  data: "",
+  hora: "",
+  endereco: "",
+  observacoes: "",
+});
 
-const inputData     = ref<InstanceType<typeof HtInput> | null>(null)
-const inputHora     = ref<InstanceType<typeof HtInput> | null>(null)
-const inputEndereco = ref<InstanceType<typeof HtInput> | null>(null)
+const inputData = ref<InstanceType<typeof HtInput> | null>(null);
+const inputHora = ref<InstanceType<typeof HtInput> | null>(null);
+const inputEndereco = ref<InstanceType<typeof HtInput> | null>(null);
 
 onMounted(async () => {
-  if (!servicoId.value) return
   try {
-    const { data } = await api.get<Servico>('/api/ServicoOferecido/ObterServicoPorId', {
-      params: { id: servicoId.value },
-    })
-    servico.value = data
+    const { data } = await api.get<Servico>(
+      "/api/ServicoOferecido/ObterServicoPorId",
+      {
+        params: { id: props.servicoId },
+      },
+    );
+    servico.value = data;
   } catch {
-    servico.value = null
+    servico.value = null;
   } finally {
-    carregandoServico.value = false
+    carregandoServico.value = false;
   }
-})
+});
 
 async function handleAgendar() {
-  if (!validarCampos([inputData.value, inputHora.value, inputEndereco.value])) return
+  if (!validarCampos([inputData.value, inputHora.value, inputEndereco.value]))
+    return;
 
-  erro.value = null
-  carregando.value = true
+  erro.value = null;
+  carregando.value = true;
   try {
-    const { data: cliente } = await api.get('/api/Cliente/ObterClientesPorUsuarioId', {
-      params: { usuarioId: auth.user?.userId },
-    })
+    const { data: cliente } = await api.get(
+      "/api/Cliente/ObterClientesPorUsuarioId",
+      {
+        params: { usuarioId: auth.user?.userId },
+      },
+    );
 
-    const dataHora = new Date(`${form.data}T${form.hora}:00`).toISOString()
+    const dataHora = new Date(`${form.data}T${form.hora}:00`).toISOString();
 
-    await api.post('/api/Agendamento/CriarAgendamento', {
-      clienteId:            cliente.id,
-      prestadorId:          prestadorId.value,
-      servicoOferecidoId:   servicoId.value,
-      dataHoraAgendada:     dataHora,
-      enderecoServico:      form.endereco,
-      observacoes:          form.observacoes,
-    })
+    await api.post("/api/Agendamento/CriarAgendamento", {
+      clienteId: cliente.id,
+      prestadorId: prestadorId.value,
+      servicoOferecidoId: props.servicoId,
+      dataHoraAgendada: dataHora,
+      enderecoServico: form.endereco,
+      observacoes: form.observacoes,
+    });
 
-    router.push('/agendamento/sucesso')
+    router.push("/agendamento/sucesso");
   } catch (err: unknown) {
-    const e = err as { response?: { data?: unknown } }
-    const msg = e.response?.data
-    erro.value = typeof msg === 'string' && msg
-      ? msg
-      : 'Erro ao criar agendamento. Verifique os dados e tente novamente.'
+    const e = err as { response?: { data?: unknown } };
+    const msg = e.response?.data;
+    erro.value =
+      typeof msg === "string" && msg
+        ? msg
+        : "Erro ao criar agendamento. Verifique os dados e tente novamente.";
   } finally {
-    carregando.value = false
+    carregando.value = false;
   }
 }
 
 function formatarPreco(valor: number): string {
-  return Number(valor).toFixed(2).replace('.', ',')
+  return Number(valor).toFixed(2).replace(".", ",");
 }
 </script>
