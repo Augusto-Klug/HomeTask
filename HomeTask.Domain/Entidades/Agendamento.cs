@@ -1,3 +1,4 @@
+using HomeTask.Domain.Entidades;
 using HomeTask.Domain.Enums;
 
 namespace HomeTask.Domain.Entities;
@@ -17,10 +18,6 @@ public class Agendamento
 
     public Prestador Prestador { get; set; } = null!;
 
-    public Guid ServicoOferecidoId { get; set; }
-
-    public ServicoOferecido ServicoOferecido { get; set; } = null!;
-
     /// <summary>
     /// Data e hora agendada para o serviço
     /// </summary>
@@ -39,7 +36,8 @@ public class Agendamento
     /// <summary>
     /// Endereço de realização do serviço
     /// </summary>
-    public string? EnderecoServico { get; set; }
+    public Guid EnderecoId { get; set; }
+    public Endereco Endereco { get; set; } = null!;
 
     public string? Observacoes { get; set; }
 
@@ -59,4 +57,5 @@ public class Agendamento
     // Navegação
     public Pagamento? Pagamento { get; set; }
     public Avaliacao? Avaliacao { get; set; }
+    public ICollection<AgendamentoServico> AgendamentoServicos { get; set; } = [];
 }

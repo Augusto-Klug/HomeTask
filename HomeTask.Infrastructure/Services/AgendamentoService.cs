@@ -25,7 +25,9 @@ public class AgendamentoService : IAgendamentoService
                 .ThenInclude(c => c.Usuario)
             .Include(a => a.Prestador)
                 .ThenInclude(p => p.Usuario)
-            .Include(a => a.ServicoOferecido)
+            .Include(a => a.Endereco)
+            .Include(a => a.AgendamentoServicos)
+                .ThenInclude(s => s.ServicoOferecido)
             .Include(a => a.Pagamento)
             .Include(a => a.Avaliacao)
             .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
@@ -134,7 +136,8 @@ public class AgendamentoService : IAgendamentoService
         return await _context.Agendamentos
             .Include(a => a.Prestador)
                 .ThenInclude(p => p.Usuario)
-            .Include(a => a.ServicoOferecido)
+            .Include(a => a.AgendamentoServicos)
+                .ThenInclude(s => s.ServicoOferecido)
             .Where(a => a.ClienteId == clienteId)
             .OrderByDescending(a => a.DataHoraAgendada)
             .ToListAsync(cancellationToken);
@@ -145,7 +148,8 @@ public class AgendamentoService : IAgendamentoService
         return await _context.Agendamentos
             .Include(a => a.Cliente)
                 .ThenInclude(c => c.Usuario)
-            .Include(a => a.ServicoOferecido)
+            .Include(a => a.AgendamentoServicos)
+                .ThenInclude(s => s.ServicoOferecido)
             .Where(a => a.PrestadorId == prestadorId)
             .OrderByDescending(a => a.DataHoraAgendada)
             .ToListAsync(cancellationToken);
@@ -156,7 +160,8 @@ public class AgendamentoService : IAgendamentoService
         return await _context.Agendamentos
             .Include(a => a.Cliente)
             .Include(a => a.Prestador)
-            .Include(a => a.ServicoOferecido)
+            .Include(a => a.AgendamentoServicos)
+                .ThenInclude(s => s.ServicoOferecido)
             .Where(a => a.Status == status)
             .OrderByDescending(a => a.DataSolicitacao)
             .ToListAsync(cancellationToken);

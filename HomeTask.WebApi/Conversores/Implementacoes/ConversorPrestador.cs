@@ -14,13 +14,7 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
             var retorno = new PrestadorContrato();
                 retorno.Id = prestador.Id;
                 retorno.UsuarioId = prestador.UsuarioId;
-                retorno.TipoUsuario = prestador.TipoUsuario;
                 retorno.Descricao = prestador.Descricao;
-                retorno.Endereco = prestador.Endereco;
-                retorno.Cidade = prestador.Cidade;
-                retorno.Estado = prestador.Estado;
-                retorno.Cep = prestador.Cep;
-                retorno.Bairro = prestador.Bairro;
                 retorno.RaioAtendimentoKm = prestador.RaioAtendimentoKm;
                 retorno.Status = prestador.Status;
                 retorno.MediaAvaliacoes = prestador.MediaAvaliacoes;
@@ -37,16 +31,9 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
                 throw new ArgumentNullException(nameof(contrato));
 
             var retorno = new Domain.Entities.Prestador();
-
                 retorno.Id = contrato.Id;
                 retorno.UsuarioId = contrato.UsuarioId;
                 retorno.Descricao = contrato.Descricao;
-                retorno.TipoUsuario = contrato.TipoUsuario;
-                retorno.Endereco = contrato.Endereco;
-                retorno.Cidade = contrato.Cidade;
-                retorno.Estado = contrato.Estado;
-                retorno.Cep = contrato.Cep;
-                retorno.Bairro = contrato.Bairro;
                 retorno.RaioAtendimentoKm = contrato.RaioAtendimentoKm;
                 retorno.Status = contrato.Status;
                 retorno.MediaAvaliacoes = contrato.MediaAvaliacoes;
@@ -59,19 +46,13 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
 
         public PrestadorViewModel? ConverterContratoparaViewModel(PrestadorContrato contrato)
         {
-            if (contrato != null)
-            {
-                var retorno = new PrestadorViewModel();
+            if (contrato == null)
+                return null;
 
+            var retorno = new PrestadorViewModel();
                 retorno.Id = contrato.Id;
                 retorno.UsuarioId = contrato.UsuarioId;
-                retorno.TipoUsuario = contrato.TipoUsuario;
                 retorno.Descricao = contrato.Descricao;
-                retorno.Endereco = contrato.Endereco;
-                retorno.Cidade = contrato.Cidade;
-                retorno.Estado = contrato.Estado;
-                retorno.Cep = contrato.Cep;
-                retorno.Bairro = contrato.Bairro;
                 retorno.RaioAtendimentoKm = contrato.RaioAtendimentoKm;
                 retorno.Status = contrato.Status;
                 retorno.MediaAvaliacoes = contrato.MediaAvaliacoes;
@@ -80,25 +61,17 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
                 retorno.DataVerificacao = contrato.DataVerificacao;
 
                 return retorno;
-            }
-            return null;
         }
 
         public PrestadorContrato ConverterViewModelparaContrato(PrestadorViewModel viewModel)
         {
-            if (viewModel != null)
-            {
-                var retorno = new PrestadorContrato();
+            if (viewModel == null)
+                return null;
 
+            var retorno = new PrestadorContrato();
                 retorno.Id = viewModel.Id;
                 retorno.UsuarioId = viewModel.UsuarioId;
-                retorno.TipoUsuario = viewModel.TipoUsuario;
                 retorno.Descricao = viewModel.Descricao;
-                retorno.Endereco = viewModel.Endereco;
-                retorno.Cidade = viewModel.Cidade;
-                retorno.Estado = viewModel.Estado;
-                retorno.Cep = viewModel.Cep;
-                retorno.Bairro = viewModel.Bairro;
                 retorno.RaioAtendimentoKm = viewModel.RaioAtendimentoKm;
                 retorno.Status = viewModel.Status;
                 retorno.MediaAvaliacoes = viewModel.MediaAvaliacoes;
@@ -107,9 +80,6 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
                 retorno.DataVerificacao = viewModel.DataVerificacao;
 
                 return retorno;
-            }
-            return null;
-
         }
     }
 }

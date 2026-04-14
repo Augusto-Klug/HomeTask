@@ -14,7 +14,7 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
             var retorno = new MensagemContrato();
                 retorno.Id = mensagem.Id;
                 retorno.RemetenteId = mensagem.RemetenteId;
-                retorno.DestinatarioId = mensagem.DestinatarioId;
+                retorno.ConversaId = mensagem.ConversaId;
                 retorno.AgendamentoId = mensagem.AgendamentoId;
                 retorno.Conteudo = mensagem.Conteudo;
                 retorno.DataEnvio = mensagem.DataEnvio;
@@ -33,7 +33,7 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
 
                 retorno.Id = contrato.Id;
                 retorno.RemetenteId = contrato.RemetenteId;
-                retorno.DestinatarioId = contrato.DestinatarioId;
+                retorno.ConversaId = contrato.ConversaId;
                 retorno.AgendamentoId = contrato.AgendamentoId;
                 retorno.Conteudo = contrato.Conteudo;
                 retorno.DataEnvio = contrato.DataEnvio;
@@ -51,7 +51,7 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
 
                 retorno.Id = contrato.Id;
                 retorno.RemetenteId = contrato.RemetenteId;
-                retorno.DestinatarioId = contrato.DestinatarioId;
+                retorno.ConversaId = contrato.ConversaId;
                 retorno.AgendamentoId = contrato.AgendamentoId;
                 retorno.Conteudo = contrato.Conteudo;
                 retorno.DataEnvio = contrato.DataEnvio;
@@ -71,7 +71,7 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
 
                 retorno.Id = viewModel.Id;
                 retorno.RemetenteId = viewModel.RemetenteId;
-                retorno.DestinatarioId = viewModel.DestinatarioId;
+                retorno.ConversaId = viewModel.ConversaId;
                 retorno.AgendamentoId = viewModel.AgendamentoId;
                 retorno.Conteudo = viewModel.Conteudo;
                 retorno.DataEnvio = viewModel.DataEnvio;

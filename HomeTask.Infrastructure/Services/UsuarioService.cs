@@ -37,38 +37,24 @@ public class UsuarioService : IUsuarioService
         usuario.SenhaHash = HashSenha(senha);
         usuario.DataCadastro = DateTime.UtcNow;
 
+        // garante que o endereço informado no cadastro seja o principal
+        var enderecoPrincipal = usuario.Enderecos.FirstOrDefault();
+        if (enderecoPrincipal != null)
+            enderecoPrincipal.Principal = true;
+
         if (usuario.TipoUsuario == TipoUsuario.Cliente || usuario.TipoUsuario == TipoUsuario.Ambos)
         {
-            usuario.Cliente ??= new Cliente 
-            { 
-                Documento = usuario.Documento,
-                TipoUsuario = usuario.TipoUsuario,
-                Endereco = usuario.Endereco,
-                Cidade = usuario.Cidade,
-                Estado = usuario.Estado,
-                Cep = usuario.Cep,
-                Bairro = usuario.Bairro,
-            };
+            usuario.Cliente ??= new Cliente();
         }
 
         if (usuario.TipoUsuario == TipoUsuario.Prestador || usuario.TipoUsuario == TipoUsuario.Ambos)
         {
-            usuario.Prestador ??= new Prestador 
-            { 
-                Documento = usuario.Documento,
-                TipoUsuario = usuario.TipoUsuario,
-                Endereco = usuario.Endereco,
-                Cidade = usuario.Cidade,
-                Estado = usuario.Estado,
-                Cep = usuario.Cep,
-                Bairro = usuario.Bairro,
-                RaioAtendimentoKm = usuario?.RaioAtendimentoKm,
-                Status = usuario?.Status ?? StatusPrestador.EmAnalise,
-                MediaAvaliacoes = usuario?.MediaAvaliacoes ?? 0,
-                TotalAvaliacoes = usuario?.TotalAvaliacoes ?? 0,
-                TotalServicosConcluidos = usuario?.TotalServicosConcluidos ?? 0,
-                DataVerificacao = usuario?.DataVerificacao ?? null
-
+            usuario.Prestador ??= new Prestador
+            {
+                Status = StatusPrestador.EmAnalise,
+                MediaAvaliacoes = 0,
+                TotalAvaliacoes = 0,
+                TotalServicosConcluidos = 0
             };
         }
 

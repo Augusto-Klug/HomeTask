@@ -37,6 +37,9 @@ public static class DependencyInjection
         services.AddScoped<IArquivoService, LocalArquivoService>();
         services.AddScoped<IPortfolioService, PortfolioService>();
         services.AddScoped<ICertificacaoService, CertificacaoService>();
+        services.AddScoped<ICidadeService, CidadeService>();
+        services.AddScoped<IEnderecoService, EnderecoService>();
+        services.AddScoped<IConversaService, ConversaService>();
 
         return services;
     }

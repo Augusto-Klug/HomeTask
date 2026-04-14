@@ -10,42 +10,18 @@ public class PrestadorMap : IEntityTypeConfiguration<Prestador>
     {
         builder.HasKey(p => p.Id);
 
-        builder.HasIndex(p => p.Documento).IsUnique();
-
         builder.HasOne(p => p.Usuario)
             .WithOne(u => u.Prestador)
             .HasForeignKey<Prestador>(p => p.UsuarioId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.Property(p => p.TipoUsuario)
-            .IsRequired();  
-
         builder.Property(p => p.Descricao)
             .HasMaxLength(1000);
 
-        builder.Property(p => p.Documento)
-            .IsRequired()
-            .HasMaxLength(20);
-
-        builder.Property(p => p.Endereco)
-            .IsRequired()
-            .HasMaxLength(200);
-
-        builder.Property(p => p.Cidade)
-            .IsRequired()
-            .HasMaxLength(50);
-
-        builder.Property(p => p.Estado)
-            .IsRequired()
-            .HasMaxLength(2);
-
-        builder.Property(p => p.Cep)
-            .IsRequired()
-            .HasMaxLength(10);
-
-        builder.Property(p => p.Bairro)
-            .IsRequired()
-            .HasMaxLength(50);
+        builder.HasMany(p => p.Conversas)
+            .WithOne(c => c.Prestador)
+            .HasForeignKey(c => c.PrestadorId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.Property(p => p.MediaAvaliacoes)
             .HasColumnType("decimal(3,2)");

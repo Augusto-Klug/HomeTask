@@ -23,29 +23,12 @@ namespace HomeTask.Domain.ViewModel
 
             [RegularExpression(@"^(\d{3}\.?\d{3}\.?\d{3}-?\d{2}|\d{2}\.?\d{3}\.?\d{3}/?\d{4}-?\d{2})$", ErrorMessage = "Documento inválido. Informe um CPF ou CNPJ válido.")]
             public string Documento { get; set; }
-
-            [MaxLength(200)]
-            public string Endereco { get; set; }
-
-            [MaxLength(100)]
-            public string Cidade { get; set; }
-
-            [MaxLength(50)]
-            public string Estado { get; set; }
-
-            [MaxLength(10)]
-            public string Cep { get; set; }
-
-            [MaxLength(100)]
-            public string Bairro { get; set; }
-
-            public int? RaioAtendimentoKm { get; set; }
-            public StatusPrestador? Status { get; set; }
-            public decimal? MediaAvaliacoes { get; set; }
-            public int? TotalAvaliacoes { get; set; }
-            public int? TotalServicosConcluidos { get; set; }
-            public DateTime? DataVerificacao { get; set; }
-
+            public string Logradouro { get; set; } = null!;
+            public string? Numero { get; set; }
+            public string? Complemento { get; set; }
+            public string Bairro { get; set; } = null!;
+            public string Cep { get; set; } = null!;
+            public Guid CidadeId { get; set; }
             [MaxLength(15)]
             public string? Telefone { get; set; }
             public DateTime DataCadastro { get; set; }

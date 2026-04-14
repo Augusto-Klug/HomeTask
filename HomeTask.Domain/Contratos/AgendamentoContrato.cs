@@ -9,7 +9,6 @@ namespace HomeTask.Domain.Contratos
         public Guid Id { get; set; } = Guid.NewGuid();
         public Guid ClienteId { get; set; }
         public Guid PrestadorId { get; set; }
-        public Guid ServicoOferecidoId { get; set; }
 
         public DateTime DataHoraAgendada { get; set; }
 
@@ -17,8 +16,7 @@ namespace HomeTask.Domain.Contratos
 
         public StatusAgendamento Status { get; set; }
 
-        [MaxLength(300)]
-        public string? EnderecoServico { get; set; }
+        public Guid EnderecoId { get; set; }
 
         [MaxLength(500)]
         public string? Observacoes { get; set; }
@@ -33,5 +31,7 @@ namespace HomeTask.Domain.Contratos
 
         [MaxLength(500)]
         public string? MotivoRecusa { get; set; }
+
+        public List<Guid> ServicosOferecidosIds { get; set; } = [];
     }
 }

@@ -1,6 +1,7 @@
 using HomeTask.Domain.Contratos;
 using HomeTask.Domain.ViewModel;
 using HomeTask.WebApi.Conversores.Interfaces;
+using HomeTask.Domain.Entidades;
 using HomeTask.Domain.Entities;
 
 namespace HomeTask.WebApi.Conversores.Implementacoes
@@ -16,13 +17,14 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
 
                 retorno.Id = servico.Id;
                 retorno.PrestadorId = servico.PrestadorId;
-                retorno.Categoria = servico.Categoria;
+                retorno.CategoriaId = servico.CategoriaId;
+                retorno.ClienteId = servico.ClienteId;
                 retorno.Titulo = servico.Titulo;
                 retorno.Descricao = servico.Descricao;
-                retorno.Valor = servico.Valor;
+                retorno.PrecoBase = servico.PrecoBase;
                 retorno.UnidadeCobranca = servico.UnidadeCobranca;
-                retorno.AceitaPagamentoAposFinalizacao = servico.AceitaPagamentoAposFinalizacao;
-                retorno.DataAgendamento = servico.DataAgendamento;
+                retorno.DuracaoEstimadaMinutos = servico.DuracaoEstimadaMinutos;
+                retorno.TipoAnuncio = servico.TipoAnuncio;
                 retorno.Ativo = servico.Ativo;
                 retorno.DataCriacao = servico.DataCriacao;
 
@@ -38,13 +40,13 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
 
                 retorno.Id = contrato.Id;
                 retorno.PrestadorId = contrato.PrestadorId;
-                retorno.Categoria = contrato.Categoria;
+                retorno.CategoriaId = contrato.CategoriaId;
                 retorno.Titulo = contrato.Titulo;
                 retorno.Descricao = contrato.Descricao;
-                retorno.Valor = contrato.Valor;
+                retorno.PrecoBase= contrato.PrecoBase;
                 retorno.UnidadeCobranca = contrato.UnidadeCobranca;
-                retorno.AceitaPagamentoAposFinalizacao = contrato.AceitaPagamentoAposFinalizacao;
-                retorno.DataAgendamento = contrato.DataAgendamento;
+                retorno.DuracaoEstimadaMinutos = contrato.DuracaoEstimadaMinutos;
+                retorno.TipoAnuncio = contrato.TipoAnuncio;
                 retorno.Ativo = contrato.Ativo;
                 retorno.DataCriacao = contrato.DataCriacao;
 
@@ -59,13 +61,13 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
 
                 retorno.Id = contrato.Id;
                 retorno.PrestadorId = contrato.PrestadorId;
-                retorno.Categoria = contrato.Categoria;
+                retorno.CategoriaId = contrato.CategoriaId;
                 retorno.Titulo = contrato.Titulo;
                 retorno.Descricao = contrato.Descricao;
-                retorno.Valor = contrato.Valor;
+                retorno.PrecoBase = contrato.PrecoBase;
                 retorno.UnidadeCobranca = contrato.UnidadeCobranca;
-                retorno.AceitaPagamentoAposFinalizacao = contrato.AceitaPagamentoAposFinalizacao;
-                retorno.DataAgendamento = contrato.DataAgendamento;
+                retorno.DuracaoEstimadaMinutos = contrato.DuracaoEstimadaMinutos;
+                retorno.TipoAnuncio = contrato.TipoAnuncio;
                 retorno.Ativo = contrato.Ativo;
                 retorno.DataCriacao = contrato.DataCriacao;
 
@@ -82,13 +84,13 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
 
                 retorno.Id = viewModel.Id;
                 retorno.PrestadorId = viewModel.PrestadorId;
-                retorno.Categoria = viewModel.Categoria;
+                retorno.CategoriaId = viewModel.CategoriaId;
                 retorno.Titulo = viewModel.Titulo;
                 retorno.Descricao = viewModel.Descricao;
-                retorno.Valor = viewModel.Valor;
+                retorno.PrecoBase = viewModel.PrecoBase;
                 retorno.UnidadeCobranca = viewModel.UnidadeCobranca;
-                retorno.AceitaPagamentoAposFinalizacao = viewModel.AceitaPagamentoAposFinalizacao;
-                retorno.DataAgendamento = viewModel.DataAgendamento;
+                retorno.DuracaoEstimadaMinutos = viewModel.DuracaoEstimadaMinutos;
+                retorno.TipoAnuncio = viewModel.TipoAnuncio;
                 retorno.Ativo = viewModel.Ativo;
                 retorno.DataCriacao = viewModel.DataCriacao;
 

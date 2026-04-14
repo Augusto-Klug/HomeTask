@@ -1,35 +1,26 @@
+using HomeTask.Domain.Entidades;
 using HomeTask.Domain.Enums;
 
 namespace HomeTask.Domain.Entities;
 public class ServicoOferecido
 {
-    #region Controle
     public Guid Id { get; set; }
     public Guid? PrestadorId { get; set; }
     public Prestador? Prestador { get; set; }
+    public Guid? ClienteId { get; set; }
+    public Cliente? Cliente { get; set; }
+    public Guid CategoriaId { get; set; }
+    public Categoria Categoria { get; set; } = null!;
     public DateTime DataCriacao { get; set; }
     public bool Ativo { get; set; }
-
-    #endregion Controle
-
-    #region Dados gerais
-    public string Titulo { get; set; }
-    public string Descricao { get; set; }
-    public CategoriaServico Categoria { get; set; }
-    public decimal? Valor { get; set; }
+    public string Titulo { get; set; } = null!;
+    public string Descricao { get; set; } = null!;
+    public decimal PrecoBase { get; set; }
+    public int? DuracaoEstimadaMinutos { get; set; }
     public string UnidadeCobranca { get; set; }
-    #endregion Dados gerais
+    public TipoAnuncio TipoAnuncio { get; set; }
 
-    #region Agendamento cliente
-    public DateOnly? DataAgendamento { get; set; }
-
-    #endregion Agendamento cliente
-
-    #region Agendamento prestador 
-
-    public bool? AceitaPagamentoAposFinalizacao { get; set; }
-
-    #endregion Agendamento prestador
+    public ICollection<AgendamentoServico> AgendamentoServicos { get; set; } = [];
 
     public ServicoOferecido() { }
 }

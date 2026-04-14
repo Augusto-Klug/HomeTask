@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HomeTask.Infrastructure.Migrations
 {
     [DbContext(typeof(HomeTaskDbContext))]
-    [Migration("20260411014813_TornarPrestadorIdOpcional")]
-    partial class TornarPrestadorIdOpcional
+    [Migration("20260412201006_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,151 @@ namespace HomeTask.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
+
+            modelBuilder.Entity("HomeTask.Domain.Entidades.AgendamentoServico", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("AgendamentoId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("Quantidade")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
+                    b.Property<Guid>("ServicoOferecidoId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<decimal>("ValorUnitario")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AgendamentoId");
+
+                    b.HasIndex("ServicoOferecidoId");
+
+                    b.ToTable("AgendamentoServicos");
+                });
+
+            modelBuilder.Entity("HomeTask.Domain.Entidades.Categoria", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Categorias");
+                });
+
+            modelBuilder.Entity("HomeTask.Domain.Entidades.Cidade", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("CodIBGE")
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar(10)");
+
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasMaxLength(2)
+                        .HasColumnType("varchar(2)");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Cidades");
+                });
+
+            modelBuilder.Entity("HomeTask.Domain.Entidades.Conversa", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("ClienteId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("DataCriacao")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("PrestadorId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PrestadorId");
+
+                    b.HasIndex("ClienteId", "PrestadorId")
+                        .IsUnique();
+
+                    b.ToTable("Conversas");
+                });
+
+            modelBuilder.Entity("HomeTask.Domain.Entidades.Endereco", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Bairro")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("Cep")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar(10)");
+
+                    b.Property<Guid>("CidadeId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Complemento")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("Logradouro")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("Numero")
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar(10)");
+
+                    b.Property<bool>("Principal")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CidadeId");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("Enderecos");
+                });
 
             modelBuilder.Entity("HomeTask.Domain.Entities.Agendamento", b =>
                 {
@@ -49,9 +194,8 @@ namespace HomeTask.Infrastructure.Migrations
                     b.Property<int>("DuracaoMinutos")
                         .HasColumnType("int");
 
-                    b.Property<string>("EnderecoServico")
-                        .HasMaxLength(300)
-                        .HasColumnType("varchar(300)");
+                    b.Property<Guid>("EnderecoId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("MotivoRecusa")
                         .HasMaxLength(500)
@@ -64,9 +208,6 @@ namespace HomeTask.Infrastructure.Migrations
                     b.Property<Guid>("PrestadorId")
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid>("ServicoOferecidoId")
-                        .HasColumnType("char(36)");
-
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -77,9 +218,9 @@ namespace HomeTask.Infrastructure.Migrations
 
                     b.HasIndex("ClienteId");
 
-                    b.HasIndex("PrestadorId");
+                    b.HasIndex("EnderecoId");
 
-                    b.HasIndex("ServicoOferecidoId");
+                    b.HasIndex("PrestadorId");
 
                     b.ToTable("Agendamentos");
                 });
@@ -171,41 +312,10 @@ namespace HomeTask.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<string>("Bairro")
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
-
-                    b.Property<string>("Cep")
-                        .HasMaxLength(10)
-                        .HasColumnType("varchar(10)");
-
-                    b.Property<string>("Cidade")
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
-
-                    b.Property<string>("Documento")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
-
-                    b.Property<string>("Endereco")
-                        .HasMaxLength(200)
-                        .HasColumnType("varchar(200)");
-
-                    b.Property<string>("Estado")
-                        .HasMaxLength(2)
-                        .HasColumnType("varchar(2)");
-
-                    b.Property<int>("TipoUsuario")
-                        .HasColumnType("int");
-
                     b.Property<Guid>("UsuarioId")
                         .HasColumnType("char(36)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Documento")
-                        .IsUnique();
 
                     b.HasIndex("UsuarioId")
                         .IsUnique();
@@ -255,14 +365,14 @@ namespace HomeTask.Infrastructure.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("varchar(2000)");
 
+                    b.Property<Guid>("ConversaId")
+                        .HasColumnType("char(36)");
+
                     b.Property<DateTime>("DataEnvio")
                         .HasColumnType("datetime(6)");
 
                     b.Property<DateTime?>("DataLeitura")
                         .HasColumnType("datetime(6)");
-
-                    b.Property<Guid>("DestinatarioId")
-                        .HasColumnType("char(36)");
 
                     b.Property<bool>("Lida")
                         .HasColumnType("tinyint(1)");
@@ -274,7 +384,7 @@ namespace HomeTask.Infrastructure.Migrations
 
                     b.HasIndex("AgendamentoId");
 
-                    b.HasIndex("DestinatarioId");
+                    b.HasIndex("ConversaId");
 
                     b.HasIndex("RemetenteId");
 
@@ -365,42 +475,12 @@ namespace HomeTask.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<string>("Bairro")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
-
-                    b.Property<string>("Cep")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("varchar(10)");
-
-                    b.Property<string>("Cidade")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
-
                     b.Property<DateTime?>("DataVerificacao")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Descricao")
                         .HasMaxLength(1000)
                         .HasColumnType("varchar(1000)");
-
-                    b.Property<string>("Documento")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
-
-                    b.Property<string>("Endereco")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("varchar(200)");
-
-                    b.Property<string>("Estado")
-                        .IsRequired()
-                        .HasMaxLength(2)
-                        .HasColumnType("varchar(2)");
 
                     b.Property<decimal>("MediaAvaliacoes")
                         .HasColumnType("decimal(3,2)");
@@ -409,9 +489,6 @@ namespace HomeTask.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TipoUsuario")
                         .HasColumnType("int");
 
                     b.Property<int>("TotalAvaliacoes")
@@ -425,9 +502,6 @@ namespace HomeTask.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Documento")
-                        .IsUnique();
-
                     b.HasIndex("UsuarioId")
                         .IsUnique();
 
@@ -440,17 +514,14 @@ namespace HomeTask.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<ulong?>("AceitaPagamentoAposFinalizacao")
-                        .HasColumnType("bit");
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("tinyint(1)");
 
-                    b.Property<ulong>("Ativo")
-                        .HasColumnType("bit");
+                    b.Property<Guid>("CategoriaId")
+                        .HasColumnType("char(36)");
 
-                    b.Property<int>("Categoria")
-                        .HasColumnType("int");
-
-                    b.Property<DateOnly?>("DataAgendamento")
-                        .HasColumnType("date");
+                    b.Property<Guid?>("ClienteId")
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime>("DataCriacao")
                         .HasColumnType("datetime");
@@ -460,8 +531,17 @@ namespace HomeTask.Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
 
-                    b.Property<Guid>("PrestadorId")
+                    b.Property<int?>("DuracaoEstimadaMinutos")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("PrecoBase")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<Guid?>("PrestadorId")
                         .HasColumnType("char(36)");
+
+                    b.Property<int>("TipoAnuncio")
+                        .HasColumnType("int");
 
                     b.Property<string>("Titulo")
                         .IsRequired()
@@ -473,10 +553,11 @@ namespace HomeTask.Infrastructure.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("varchar(20)");
 
-                    b.Property<decimal?>("Valor")
-                        .HasColumnType("decimal(10,2)");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoriaId");
+
+                    b.HasIndex("ClienteId");
 
                     b.HasIndex("PrestadorId");
 
@@ -492,25 +573,7 @@ namespace HomeTask.Infrastructure.Migrations
                     b.Property<bool>("Ativo")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<string>("Bairro")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
-
-                    b.Property<string>("Cep")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("varchar(10)");
-
-                    b.Property<string>("Cidade")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
-
                     b.Property<DateTime>("DataCadastro")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTime?>("DataVerificacao")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Documento")
@@ -523,46 +586,21 @@ namespace HomeTask.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
-                    b.Property<string>("Endereco")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("varchar(200)");
-
-                    b.Property<string>("Estado")
-                        .IsRequired()
-                        .HasMaxLength(2)
-                        .HasColumnType("varchar(2)");
-
-                    b.Property<decimal?>("MediaAvaliacoes")
-                        .HasColumnType("decimal(3,2)");
-
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
-
-                    b.Property<int?>("RaioAtendimentoKm")
-                        .HasColumnType("int");
 
                     b.Property<string>("SenhaHash")
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("varchar(256)");
 
-                    b.Property<int?>("Status")
-                        .HasColumnType("int");
-
                     b.Property<string>("Telefone")
                         .HasMaxLength(15)
                         .HasColumnType("varchar(15)");
 
                     b.Property<int>("TipoUsuario")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("TotalAvaliacoes")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("TotalServicosConcluidos")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("UltimoAcesso")
@@ -579,11 +617,74 @@ namespace HomeTask.Infrastructure.Migrations
                     b.ToTable("Usuarios");
                 });
 
+            modelBuilder.Entity("HomeTask.Domain.Entidades.AgendamentoServico", b =>
+                {
+                    b.HasOne("HomeTask.Domain.Entities.Agendamento", "Agendamento")
+                        .WithMany("AgendamentoServicos")
+                        .HasForeignKey("AgendamentoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HomeTask.Domain.Entities.ServicoOferecido", "ServicoOferecido")
+                        .WithMany("AgendamentoServicos")
+                        .HasForeignKey("ServicoOferecidoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Agendamento");
+
+                    b.Navigation("ServicoOferecido");
+                });
+
+            modelBuilder.Entity("HomeTask.Domain.Entidades.Conversa", b =>
+                {
+                    b.HasOne("HomeTask.Domain.Entities.Cliente", "Cliente")
+                        .WithMany("Conversas")
+                        .HasForeignKey("ClienteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HomeTask.Domain.Entities.Prestador", "Prestador")
+                        .WithMany("Conversas")
+                        .HasForeignKey("PrestadorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cliente");
+
+                    b.Navigation("Prestador");
+                });
+
+            modelBuilder.Entity("HomeTask.Domain.Entidades.Endereco", b =>
+                {
+                    b.HasOne("HomeTask.Domain.Entidades.Cidade", "Cidade")
+                        .WithMany("Enderecos")
+                        .HasForeignKey("CidadeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("HomeTask.Domain.Entities.Usuario", "Usuario")
+                        .WithMany("Enderecos")
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cidade");
+
+                    b.Navigation("Usuario");
+                });
+
             modelBuilder.Entity("HomeTask.Domain.Entities.Agendamento", b =>
                 {
                     b.HasOne("HomeTask.Domain.Entities.Cliente", "Cliente")
                         .WithMany("Agendamentos")
                         .HasForeignKey("ClienteId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("HomeTask.Domain.Entidades.Endereco", "Endereco")
+                        .WithMany("Agendamentos")
+                        .HasForeignKey("EnderecoId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -593,17 +694,11 @@ namespace HomeTask.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("HomeTask.Domain.Entities.ServicoOferecido", "ServicoOferecido")
-                        .WithMany()
-                        .HasForeignKey("ServicoOferecidoId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("Cliente");
 
-                    b.Navigation("Prestador");
+                    b.Navigation("Endereco");
 
-                    b.Navigation("ServicoOferecido");
+                    b.Navigation("Prestador");
                 });
 
             modelBuilder.Entity("HomeTask.Domain.Entities.Avaliacao", b =>
@@ -673,10 +768,10 @@ namespace HomeTask.Infrastructure.Migrations
                         .HasForeignKey("AgendamentoId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("HomeTask.Domain.Entities.Usuario", "Destinatario")
-                        .WithMany()
-                        .HasForeignKey("DestinatarioId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                    b.HasOne("HomeTask.Domain.Entidades.Conversa", "Conversa")
+                        .WithMany("Mensagens")
+                        .HasForeignKey("ConversaId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("HomeTask.Domain.Entities.Usuario", "Remetente")
@@ -687,7 +782,7 @@ namespace HomeTask.Infrastructure.Migrations
 
                     b.Navigation("Agendamento");
 
-                    b.Navigation("Destinatario");
+                    b.Navigation("Conversa");
 
                     b.Navigation("Remetente");
                 });
@@ -727,17 +822,53 @@ namespace HomeTask.Infrastructure.Migrations
 
             modelBuilder.Entity("HomeTask.Domain.Entities.ServicoOferecido", b =>
                 {
+                    b.HasOne("HomeTask.Domain.Entidades.Categoria", "Categoria")
+                        .WithMany("ServicosOferecidos")
+                        .HasForeignKey("CategoriaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("HomeTask.Domain.Entities.Cliente", "Cliente")
+                        .WithMany()
+                        .HasForeignKey("ClienteId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("HomeTask.Domain.Entities.Prestador", "Prestador")
                         .WithMany("ServicosOferecidos")
                         .HasForeignKey("PrestadorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Categoria");
+
+                    b.Navigation("Cliente");
 
                     b.Navigation("Prestador");
                 });
 
+            modelBuilder.Entity("HomeTask.Domain.Entidades.Categoria", b =>
+                {
+                    b.Navigation("ServicosOferecidos");
+                });
+
+            modelBuilder.Entity("HomeTask.Domain.Entidades.Cidade", b =>
+                {
+                    b.Navigation("Enderecos");
+                });
+
+            modelBuilder.Entity("HomeTask.Domain.Entidades.Conversa", b =>
+                {
+                    b.Navigation("Mensagens");
+                });
+
+            modelBuilder.Entity("HomeTask.Domain.Entidades.Endereco", b =>
+                {
+                    b.Navigation("Agendamentos");
+                });
+
             modelBuilder.Entity("HomeTask.Domain.Entities.Agendamento", b =>
                 {
+                    b.Navigation("AgendamentoServicos");
+
                     b.Navigation("Avaliacao");
 
                     b.Navigation("Pagamento");
@@ -748,6 +879,8 @@ namespace HomeTask.Infrastructure.Migrations
                     b.Navigation("Agendamentos");
 
                     b.Navigation("Avaliacoes");
+
+                    b.Navigation("Conversas");
                 });
 
             modelBuilder.Entity("HomeTask.Domain.Entities.Prestador", b =>
@@ -758,6 +891,8 @@ namespace HomeTask.Infrastructure.Migrations
 
                     b.Navigation("Certificacoes");
 
+                    b.Navigation("Conversas");
+
                     b.Navigation("Disponibilidades");
 
                     b.Navigation("Portfolios");
@@ -765,9 +900,16 @@ namespace HomeTask.Infrastructure.Migrations
                     b.Navigation("ServicosOferecidos");
                 });
 
+            modelBuilder.Entity("HomeTask.Domain.Entities.ServicoOferecido", b =>
+                {
+                    b.Navigation("AgendamentoServicos");
+                });
+
             modelBuilder.Entity("HomeTask.Domain.Entities.Usuario", b =>
                 {
                     b.Navigation("Cliente");
+
+                    b.Navigation("Enderecos");
 
                     b.Navigation("Prestador");
                 });
