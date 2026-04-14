@@ -25,14 +25,9 @@ namespace HomeTask.Infrastructure.Services
         {
             var urlImagem = await _arquivoService.SalvarAsync(imagem, nomeArquivo, $"portfolio/{prestadorId}", cancellationToken);
 
-            var portfolio = new Portfolio
-            {
-                PrestadorId = prestadorId,
-                UrlImagem = urlImagem,
-                Titulo = titulo,
-                Descricao = descricao,
-                DataCadastro = DateTime.UtcNow
-            };
+            var portfolio = new Portfolio();
+
+            portfolio.DefinirDados(prestadorId, urlImagem, titulo, descricao, DateTime.UtcNow);
 
             _context.Portfolios.Add(portfolio);
             await _context.SaveChangesAsync(cancellationToken);

@@ -34,8 +34,7 @@ public class PagamentoService : IPagamentoService
 
     public async Task<Pagamento> CriarAsync(Pagamento pagamento, CancellationToken cancellationToken = default)
     {
-        pagamento.Status = StatusPagamento.Pendente;
-        pagamento.DataCriacao = DateTime.UtcNow;
+        pagamento.DefinirComoPendente(DateTime.UtcNow);
 
         _context.Pagamentos.Add(pagamento);
         await _context.SaveChangesAsync(cancellationToken);
@@ -52,8 +51,7 @@ public class PagamentoService : IPagamentoService
         if (pagamento.Status != StatusPagamento.Pendente)
             throw new InvalidOperationException("Pagamento não pode ser processado neste status");
 
-        pagamento.Status = StatusPagamento.Processando;
-        pagamento.DataProcessamento = DateTime.UtcNow;
+        pagamento.Processar(DateTime.UtcNow);
 
         // TODO: Integração com gateway de pagamento
 
@@ -70,9 +68,7 @@ public class PagamentoService : IPagamentoService
         if (pagamento.Status != StatusPagamento.Processando)
             throw new InvalidOperationException("Pagamento não pode ser confirmado neste status");
 
-        pagamento.Status = StatusPagamento.Aprovado;
-        pagamento.TransacaoId = transacaoId;
-        pagamento.DataConfirmacao = DateTime.UtcNow;
+        pagamento.Aprovar(transacaoId, DateTime.UtcNow);
 
         await _context.SaveChangesAsync(cancellationToken);
         return pagamento;
@@ -87,8 +83,7 @@ public class PagamentoService : IPagamentoService
         if (pagamento.Status != StatusPagamento.Processando)
             throw new InvalidOperationException("Pagamento não pode ser recusado neste status");
 
-        pagamento.Status = StatusPagamento.Recusado;
-        pagamento.MotivoRecusa = motivo;
+        pagamento.Recusar(motivo);
 
         await _context.SaveChangesAsync(cancellationToken);
         return pagamento;
@@ -103,7 +98,7 @@ public class PagamentoService : IPagamentoService
         if (pagamento.Status != StatusPagamento.Aprovado)
             throw new InvalidOperationException("Pagamento não pode ser estornado neste status");
 
-        pagamento.Status = StatusPagamento.Estornado;
+        pagamento.Estornar();
 
         // TODO: Integração com gateway de pagamento para estorno
 

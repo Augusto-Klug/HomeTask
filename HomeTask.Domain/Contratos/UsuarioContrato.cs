@@ -1,5 +1,3 @@
-using System;
-using System.ComponentModel.DataAnnotations;
 using HomeTask.Domain.Enums;
 
 namespace HomeTask.Domain.Contratos
@@ -8,7 +6,7 @@ namespace HomeTask.Domain.Contratos
     {
         public Guid Id { get; set; } = Guid.NewGuid();
         public string Nome { get; set; }
-        public string Email { get; set; } 
+        public string Email { get; set; }
         public string Senha { get; set; }
         public string Logradouro { get; set; } = null!;
         public string? Numero { get; set; }
@@ -16,7 +14,7 @@ namespace HomeTask.Domain.Contratos
         public string Bairro { get; set; } = null!;
         public string Cep { get; set; } = null!;
         public Guid CidadeId { get; set; }
-        public string Documento { get; set; } 
+        public string Documento { get; set; }
         public string? Telefone { get; set; }
         public TipoUsuario TipoUsuario { get; set; }
         public DateTime DataCadastro { get; set; }

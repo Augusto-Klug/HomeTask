@@ -40,7 +40,7 @@ public class PrestadorService : IPrestadorService
 
     public async Task<Prestador> CriarAsync(Prestador prestador, CancellationToken cancellationToken = default)
     {
-        prestador.Status = StatusPrestador.EmAnalise;
+        prestador.DefinirStatus(StatusPrestador.EmAnalise);
         _context.Prestadores.Add(prestador);
         await _context.SaveChangesAsync(cancellationToken);
         return prestador;
@@ -114,8 +114,9 @@ public class PrestadorService : IPrestadorService
 
         if (prestador != null && prestador.Avaliacoes.Count != 0)
         {
-            prestador.MediaAvaliacoes = (decimal)prestador.Avaliacoes.Average(a => a.Nota);
-            prestador.TotalAvaliacoes = prestador.Avaliacoes.Count;
+            prestador.AtualizarMetricasAvaliacao(
+                (decimal)prestador.Avaliacoes.Average(a => a.Nota),
+                prestador.Avaliacoes.Count);
 
             // NEG08 - Suspensão automática para avaliações negativas recorrentes
             var avaliacoesRecentes = prestador.Avaliacoes
@@ -125,7 +126,7 @@ public class PrestadorService : IPrestadorService
 
             if (avaliacoesRecentes.Count >= 5 && avaliacoesRecentes.Average(a => a.Nota) < 2)
             {
-                prestador.Status = StatusPrestador.Suspenso;
+                prestador.DefinirStatus(StatusPrestador.Suspenso);
             }
 
             await _context.SaveChangesAsync(cancellationToken);
@@ -137,10 +138,10 @@ public class PrestadorService : IPrestadorService
         var prestador = await _context.Prestadores.FindAsync([prestadorId], cancellationToken);
         if (prestador != null)
         {
-            prestador.Status = status;
+            prestador.DefinirStatus(status);
             if (status == StatusPrestador.Ativo)
             {
-                prestador.DataVerificacao = DateTime.UtcNow;
+                prestador.DefinirDataVerificacao(DateTime.UtcNow);
             }
             await _context.SaveChangesAsync(cancellationToken);
         }

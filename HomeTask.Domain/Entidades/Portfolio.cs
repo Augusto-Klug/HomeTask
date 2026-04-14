@@ -5,22 +5,38 @@ namespace HomeTask.Domain.Entities;
 /// </summary>
 public class Portfolio
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public Portfolio() { }
 
-    public Guid PrestadorId { get; set; }
+    public Guid Id { get; private set; } = Guid.NewGuid();
 
-    public Prestador Prestador { get; set; } = null!;
+    public Guid PrestadorId { get; private set; }
 
-    public string? Titulo { get; set; }
+    public Prestador Prestador { get; private set; } = null!;
 
-    public string? Descricao { get; set; }
+    public string? Titulo { get; private set; }
+
+    public string? Descricao { get; private set; }
 
     /// <summary>
     /// URL da imagem
     /// </summary>
-    public string UrlImagem { get; set; } = string.Empty;
+    public string UrlImagem { get; private set; } = string.Empty;
 
-    public DateTime DataCadastro { get; set; } = DateTime.UtcNow;
+    public DateTime DataCadastro { get; private set; } = DateTime.UtcNow;
 
-    public int Ordem { get; set; } = 0;
+    public int Ordem { get; private set; } = 0;
+
+    public void DefinirDados(
+        Guid prestadorId,
+        string urlImagem,
+        string? titulo,
+        string? descricao,
+        DateTime dataCadastro)
+    {
+        PrestadorId = prestadorId;
+        UrlImagem = urlImagem;
+        Titulo = titulo;
+        Descricao = descricao;
+        DataCadastro = dataCadastro;
+    }
 }

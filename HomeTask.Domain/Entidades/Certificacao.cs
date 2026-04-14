@@ -5,26 +5,46 @@ namespace HomeTask.Domain.Entities;
 /// </summary>
 public class Certificacao
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public Certificacao() { }
 
-    public Guid PrestadorId { get; set; }
+    public Guid Id { get; private set; } = Guid.NewGuid();
 
-    public Prestador Prestador { get; set; } = null!;
+    public Guid PrestadorId { get; private set; }
 
-    public string Nome { get; set; } = string.Empty;
+    public Prestador Prestador { get; private set; } = null!;
 
-    public string? Instituicao { get; set; }
+    public string Nome { get; private set; } = string.Empty;
 
-    public DateTime? DataEmissao { get; set; }
+    public string? Instituicao { get; private set; }
 
-    public DateTime? DataValidade { get; set; }
+    public DateTime? DataEmissao { get; private set; }
+
+    public DateTime? DataValidade { get; private set; }
 
     /// <summary>
     /// URL do documento/certificado
     /// </summary>
-    public string? UrlDocumento { get; set; }
+    public string? UrlDocumento { get; private set; }
 
-    public bool Verificada { get; set; } = false;
+    public bool Verificada { get; private set; } = false;
 
-    public DateTime DataCadastro { get; set; } = DateTime.UtcNow;
+    public DateTime DataCadastro { get; private set; } = DateTime.UtcNow;
+
+    public void DefinirDados(
+        Guid prestadorId,
+        string nome,
+        string? instituicao,
+        DateTime? dataEmissao,
+        DateTime? dataValidade,
+        string? urlDocumento,
+        DateTime dataCadastro)
+    {
+        PrestadorId = prestadorId;
+        Nome = nome;
+        Instituicao = instituicao;
+        DataEmissao = dataEmissao;
+        DataValidade = dataValidade;
+        UrlDocumento = urlDocumento;
+        DataCadastro = dataCadastro;
+    }
 }

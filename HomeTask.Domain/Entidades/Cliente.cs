@@ -8,12 +8,20 @@ namespace HomeTask.Domain.Entities;
 /// </summary>
 public class Cliente
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
-    public Guid UsuarioId { get; set; }
-    public Usuario Usuario { get; set; } = null!;
+    public Cliente() { }
+
+    public Guid Id { get; private set; } = Guid.NewGuid();
+    public Guid UsuarioId { get; private set; }
+    public Usuario Usuario { get; private set; } = null!;
 
     // Navegação
-    public ICollection<Agendamento> Agendamentos { get; set; } = [];
-    public ICollection<Avaliacao> Avaliacoes { get; set; } = [];
-    public ICollection<Conversa> Conversas { get; set; } = [];
+    public ICollection<Agendamento> Agendamentos { get; private set; } = [];
+    public ICollection<Avaliacao> Avaliacoes { get; private set; } = [];
+    public ICollection<Conversa> Conversas { get; private set; } = [];
+
+    public void DefinirDados(Guid id, Guid usuarioId)
+    {
+        Id = id;
+        UsuarioId = usuarioId;
+    }
 }

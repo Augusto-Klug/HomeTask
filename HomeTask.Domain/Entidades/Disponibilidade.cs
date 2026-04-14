@@ -5,26 +5,28 @@ namespace HomeTask.Domain.Entities;
 /// </summary>
 public class Disponibilidade
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public Disponibilidade() { }
 
-    public Guid PrestadorId { get; set; }
+    public Guid Id { get; private set; } = Guid.NewGuid();
 
-    public Prestador Prestador { get; set; } = null!;
+    public Guid PrestadorId { get; private set; }
+
+    public Prestador Prestador { get; private set; } = null!;
 
     /// <summary>
     /// Dia da semana (0 = Domingo, 6 = Sábado)
     /// </summary>
-    public int DiaSemana { get; set; }
+    public int DiaSemana { get; private set; }
 
     /// <summary>
     /// Hora de início da disponibilidade
     /// </summary>
-    public TimeSpan HoraInicio { get; set; }
+    public TimeSpan HoraInicio { get; private set; }
 
     /// <summary>
     /// Hora de fim da disponibilidade
     /// </summary>
-    public TimeSpan HoraFim { get; set; }
+    public TimeSpan HoraFim { get; private set; }
 
-    public bool Ativo { get; set; } = true;
+    public bool Ativo { get; private set; } = true;
 }

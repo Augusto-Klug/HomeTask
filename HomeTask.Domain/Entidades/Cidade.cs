@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,14 +6,16 @@ namespace HomeTask.Domain.Entidades
 {
     public class Cidade
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Cidade() { }
 
-        public String Nome { get; set; }  = null!;
+        public Guid Id { get; private set; } = Guid.NewGuid();
 
-        public String Estado { get; set; } = null!;
+        public String Nome { get; private set; }  = null!;
 
-        public string? CodIBGE { get; set; }
+        public String Estado { get; private set; } = null!;
 
-        public ICollection<Endereco> Enderecos { get; set; } = [];
+        public string? CodIBGE { get; private set; }
+
+        public ICollection<Endereco> Enderecos { get; private set; } = [];
     }
 }
