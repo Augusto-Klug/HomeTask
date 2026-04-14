@@ -42,7 +42,7 @@ export interface Avaliacao {
 export interface AgendamentoForm {
   data: string
   hora: string
-  endereco: string
+  logradouro: string
   observacoes: string
 }
 
@@ -54,7 +54,7 @@ export interface CadastroForm {
   telefone: string
   senha: string
   cep: string
-  endereco: string
+  logradouro: string
   bairro: string
   cidadeId: string
   estado: string

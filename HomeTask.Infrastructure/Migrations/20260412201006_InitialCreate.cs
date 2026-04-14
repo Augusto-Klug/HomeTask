@@ -633,6 +633,7 @@ namespace HomeTask.Infrastructure.Migrations
                     { new Guid("20000000-0000-0000-0000-000000000006"), "Balneário Camboriú", "SC", "4202008" },
                 });
 
+
             migrationBuilder.InsertData(
                 table: "Categorias",
                 columns: new[] { "Id", "Nome", "Ativo" },

@@ -86,7 +86,7 @@
 
           <HtInput
             ref="inputEndereco"
-            v-model="form.endereco"
+            v-model="form.logradouro"
             label="Logradouro"
             regra="required"
             placeholder="Rua, Avenida..."
@@ -182,7 +182,7 @@ const form = reactive<CadastroForm>({
   telefone: '',
   senha: '',
   cep: '',
-  endereco: '',
+  logradouro: '',
   bairro: '',
   cidadeId: '',
   estado: '',
@@ -286,7 +286,7 @@ async function handleCadastro() {
       senha:     form.senha,
       tipo:      Number(form.tipoUsuario),
       cep:       form.cep,
-      endereco:  form.endereco,
+      logradouro:  form.logradouro,
       bairro:    form.bairro,
       cidadeId:  form.cidadeId,
       estado:    form.estado,
