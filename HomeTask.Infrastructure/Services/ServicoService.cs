@@ -28,8 +28,7 @@ public class ServicoService : IServicoService
 
     public async Task<ServicoOferecido> CriarAsync(ServicoOferecido servico, CancellationToken cancellationToken = default)
     {
-        servico.DataCriacao = DateTime.UtcNow;
-        servico.Ativo = true;
+        servico.Ativar(DateTime.UtcNow);
 
         _context.ServicosOferecidos.Add(servico);
         await _context.SaveChangesAsync(cancellationToken);
@@ -50,7 +49,7 @@ public class ServicoService : IServicoService
         if (servico == null)
             return false;
 
-        servico.Ativo = false;
+        servico.Desativar();
         await _context.SaveChangesAsync(cancellationToken);
         return true;
     }

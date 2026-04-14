@@ -49,8 +49,7 @@ public class AvaliacaoService : IAvaliacaoService
         if (avaliacaoExistente != null)
             throw new InvalidOperationException("Este serviço já foi avaliado");
 
-        avaliacao.DataAvaliacao = DateTime.UtcNow;
-        avaliacao.Visivel = true; // NEG07 - Avaliações são públicas
+        avaliacao.Publicar(DateTime.UtcNow); // NEG07 - Avaliações são públicas
 
         _context.Avaliacoes.Add(avaliacao);
         await _context.SaveChangesAsync(cancellationToken);

@@ -51,12 +51,9 @@ public class ConversaService : IConversaService
             return conversa;
 
         // cria nova conversa
-        conversa = new Conversa
-        {
-            ClienteId = clienteId,
-            PrestadorId = prestadorId,
-            DataCriacao = DateTime.UtcNow
-        };
+        conversa = new Conversa();
+
+        conversa.DefinirDados(clienteId, prestadorId, DateTime.UtcNow);
 
         _context.Conversas.Add(conversa);
         await _context.SaveChangesAsync(cancellationToken);

@@ -1,4 +1,4 @@
-﻿using HomeTask.Domain.Entities;
+using HomeTask.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,19 +7,28 @@ namespace HomeTask.Domain.Entidades
 {
     public class Conversa
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Conversa() { }
 
-        public Guid ClienteId { get; set; }
+        public Guid Id { get; private set; } = Guid.NewGuid();
 
-        public Guid PrestadorId { get; set; }
+        public Guid ClienteId { get; private set; }
 
-        public DateTime DataCriacao { get; set; } = DateTime.UtcNow;
+        public Guid PrestadorId { get; private set; }
 
-        public Cliente Cliente { get; set; } = null!;
+        public DateTime DataCriacao { get; private set; } = DateTime.UtcNow;
 
-        public Prestador Prestador { get; set; } = null!;
+    public Cliente Cliente { get; private set; } = null!;
 
-        public ICollection<Mensagem> Mensagens { get; set; } = [];
+    public Prestador Prestador { get; private set; } = null!;
+
+    public ICollection<Mensagem> Mensagens { get; private set; } = [];
+
+    public void DefinirDados(Guid clienteId, Guid prestadorId, DateTime dataCriacao)
+    {
+        ClienteId = clienteId;
+        PrestadorId = prestadorId;
+        DataCriacao = dataCriacao;
+    }
 
     }
 }

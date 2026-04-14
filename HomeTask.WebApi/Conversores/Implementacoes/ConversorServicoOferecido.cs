@@ -37,18 +37,19 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
                 throw new ArgumentNullException(nameof(contrato));
 
             var retorno = new ServicoOferecido();
-
-                retorno.Id = contrato.Id;
-                retorno.PrestadorId = contrato.PrestadorId;
-                retorno.CategoriaId = contrato.CategoriaId;
-                retorno.Titulo = contrato.Titulo;
-                retorno.Descricao = contrato.Descricao;
-                retorno.PrecoBase= contrato.PrecoBase;
-                retorno.UnidadeCobranca = contrato.UnidadeCobranca;
-                retorno.DuracaoEstimadaMinutos = contrato.DuracaoEstimadaMinutos;
-                retorno.TipoAnuncio = contrato.TipoAnuncio;
-                retorno.Ativo = contrato.Ativo;
-                retorno.DataCriacao = contrato.DataCriacao;
+                retorno.DefinirDados(
+                    contrato.Id,
+                    contrato.PrestadorId,
+                    contrato.CategoriaId,
+                    contrato.ClienteId,
+                    contrato.Titulo,
+                    contrato.Descricao,
+                    contrato.PrecoBase,
+                    contrato.UnidadeCobranca,
+                    contrato.DuracaoEstimadaMinutos,
+                    contrato.TipoAnuncio,
+                    contrato.Ativo,
+                    contrato.DataCriacao);
 
                 return retorno;
         }

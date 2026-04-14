@@ -5,34 +5,62 @@ namespace HomeTask.Domain.Entities;
 /// </summary>
 public class Avaliacao
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public Avaliacao() { }
 
-    public Guid AgendamentoId { get; set; }
+    public Guid Id { get; private set; } = Guid.NewGuid();
 
-    public Agendamento Agendamento { get; set; } = null!;
+    public Guid AgendamentoId { get; private set; }
 
-    public Guid ClienteId { get; set; }
+    public Agendamento Agendamento { get; private set; } = null!;
 
-    public Cliente Cliente { get; set; } = null!;
+    public Guid ClienteId { get; private set; }
 
-    public Guid PrestadorId { get; set; }
+    public Cliente Cliente { get; private set; } = null!;
 
-    public Prestador Prestador { get; set; } = null!;
+    public Guid PrestadorId { get; private set; }
+
+    public Prestador Prestador { get; private set; } = null!;
 
     /// <summary>
     /// Nota de 0 a 5 estrelas (NEG07)
     /// </summary>
-    public int Nota { get; set; }
+    public int Nota { get; private set; }
 
     /// <summary>
     /// Comentário opcional sobre o serviço
     /// </summary>
-    public string? Comentario { get; set; }
+    public string? Comentario { get; private set; }
 
-    public DateTime DataAvaliacao { get; set; } = DateTime.UtcNow;
+    public DateTime DataAvaliacao { get; private set; } = DateTime.UtcNow;
 
     /// <summary>
     /// Avaliações são públicas e permanentes (NEG07)
     /// </summary>
-    public bool Visivel { get; set; } = true;
+    public bool Visivel { get; private set; } = true;
+
+    public void DefinirDados(
+        Guid id,
+        Guid agendamentoId,
+        Guid clienteId,
+        Guid prestadorId,
+        int nota,
+        string? comentario,
+        DateTime dataAvaliacao,
+        bool visivel)
+    {
+        Id = id;
+        AgendamentoId = agendamentoId;
+        ClienteId = clienteId;
+        PrestadorId = prestadorId;
+        Nota = nota;
+        Comentario = comentario;
+        DataAvaliacao = dataAvaliacao;
+        Visivel = visivel;
+    }
+
+    public void Publicar(DateTime dataAvaliacao)
+    {
+        DataAvaliacao = dataAvaliacao;
+        Visivel = true;
+    }
 }

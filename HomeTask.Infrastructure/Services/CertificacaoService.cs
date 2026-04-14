@@ -20,16 +20,16 @@ public class CertificacaoService : ICertificacaoService
     {
         var urlDocumento = await _arquivoService.SalvarAsync(documento, nomeArquivo, $"certificacoes/{prestadorId}", cancellationToken);
 
-        var certificacao = new Certificacao
-        {
-            PrestadorId = prestadorId,
-            Nome = nome,
-            Instituicao = instituicao,
-            DataEmissao = dataEmissao,
-            DataValidade = dataValidade,
-            UrlDocumento = urlDocumento,
-            DataCadastro = DateTime.UtcNow
-        };
+        var certificacao = new Certificacao();
+
+        certificacao.DefinirDados(
+            prestadorId,
+            nome,
+            instituicao,
+            dataEmissao,
+            dataValidade,
+            urlDocumento,
+            DateTime.UtcNow);
 
         _context.Certificacoes.Add(certificacao);
         await _context.SaveChangesAsync(cancellationToken);

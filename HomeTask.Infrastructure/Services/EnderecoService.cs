@@ -38,7 +38,7 @@ public class EnderecoService : IEnderecoService
             .AnyAsync(e => e.UsuarioId == endereco.UsuarioId, cancellationToken);
 
         if (!temEnderecos)
-            endereco.Principal = true;
+            endereco.DefinirPrincipal(true);
 
         _context.Enderecos.Add(endereco);
         await _context.SaveChangesAsync(cancellationToken);
@@ -68,7 +68,7 @@ public class EnderecoService : IEnderecoService
 
                 if (proximo != null)
                 {
-                    proximo.Principal = true;
+                    proximo.DefinirPrincipal(true);
                     await _context.SaveChangesAsync(cancellationToken);
                 }
             }
@@ -83,12 +83,12 @@ public class EnderecoService : IEnderecoService
             .ToListAsync(cancellationToken);
 
         foreach (var e in enderecos)
-            e.Principal = false;
+            e.DefinirPrincipal(false);
 
         // marca o selecionado como principal
         var principal = enderecos.FirstOrDefault(e => e.Id == enderecoId);
         if (principal != null)
-            principal.Principal = true;
+            principal.DefinirPrincipal(true);
 
         await _context.SaveChangesAsync(cancellationToken);
     }

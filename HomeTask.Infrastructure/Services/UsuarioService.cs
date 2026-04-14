@@ -34,28 +34,30 @@ public class UsuarioService : IUsuarioService
 
     public async Task<Usuario> CriarAsync(Usuario usuario, string senha, CancellationToken cancellationToken = default)
     {
-        usuario.SenhaHash = HashSenha(senha);
-        usuario.DataCadastro = DateTime.UtcNow;
+        usuario.DefinirSenhaHash(HashSenha(senha));
+        usuario.DefinirDataCadastro(DateTime.UtcNow);
 
         // garante que o endereço informado no cadastro seja o principal
         var enderecoPrincipal = usuario.Enderecos.FirstOrDefault();
         if (enderecoPrincipal != null)
-            enderecoPrincipal.Principal = true;
+            enderecoPrincipal.DefinirPrincipal(true);
 
         if (usuario.TipoUsuario == TipoUsuario.Cliente || usuario.TipoUsuario == TipoUsuario.Ambos)
         {
-            usuario.Cliente ??= new Cliente();
+            if (usuario.Cliente == null)
+            {
+                usuario.DefinirCliente(new Cliente());
+            }
         }
 
         if (usuario.TipoUsuario == TipoUsuario.Prestador || usuario.TipoUsuario == TipoUsuario.Ambos)
         {
-            usuario.Prestador ??= new Prestador
+            if (usuario.Prestador == null)
             {
-                Status = StatusPrestador.EmAnalise,
-                MediaAvaliacoes = 0,
-                TotalAvaliacoes = 0,
-                TotalServicosConcluidos = 0
-            };
+                var prestador = new Prestador();
+                prestador.DefinirStatusInicial();
+                usuario.DefinirPrestador(prestador);
+            }
         }
 
         _context.Usuarios.Add(usuario);

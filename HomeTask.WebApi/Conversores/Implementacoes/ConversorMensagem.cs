@@ -30,15 +30,15 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
                 throw new ArgumentNullException(nameof(contrato));
 
             var retorno = new Domain.Entities.Mensagem();
-
-                retorno.Id = contrato.Id;
-                retorno.RemetenteId = contrato.RemetenteId;
-                retorno.ConversaId = contrato.ConversaId;
-                retorno.AgendamentoId = contrato.AgendamentoId;
-                retorno.Conteudo = contrato.Conteudo;
-                retorno.DataEnvio = contrato.DataEnvio;
-                retorno.DataLeitura = contrato.DataLeitura;
-                retorno.Lida = contrato.Lida;
+                retorno.DefinirDados(
+                    contrato.Id,
+                    contrato.RemetenteId,
+                    contrato.ConversaId,
+                    contrato.AgendamentoId,
+                    contrato.Conteudo,
+                    contrato.DataEnvio,
+                    contrato.DataLeitura,
+                    contrato.Lida);
 
                 return retorno;
         }
