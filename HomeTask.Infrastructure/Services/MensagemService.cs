@@ -27,8 +27,7 @@ public class MensagemService : IMensagemService
 
     public async Task<Mensagem> EnviarAsync(Mensagem mensagem, CancellationToken cancellationToken = default)
     {
-        mensagem.DataEnvio = DateTime.UtcNow;
-        mensagem.Lida = false;
+        mensagem.PrepararEnvio(DateTime.UtcNow);
 
         _context.Mensagens.Add(mensagem);
         await _context.SaveChangesAsync(cancellationToken);
@@ -63,8 +62,7 @@ public class MensagemService : IMensagemService
         var mensagem = await _context.Mensagens.FindAsync([mensagemId], cancellationToken);
         if (mensagem != null && !mensagem.Lida)
         {
-            mensagem.Lida = true;
-            mensagem.DataLeitura = DateTime.UtcNow;
+            mensagem.MarcarComoLida(DateTime.UtcNow);
             await _context.SaveChangesAsync(cancellationToken);
         }
     }

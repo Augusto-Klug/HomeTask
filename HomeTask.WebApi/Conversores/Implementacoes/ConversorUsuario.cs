@@ -44,27 +44,16 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
             ArgumentNullException.ThrowIfNull(contrato);
 
             var retorno = new Usuario();
-                retorno.Id = contrato.Id;
-                retorno.Nome = contrato.Nome;
-                retorno.Email = contrato.Email;
-                retorno.Documento = contrato.Documento;
-                retorno.Telefone = contrato.Telefone;
-                retorno.TipoUsuario = contrato.TipoUsuario;
-                retorno.DataCadastro = contrato.DataCadastro;
-                retorno.UltimoAcesso = contrato.UltimoAcesso;
-                retorno.Ativo = contrato.Ativo;
-
-                // monta o endereço e adiciona à coleção do usuário
-                retorno.Enderecos.Add(new Endereco
-                {
-                    Logradouro = contrato.Logradouro,
-                    Numero = contrato.Numero,
-                    Complemento = contrato.Complemento,
-                    Bairro = contrato.Bairro,
-                    Cep = contrato.Cep,
-                    CidadeId = contrato.CidadeId,
-                    Principal = true
-                });
+                retorno.DefinirDados(
+                    contrato.Id,
+                    contrato.Nome,
+                    contrato.Email,
+                    contrato.Documento,
+                    contrato.Telefone,
+                    contrato.TipoUsuario,
+                    contrato.DataCadastro,
+                    contrato.UltimoAcesso,
+                    contrato.Ativo);
 
                 return retorno;
         }

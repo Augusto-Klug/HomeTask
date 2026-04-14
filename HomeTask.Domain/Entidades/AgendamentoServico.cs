@@ -1,4 +1,4 @@
-﻿using HomeTask.Domain.Entities;
+using HomeTask.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,18 +7,20 @@ namespace HomeTask.Domain.Entidades
 {
     public class AgendamentoServico
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public AgendamentoServico() { }
 
-        public Guid AgendamentoId { get; set; }
+        public Guid Id { get; private set; } = Guid.NewGuid();
 
-        public Guid ServicoOferecidoId { get; set; }
+        public Guid AgendamentoId { get; private set; }
 
-        public int Quantidade { get; set; } = 1;
-        public decimal ValorUnitario { get; set; }
+        public Guid ServicoOferecidoId { get; private set; }
+
+        public int Quantidade { get; private set; } = 1;
+        public decimal ValorUnitario { get; private set; }
 
          // Navegação
-        public Agendamento Agendamento { get; set; } = null!;
-        public ServicoOferecido ServicoOferecido { get; set; } = null!;
+        public Agendamento Agendamento { get; private set; } = null!;
+        public ServicoOferecido ServicoOferecido { get; private set; } = null!;
 
     }
 }

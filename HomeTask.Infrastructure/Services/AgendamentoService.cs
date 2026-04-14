@@ -35,8 +35,7 @@ public class AgendamentoService : IAgendamentoService
 
     public async Task<Agendamento> CriarAsync(Agendamento agendamento, CancellationToken cancellationToken = default)
     {
-        agendamento.Status = StatusAgendamento.Solicitado;
-        agendamento.DataSolicitacao = DateTime.UtcNow;
+        agendamento.DefinirComoSolicitado(DateTime.UtcNow);
 
         _context.Agendamentos.Add(agendamento);
         await _context.SaveChangesAsync(cancellationToken);
@@ -53,8 +52,7 @@ public class AgendamentoService : IAgendamentoService
         if (agendamento.Status != StatusAgendamento.Solicitado)
             throw new InvalidOperationException("Agendamento não pode ser aceito neste status");
 
-        agendamento.Status = StatusAgendamento.Aceito;
-        agendamento.DataResposta = DateTime.UtcNow;
+        agendamento.Aceitar(DateTime.UtcNow);
 
         await _context.SaveChangesAsync(cancellationToken);
         return agendamento;
@@ -69,9 +67,7 @@ public class AgendamentoService : IAgendamentoService
         if (agendamento.Status != StatusAgendamento.Solicitado)
             throw new InvalidOperationException("Agendamento não pode ser recusado neste status");
 
-        agendamento.Status = StatusAgendamento.Recusado;
-        agendamento.DataResposta = DateTime.UtcNow;
-        agendamento.MotivoRecusa = motivo;
+        agendamento.Recusar(motivo, DateTime.UtcNow);
 
         await _context.SaveChangesAsync(cancellationToken);
         return agendamento;
@@ -86,7 +82,7 @@ public class AgendamentoService : IAgendamentoService
         if (agendamento.Status != StatusAgendamento.Aceito)
             throw new InvalidOperationException("Agendamento não pode ser iniciado neste status");
 
-        agendamento.Status = StatusAgendamento.EmAndamento;
+        agendamento.Iniciar();
 
         await _context.SaveChangesAsync(cancellationToken);
         return agendamento;
@@ -101,13 +97,12 @@ public class AgendamentoService : IAgendamentoService
         if (agendamento.Status != StatusAgendamento.EmAndamento)
             throw new InvalidOperationException("Agendamento não pode ser concluído neste status");
 
-        agendamento.Status = StatusAgendamento.Concluido;
-        agendamento.DataConclusao = DateTime.UtcNow;
+        agendamento.Concluir(DateTime.UtcNow);
 
         var prestador = await _context.Prestadores.FindAsync([agendamento.PrestadorId], cancellationToken);
         if (prestador != null)
         {
-            prestador.TotalServicosConcluidos++;
+            prestador.IncrementarTotalServicosConcluidos();
         }
 
         await _context.SaveChangesAsync(cancellationToken);
@@ -124,8 +119,7 @@ public class AgendamentoService : IAgendamentoService
             agendamento.Status == StatusAgendamento.Cancelado)
             throw new InvalidOperationException("Agendamento não pode ser cancelado neste status");
 
-        agendamento.Status = StatusAgendamento.Cancelado;
-        agendamento.MotivoRecusa = motivo;
+        agendamento.Cancelar(motivo);
 
         await _context.SaveChangesAsync(cancellationToken);
         return agendamento;

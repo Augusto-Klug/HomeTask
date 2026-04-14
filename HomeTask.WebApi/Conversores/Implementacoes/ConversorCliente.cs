@@ -24,8 +24,7 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
                 throw new ArgumentNullException(nameof(contrato));
 
             var retorno = new Domain.Entities.Cliente();
-                retorno.Id = contrato.Id;
-                retorno.UsuarioId = contrato.UsuarioId;
+                retorno.DefinirDados(contrato.Id, contrato.UsuarioId);
 
                 return retorno;
         }

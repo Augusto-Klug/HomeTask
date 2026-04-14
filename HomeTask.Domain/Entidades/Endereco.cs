@@ -1,30 +1,57 @@
-﻿using HomeTask.Domain.Entities;
+using HomeTask.Domain.Entities;
 
 namespace HomeTask.Domain.Entidades
 {
     public class Endereco
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Endereco() { }
 
-        public Guid UsuarioId { get; set; }
+        public Guid Id { get; private set; } = Guid.NewGuid();
 
-        public Guid CidadeId { get; set; }
+        public Guid UsuarioId { get; private set; }
 
-        public string Logradouro { get; set; } = null!;
+        public Guid CidadeId { get; private set; }
 
-        public string? Numero { get; set; }
+        public string Logradouro { get; private set; } = null!;
 
-        public string? Complemento { get; set;}
+        public string? Numero { get; private set; }
 
-        public string Bairro { get; set; } = null!;
+        public string? Complemento { get; private set;}
 
-        public string Cep { get; set; } = null!;
+        public string Bairro { get; private set; } = null!;
 
-        public bool Principal { get; set; }
+        public string Cep { get; private set; } = null!;
 
-        public Usuario Usuario { get; set; } = null!;
-        public Cidade Cidade { get; set; } = null!;
-        public ICollection<Agendamento> Agendamentos { get; set; } = [];
+        public bool Principal { get; private set; }
+
+        public Usuario Usuario { get; private set; } = null!;
+        public Cidade Cidade { get; private set; } = null!;
+        public ICollection<Agendamento> Agendamentos { get; private set; } = [];
+
+        public void DefinirPrincipal(bool principal)
+        {
+            Principal = principal;
+        }
+
+        public void DefinirDados(
+            Guid usuarioId,
+            Guid cidadeId,
+            string logradouro,
+            string? numero,
+            string? complemento,
+            string bairro,
+            string cep,
+            bool principal)
+        {
+            UsuarioId = usuarioId;
+            CidadeId = cidadeId;
+            Logradouro = logradouro;
+            Numero = numero;
+            Complemento = complemento;
+            Bairro = bairro;
+            Cep = cep;
+            Principal = principal;
+        }
 
     }
 }

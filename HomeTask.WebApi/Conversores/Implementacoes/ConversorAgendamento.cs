@@ -36,22 +36,20 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
                 throw new ArgumentNullException(nameof(contrato));
 
             var retorno = new Domain.Entities.Agendamento();
-
-                retorno.Id = contrato.Id;
-                retorno.ClienteId = contrato.ClienteId;
-                retorno.PrestadorId = contrato.PrestadorId;
-                //retorno.ServicoOferecidoId = contrato.ServicoOferecidoId; 
-                // ServicosOferecidosIds é tratado no Service
-                retorno.DataHoraAgendada = contrato.DataHoraAgendada;
-                retorno.DuracaoMinutos = contrato.DuracaoMinutos;
-                retorno.Status = contrato.Status;
-                retorno.EnderecoId = contrato.EnderecoId;
-                retorno.Observacoes = contrato.Observacoes;
-                retorno.ValorTotal = contrato.ValorTotal;
-                retorno.DataSolicitacao = contrato.DataSolicitacao;
-                retorno.DataResposta = contrato.DataResposta;
-                retorno.DataConclusao = contrato.DataConclusao;
-                retorno.MotivoRecusa = contrato.MotivoRecusa;
+                retorno.DefinirDados(
+                    contrato.Id,
+                    contrato.ClienteId,
+                    contrato.PrestadorId,
+                    contrato.DataHoraAgendada,
+                    contrato.DuracaoMinutos,
+                    contrato.Status,
+                    contrato.EnderecoId,
+                    contrato.Observacoes,
+                    contrato.ValorTotal,
+                    contrato.DataSolicitacao,
+                    contrato.DataResposta,
+                    contrato.DataConclusao,
+                    contrato.MotivoRecusa);
 
                 return retorno;
         }
