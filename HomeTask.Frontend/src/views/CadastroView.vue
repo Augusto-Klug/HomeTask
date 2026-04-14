@@ -101,11 +101,13 @@
               regra="required"
               required
             />
-            <HtInput
+            <HtSelect
               ref="inputCidade"
-              v-model="form.cidade"
+              v-model="form.cidadeId"
               label="Cidade"
-              regra="required"
+              :options="cidades"
+              placeholder="Selecione a cidade"
+              :hint="carregandoCidades ? 'Carregando cidades...' : undefined"
               required
             />
           </div>
@@ -151,12 +153,13 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/services/api'
 import { validarCampos } from '@/shared/validacao'
 import type { CadastroForm } from '@/types'
 import HtInput from '@/components/ui/HtInput.vue'
+import HtSelect from '@/components/ui/HtSelect.vue'
 import HtTextarea from '@/components/ui/HtTextarea.vue'
 import HtButton from '@/components/ui/HtButton.vue'
 import HtCard from '@/components/ui/HtCard.vue'
@@ -181,7 +184,7 @@ const form = reactive<CadastroForm>({
   cep: '',
   endereco: '',
   bairro: '',
-  cidade: '',
+  cidadeId: '',
   estado: '',
   raioAtendimentoKm: 10,
   descricao: '',
@@ -189,6 +192,8 @@ const form = reactive<CadastroForm>({
 
 const carregando = ref(false)
 const erro = ref<string | null>(null)
+const carregandoCidades = ref(false)
+const cidades = ref<Array<{ label: string; value: string }>>([])
 
 // Refs dos campos
 const inputNome      = ref<InstanceType<typeof HtInput> | null>(null)
@@ -199,9 +204,66 @@ const inputSenha     = ref<InstanceType<typeof HtInput> | null>(null)
 const inputCep       = ref<InstanceType<typeof HtInput> | null>(null)
 const inputEndereco  = ref<InstanceType<typeof HtInput> | null>(null)
 const inputBairro    = ref<InstanceType<typeof HtInput> | null>(null)
-const inputCidade    = ref<InstanceType<typeof HtInput> | null>(null)
+const inputCidade    = ref<InstanceType<typeof HtSelect> | null>(null)
 const inputEstado    = ref<InstanceType<typeof HtInput> | null>(null)
 const inputDescricao = ref<InstanceType<typeof HtInput> | null>(null)
+
+type CidadeApi = {
+  id?: string | number
+  Id?: string | number
+  cidadeId?: string | number
+  CidadeId?: string | number
+  nome?: string
+  Nome?: string
+  descricao?: string
+  Descricao?: string
+  estado?: string
+  Estado?: string
+  uf?: string
+  Uf?: string
+  UF?: string
+}
+
+function mapearCidade(cidade: CidadeApi) {
+  const value = cidade.id ?? cidade.Id ?? cidade.cidadeId ?? cidade.CidadeId ?? ''
+  const nome = cidade.nome ?? cidade.Nome ?? cidade.descricao ?? cidade.Descricao ?? ''
+  const uf = cidade.uf ?? cidade.Uf ?? cidade.UF ?? cidade.estado ?? cidade.Estado ?? ''
+  const label = uf && nome ? `${nome} - ${uf}` : nome
+  return { value: String(value), label: label || String(value) }
+}
+
+async function carregarCidades() {
+  carregandoCidades.value = true
+  try {
+    const response = await api.get('/api/Cidade/Listar')
+    const lista = (Array.isArray(response.data)
+      ? response.data
+      : response.data?.cidades ?? response.data?.data ?? response.data?.value ?? []) as CidadeApi[]
+    cidades.value = lista.map(mapearCidade).filter(cidade => cidade.value)
+  } catch (err: unknown) {
+    const e = err as { response?: { status?: number } }
+    if (e.response?.status === 404) {
+      try {
+        const response = await api.get('/api/Cidades/Listar')
+        const lista = (Array.isArray(response.data)
+          ? response.data
+          : response.data?.cidades ?? response.data?.data ?? response.data?.value ?? []) as CidadeApi[]
+        cidades.value = lista.map(mapearCidade).filter(cidade => cidade.value)
+        return
+      } catch {
+        cidades.value = []
+      }
+    } else {
+      cidades.value = []
+    }
+  } finally {
+    carregandoCidades.value = false
+  }
+}
+
+onMounted(() => {
+  void carregarCidades()
+})
 
 async function handleCadastro() {
   const camposBase = [
@@ -226,7 +288,7 @@ async function handleCadastro() {
       cep:       form.cep,
       endereco:  form.endereco,
       bairro:    form.bairro,
-      cidade:    form.cidade,
+      cidadeId:  form.cidadeId,
       estado:    form.estado,
     })
     router.push('/cadastro-sucesso')

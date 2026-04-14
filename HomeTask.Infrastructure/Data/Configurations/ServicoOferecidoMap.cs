@@ -14,7 +14,7 @@ public class ServicoOferecidoMap : IEntityTypeConfiguration<ServicoOferecido>
             .WithMany(p => p.ServicosOferecidos)
             .HasForeignKey(s => s.PrestadorId)
             .IsRequired(false)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.SetNull);
 
         builder.Property(s => s.Titulo)
             .HasMaxLength(100);
@@ -22,32 +22,34 @@ public class ServicoOferecidoMap : IEntityTypeConfiguration<ServicoOferecido>
         builder.Property(s => s.Descricao)
             .HasMaxLength(500);
 
-        builder.Property(s => s.Valor)
-            .HasColumnType("decimal(10,2)");
-
-        builder.Property(s => s.Categoria)
-            .HasColumnType("int")
-            .IsRequired();
-
         builder.Property(s => s.UnidadeCobranca)
             .HasMaxLength(20);
-
-        builder.Property(s => s.DataAgendamento)
-            .HasColumnType("date")
-            .IsRequired(false);
-
-        builder.Property(s => s.AceitaPagamentoAposFinalizacao)
-            .HasColumnType("bit")
-            .IsRequired(false);
 
         builder.Property(s => s.DataCriacao)
             .HasColumnType("datetime")
             .IsRequired();
 
-        builder.Property(s => s.Ativo)
-            .HasColumnType("bit")
-            .IsRequired();
+         builder.HasOne(s => s.Categoria)
+            .WithMany(c => c.ServicosOferecidos)
+            .HasForeignKey(s => s.CategoriaId)
+            .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasOne(s => s.Cliente)
+            .WithMany()
+            .HasForeignKey(s => s.ClienteId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasMany(s => s.AgendamentoServicos)
+            .WithOne(a => a.ServicoOferecido)
+            .HasForeignKey(a => a.ServicoOferecidoId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Property(s => s.PrecoBase)
+            .HasColumnType("decimal(10,2)");
+
+        builder.Property(s => s.TipoAnuncio)
+            .IsRequired();
 
     }
 }

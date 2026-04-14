@@ -53,22 +53,27 @@ public class PrestadorService : IPrestadorService
         return prestador;
     }
 
-    public async Task<IEnumerable<Prestador>> BuscarAsync(CategoriaServico? categoria, string? cidade, DateTime? dataDisponivel, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Prestador>> BuscarAsync(Guid? categoriaId, string? cidade, DateTime? dataDisponivel, CancellationToken cancellationToken = default)
     {
         var query = _context.Prestadores
             .Include(p => p.Usuario)
+                .ThenInclude(u => u.Enderecos)
+                    .ThenInclude(e => e.Cidade)
             .Include(p => p.ServicosOferecidos)
+                .ThenInclude(s => s.Categoria)
             .Include(p => p.Avaliacoes)
             .Where(p => p.Status == StatusPrestador.Ativo);
 
-        if (categoria.HasValue)
+        if (categoriaId.HasValue)
         {
-            query = query.Where(p => p.ServicosOferecidos.Any(s => s.Categoria == categoria.Value && s.Ativo));
+            query = query.Where(p => p.ServicosOferecidos
+                .Any(s => s.CategoriaId == categoriaId.Value && s.Ativo));
         }
 
         if (!string.IsNullOrWhiteSpace(cidade))
         {
-            query = query.Where(p => p.Cidade != null && p.Cidade.Contains(cidade));
+            query = query.Where(p => p.Usuario.Enderecos
+                .Any(e => e.Principal && e.Cidade.Nome.Contains(cidade)));
         }
 
         if (dataDisponivel.HasValue)
@@ -83,7 +88,9 @@ public class PrestadorService : IPrestadorService
                 d.Ativo));
         }
 
-        return await query.OrderByDescending(p => p.MediaAvaliacoes).ToListAsync(cancellationToken);
+        return await query
+            .OrderByDescending(p => p.MediaAvaliacoes)
+            .ToListAsync(cancellationToken);
     }
 
     public async Task<IEnumerable<Agendamento>> ObterHistoricoServicosAsync(Guid prestadorId, CancellationToken cancellationToken = default)
@@ -91,7 +98,8 @@ public class PrestadorService : IPrestadorService
         return await _context.Agendamentos
             .Include(a => a.Cliente)
                 .ThenInclude(c => c.Usuario)
-            .Include(a => a.ServicoOferecido)
+            .Include(a => a.AgendamentoServicos)
+                .ThenInclude(s => s.ServicoOferecido)
             .Include(a => a.Avaliacao)
             .Where(a => a.PrestadorId == prestadorId)
             .OrderByDescending(a => a.DataHoraAgendada)

@@ -22,7 +22,7 @@ public class ServicoService : IServicoService
     {
         return await _context.ServicosOferecidos
             .Include(s => s.Prestador)
-                .ThenInclude(p => p.Usuario)
+            .ThenInclude(p => p.Usuario)
             .FirstOrDefaultAsync(s => s.Id == id, cancellationToken);
     }
 
@@ -59,37 +59,34 @@ public class ServicoService : IServicoService
     {
         return await _context.ServicosOferecidos
             .Where(s => s.PrestadorId == prestadorId && s.Ativo)
-            .OrderBy(s => s.Categoria)
+            .OrderBy(s => s.Titulo)
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<ServicoOferecido>> BuscarAsync(CategoriaServico? categoria, string? cidade, decimal? precoMaximo, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<ServicoOferecido>> BuscarAsync(Guid? categoriaId, string? cidade, decimal? precoMaximo, CancellationToken cancellationToken = default)
     {
         var query = _context.ServicosOferecidos
             .Include(s => s.Prestador)
                 .ThenInclude(p => p.Usuario)
             .Include(s => s.Prestador)
                 .ThenInclude(p => p.Avaliacoes)
-            .Where(s => s.Ativo && s.Prestador.Status == StatusPrestador.Ativo);
+            .Include(s => s.Categoria)
+            .Where(s => s.Ativo && s.PrestadorId != null && s.Prestador!.Status == StatusPrestador.Ativo);
 
-        if (categoria.HasValue)
-        {
-            query = query.Where(s => s.Categoria == categoria.Value);
-        }
+        if (categoriaId.HasValue)
+            query = query.Where(s => s.CategoriaId == categoriaId.Value);
 
         if (!string.IsNullOrWhiteSpace(cidade))
-        {
-            query = query.Where(s => s.Prestador.Cidade != null && s.Prestador.Cidade.Contains(cidade));
-        }
+            query = query.Where(s =>
+                s.Prestador!.Usuario.Enderecos
+                    .Any(e => e.Principal && e.Cidade.Nome.Contains(cidade)));
 
         if (precoMaximo.HasValue)
-        {
-            query = query.Where(s => s.Valor <= precoMaximo.Value);
-        }
+            query = query.Where(s => s.PrecoBase <= precoMaximo.Value);
 
         return await query
-            .OrderByDescending(s => s.Prestador.MediaAvaliacoes)
-            .ThenBy(s => s.Valor)
+            .OrderByDescending(s => s.Prestador!.MediaAvaliacoes)
+            .ThenBy(s => s.PrecoBase)
             .ToListAsync(cancellationToken);
     }
 }

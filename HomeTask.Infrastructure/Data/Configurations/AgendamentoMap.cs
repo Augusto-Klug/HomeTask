@@ -19,15 +19,16 @@ public class AgendamentoMap : IEntityTypeConfiguration<Agendamento>
             .WithMany(p => p.Agendamentos)
             .HasForeignKey(a => a.PrestadorId)
             .OnDelete(DeleteBehavior.Restrict);
-
-        builder.HasOne(a => a.ServicoOferecido)
-            .WithMany()
-            .HasForeignKey(a => a.ServicoOferecidoId)
+        
+            builder.HasOne(a => a.Endereco)
+            .WithMany(e => e.Agendamentos)
+            .HasForeignKey(a => a.EnderecoId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.Property(a => a.EnderecoServico)
-            .HasMaxLength(300);
-
+        builder.HasMany(a => a.AgendamentoServicos)
+            .WithOne(s => s.Agendamento)
+            .HasForeignKey(s => s.AgendamentoId)
+            .OnDelete(DeleteBehavior.Cascade);
         builder.Property(a => a.Observacoes)
             .HasMaxLength(500);
 

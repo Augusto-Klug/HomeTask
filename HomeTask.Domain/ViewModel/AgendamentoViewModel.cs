@@ -9,16 +9,13 @@ namespace HomeTask.Domain.ViewModel
             public Guid Id { get; set; } = Guid.NewGuid();
             public Guid ClienteId { get; set; }
             public Guid PrestadorId { get; set; }
-            public Guid ServicoOferecidoId { get; set; }
 
             public DateTime DataHoraAgendada { get; set; }
 
             public int DuracaoMinutos { get; set; }
+            public Guid EnderecoId { get; set; }
 
             public StatusAgendamento Status { get; set; }
-
-            [MaxLength(300)]
-            public string? EnderecoServico { get; set; }
 
             [MaxLength(500)]
             public string? Observacoes { get; set; }
@@ -33,5 +30,7 @@ namespace HomeTask.Domain.ViewModel
 
             [MaxLength(500)]
             public string? MotivoRecusa { get; set; }
+
+            public List<Guid> ServicosOferecidosIds { get; set; } = [];
     }
 }

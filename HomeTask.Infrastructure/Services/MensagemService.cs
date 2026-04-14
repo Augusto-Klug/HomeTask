@@ -21,7 +21,7 @@ public class MensagemService : IMensagemService
     {
         return await _context.Mensagens
             .Include(m => m.Remetente)
-            .Include(m => m.Destinatario)
+            .Include(m => m.Conversa)
             .FirstOrDefaultAsync(m => m.Id == id, cancellationToken);
     }
 
@@ -36,30 +36,26 @@ public class MensagemService : IMensagemService
         return mensagem;
     }
 
-    public async Task<IEnumerable<Mensagem>> ObterConversaAsync(Guid usuarioId1, Guid usuarioId2, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Mensagem>> ObterConversaAsync(Guid conversaId, CancellationToken cancellationToken = default)
     {
         return await _context.Mensagens
             .Include(m => m.Remetente)
-            .Include(m => m.Destinatario)
-            .Where(m =>
-                (m.RemetenteId == usuarioId1 && m.DestinatarioId == usuarioId2) ||
-                (m.RemetenteId == usuarioId2 && m.DestinatarioId == usuarioId1))
+            .Include(m => m.Conversa)
+            .Where(m => m.ConversaId == conversaId)
             .OrderBy(m => m.DataEnvio)
             .ToListAsync(cancellationToken);
     }
 
     public async Task<IEnumerable<Mensagem>> ObterConversasPorUsuarioAsync(Guid usuarioId, CancellationToken cancellationToken = default)
     {
-        var mensagens = await _context.Mensagens
+        return await _context.Mensagens
             .Include(m => m.Remetente)
-            .Include(m => m.Destinatario)
-            .Where(m => m.RemetenteId == usuarioId || m.DestinatarioId == usuarioId)
-            .ToListAsync(cancellationToken);
-
-        return mensagens
-            .GroupBy(m => m.RemetenteId == usuarioId ? m.DestinatarioId : m.RemetenteId)
+            .Include(m => m.Conversa)
+            .Where(m => m.Conversa.ClienteId == usuarioId || m.Conversa.PrestadorId == usuarioId)
+            .GroupBy(m => m.ConversaId)
             .Select(g => g.OrderByDescending(m => m.DataEnvio).First())
-            .OrderByDescending(m => m.DataEnvio);
+            .OrderByDescending(m => m.DataEnvio)
+            .ToListAsync(cancellationToken);
     }
 
     public async Task MarcarComoLidaAsync(Guid mensagemId, CancellationToken cancellationToken = default)
@@ -76,6 +72,8 @@ public class MensagemService : IMensagemService
     public async Task<int> ObterNaoLidasAsync(Guid usuarioId, CancellationToken cancellationToken = default)
     {
         return await _context.Mensagens
-            .CountAsync(m => m.DestinatarioId == usuarioId && !m.Lida, cancellationToken);
+            .Where(m => m.Conversa.ClienteId == usuarioId || m.Conversa.PrestadorId == usuarioId)
+            .Where(m => m.RemetenteId != usuarioId && !m.Lida)
+            .CountAsync(cancellationToken);
     }
 }
