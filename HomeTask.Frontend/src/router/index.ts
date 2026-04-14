@@ -82,6 +82,19 @@ const router = createRouter({
       name: "agendamento-sucesso",
       component: () => import("@/views/agendamento/AgendamentoSucessoView.vue"),
     },
+    // Perfil
+    {
+      path: "/perfil/agendamentos",
+      name: "perfil-agendamentos",
+      component: () => import("@/views/perfil/MeusAgendamentosView.vue"),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/perfil/minha-conta",
+      name: "perfil-minha-conta",
+      component: () => import("@/views/perfil/MinhaContaView.vue"),
+      meta: { requiresAuth: true },
+    },
     // Fallback
     {
       path: "/:pathMatch(.*)*",

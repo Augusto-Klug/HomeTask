@@ -51,6 +51,23 @@
                 {{ auth.user?.nome }}
               </p>
             </div>
+            <router-link
+              to="/perfil/minha-conta"
+              class="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-base-content hover:bg-base-200 transition-colors"
+              @click="userMenuOpen = false"
+            >
+              <span class="material-symbols-rounded text-base">manage_accounts</span>
+              Minha conta
+            </router-link>
+            <router-link
+              to="/perfil/agendamentos"
+              class="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-base-content hover:bg-base-200 transition-colors"
+              @click="userMenuOpen = false"
+            >
+              <span class="material-symbols-rounded text-base">calendar_month</span>
+              Agendamentos
+            </router-link>
+            <div class="border-t border-base-300 my-1" />
             <button
               type="button"
               class="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-base-content hover:bg-base-200 transition-colors"
