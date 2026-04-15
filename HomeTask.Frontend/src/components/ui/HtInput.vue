@@ -11,7 +11,10 @@
     <label
       :for="inputId"
       class="input input-bordered flex items-center gap-2 w-full cursor-text"
-      :class="{ 'input-error': hasError, 'opacity-50 pointer-events-none': disabled }"
+      :class="{
+        'input-error': hasError,
+        'bg-base-200/60 border-base-300/70 cursor-not-allowed pointer-events-none': disabled,
+      }"
     >
       <span
         v-if="$slots.prefix"
@@ -29,7 +32,7 @@
         :disabled="disabled"
         :placeholder="placeholder"
         :maxlength="maxlength"
-        class="grow bg-transparent border-none outline-none text-sm"
+        class="grow bg-transparent border-none outline-none text-sm disabled:text-base-content disabled:opacity-100 disabled:[-webkit-text-fill-color:var(--color-base-content)]"
         @input="handleInput"
         @blur="handleBlur"
       />
@@ -156,7 +159,7 @@ function validar(): boolean {
 
   if (!v) {
     if (props.required || props.regra) {
-      setError(props.mensagemErro ?? mensagensPadrao['required'])
+      setError(props.mensagemErro ?? mensagensPadrao['required'] ?? 'Campo obrigatório')
       return false
     }
     clearError()

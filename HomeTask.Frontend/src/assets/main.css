@@ -95,14 +95,14 @@
   --color-success-light: color-mix(in oklch, var(--color-success) 12%, var(--color-base-100));
 
   /* Tipografia */
-  --text-xs:    12px;
-  --text-sm:    13px;
-  --text-base:  14px;
-  --text-title: 16px;
-  --text-lg:    18px;
-  --text-xl:    20px;
-  --text-2xl:   24px;
-  --text-3xl:   30px;
+  --text-xs:    14px;
+  --text-sm:    15px;
+  --text-base:  16px;
+  --text-title: 18px;
+  --text-lg:    20px;
+  --text-xl:    22px;
+  --text-2xl:   26px;
+  --text-3xl:   32px;
 }
 
 /* ─── Base ───────────────────────────────────────────────── */
@@ -113,12 +113,12 @@
 }
 
 html {
-  font-size: 14px;
+  font-size: 16px;
 }
 
 body {
   font-family: 'Inter', 'Roboto', system-ui, -apple-system, sans-serif;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.5;
   margin: 0;
 }

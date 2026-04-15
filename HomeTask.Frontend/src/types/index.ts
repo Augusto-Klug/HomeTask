@@ -42,7 +42,7 @@ export interface Avaliacao {
 export interface AgendamentoForm {
   data: string
   hora: string
-  endereco: string
+  logradouro: string
   observacoes: string
 }
 
@@ -54,7 +54,7 @@ export interface CadastroForm {
   telefone: string
   senha: string
   cep: string
-  endereco: string
+  logradouro: string
   bairro: string
   cidadeId: string
   estado: string
@@ -84,6 +84,73 @@ export const CATEGORIAS_SERVICO = [
 
 export type TipoValorCliente = 'por_hora' | 'total' | 'a_combinar'
 export type TipoValorPrestador = 'por_hora' | 'total'
+
+export type StatusAgendamento =
+  | 'Solicitado'
+  | 'Confirmado'
+  | 'EmAndamento'
+  | 'Concluido'
+  | 'Cancelado'
+  | 'Recusado'
+
+export type TipoAnuncio = 'PrestadorOferece' | 'ClienteSolicitou'
+
+export interface CategoriaResumo {
+  id: string
+  nome: string
+  icone: string
+}
+
+export interface ServicoOferecido {
+  id: string
+  titulo: string
+  descricao: string
+  precoBase: number
+  duracaoEstimadaMinutos: number | null
+  unidadeCobranca: string
+  tipoAnuncio: TipoAnuncio
+  categoria: CategoriaResumo
+}
+
+export interface AgendamentoEndereco {
+  logradouro: string
+  bairro: string
+  cidade: string
+  estado: string
+}
+
+export interface AgendamentoResumo {
+  id: string
+  clienteId: string
+  clienteNome: string
+  prestadorId: string
+  prestadorNome: string
+  dataHoraAgendada: string
+  duracaoMinutos: number
+  status: StatusAgendamento
+  endereco: AgendamentoEndereco
+  observacoes: string | null
+  valorTotal: number
+  dataSolicitacao: string
+  dataResposta: string | null
+  dataConclusao: string | null
+  motivoRecusa: string | null
+  servicos: ServicoOferecido[]
+}
+
+export interface PerfilForm {
+  nome: string
+  email: string
+  telefone: string
+  documento: string
+  cep: string
+  logradouro: string
+  bairro: string
+  cidade: string
+  estado: string
+  descricao: string
+  raioAtendimentoKm: number | null
+}
 
 export interface ServicoClienteForm {
   titulo: string

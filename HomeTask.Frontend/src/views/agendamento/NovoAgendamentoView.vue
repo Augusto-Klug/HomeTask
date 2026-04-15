@@ -71,7 +71,7 @@
 
           <HtInput
             ref="inputEndereco"
-            v-model="form.endereco"
+            v-model="form.logradouro"
             label="Endereço do serviço"
             placeholder="Rua, número, bairro..."
             regra="required"
@@ -127,7 +127,7 @@ const erro = ref<string | null>(null);
 const form = reactive<AgendamentoForm>({
   data: "",
   hora: "",
-  endereco: "",
+  logradouro: "",
   observacoes: "",
 });
 
@@ -172,7 +172,7 @@ async function handleAgendar() {
       prestadorId: prestadorId.value,
       servicoOferecidoId: props.servicoId,
       dataHoraAgendada: dataHora,
-      enderecoServico: form.endereco,
+      enderecoServico: form.logradouro,
       observacoes: form.observacoes,
     });
 

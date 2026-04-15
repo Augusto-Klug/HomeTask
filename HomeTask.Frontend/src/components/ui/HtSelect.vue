@@ -12,7 +12,10 @@
       :value="modelValue"
       :disabled="disabled"
       class="select select-bordered w-full"
-      :class="{ 'select-error': hasError }"
+      :class="{
+        'select-error': hasError,
+        'bg-base-200/60 border-base-300/70 text-base-content opacity-100 cursor-not-allowed disabled:[-webkit-text-fill-color:var(--color-base-content)]': disabled,
+      }"
       @change="onSelect"
       @blur="required && validar()"
     >

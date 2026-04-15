@@ -15,7 +15,10 @@
       :placeholder="placeholder"
       :rows="rows"
       class="textarea textarea-bordered w-full resize-y"
-      :class="{ 'textarea-error': hasError }"
+      :class="{
+        'textarea-error': hasError,
+        'bg-base-200/60 border-base-300/70 text-base-content opacity-100 cursor-not-allowed disabled:[-webkit-text-fill-color:var(--color-base-content)]': disabled,
+      }"
       @input="emit('update:modelValue', ($event.target as HTMLTextAreaElement).value)"
       @blur="required && validar()"
     />
