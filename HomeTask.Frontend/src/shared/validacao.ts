@@ -49,29 +49,29 @@ export function validarCPF(cpf: string): boolean {
   const n = cpf.replace(/\D/g, '')
   if (n.length !== 11 || /^(\d)\1+$/.test(n)) return false
   let soma = 0
-  for (let i = 0; i < 9; i++) soma += parseInt(n[i]) * (10 - i)
+  for (let i = 0; i < 9; i++) soma += parseInt(n[i] ?? '0', 10) * (10 - i)
   let r = (soma * 10) % 11
   if (r === 10 || r === 11) r = 0
-  if (r !== parseInt(n[9])) return false
+  if (r !== parseInt(n[9] ?? '0', 10)) return false
   soma = 0
-  for (let i = 0; i < 10; i++) soma += parseInt(n[i]) * (11 - i)
+  for (let i = 0; i < 10; i++) soma += parseInt(n[i] ?? '0', 10) * (11 - i)
   r = (soma * 10) % 11
   if (r === 10 || r === 11) r = 0
-  return r === parseInt(n[10])
+  return r === parseInt(n[10] ?? '0', 10)
 }
 
 export function validarCNPJ(cnpj: string): boolean {
   const n = cnpj.replace(/\D/g, '')
   if (n.length !== 14 || /^(\d)\1+$/.test(n)) return false
   const calc = (str: string, weights: number[]) =>
-    weights.reduce((acc, w, i) => acc + parseInt(str[i]) * w, 0)
+    weights.reduce((acc, w, i) => acc + parseInt(str[i] ?? '0', 10) * w, 0)
   const mod = (v: number) => {
     const r = v % 11
     return r < 2 ? 0 : 11 - r
   }
   const d1 = mod(calc(n, [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]))
   const d2 = mod(calc(n, [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]))
-  return d1 === parseInt(n[12]) && d2 === parseInt(n[13])
+  return d1 === parseInt(n[12] ?? '0', 10) && d2 === parseInt(n[13] ?? '0', 10)
 }
 
 export function validarEmail(email: string): boolean {

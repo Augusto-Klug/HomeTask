@@ -79,6 +79,7 @@
             v-model="form.valor"
             label="Valor (R$)"
             type="number"
+            :allowNegative="false"
             :placeholder="form.unidadeCobranca === 'total' ? 'Ex: 250,00 total' : 'Ex: 80,00 por hora'"
             :hint="form.unidadeCobranca === 'total' ? 'Valor total pelo serviço' : 'Valor cobrado por hora de trabalho'"
             required

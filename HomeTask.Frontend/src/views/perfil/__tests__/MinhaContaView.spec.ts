@@ -32,6 +32,11 @@ const HtInputStub = {
   props: ['modelValue', 'disabled', 'label', 'regra', 'type'],
 }
 
+const HtSearchSelectStub = {
+  template: '<div class="search-select"><span class="search-select-value">{{ modelValue }}</span><input :disabled="disabled || undefined" /></div>',
+  props: ['modelValue', 'disabled', 'label', 'options', 'required'],
+}
+
 // Stub que preserva data-testid e type
 const HtButtonStub = {
   template: '<button :type="type || \'button\'" v-bind="$attrs"><slot /></button>',
@@ -48,6 +53,7 @@ function mountView() {
       plugins: [router],
       stubs: {
         HtInput: HtInputStub,
+        HtSearchSelect: HtSearchSelectStub,
         HtButton: HtButtonStub,
         HtSpinner: true,
         HtAlert: { template: '<div><slot /></div>', props: ['variant', 'message', 'title'] },
@@ -97,5 +103,13 @@ describe('MinhaContaView', () => {
     await wrapper.find('form').trigger('submit')
     await flushPromises()
     expect(apiModule.default.put).toHaveBeenCalledWith('/api/Usuarios/perfil', expect.any(Object))
+  })
+
+  it('usa um select pesquisável para a UF', async () => {
+    const wrapper = mountView()
+    await flushPromises()
+
+    expect(wrapper.findAll('.search-select').length).toBeGreaterThanOrEqual(1)
+    expect(wrapper.text()).toContain('SC')
   })
 })

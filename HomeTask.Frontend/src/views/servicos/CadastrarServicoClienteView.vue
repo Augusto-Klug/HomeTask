@@ -82,6 +82,7 @@
             v-model="form.valor"
             label="Valor (R$)"
             type="number"
+            :allowNegative="false"
             :placeholder="form.unidadeCobranca === 'por_hora' ? 'Ex: 80,00 por hora' : 'Ex: 250,00 total'"
             :hint="form.unidadeCobranca === 'por_hora' ? 'Valor por hora de trabalho' : 'Valor total do serviço'"
             required
@@ -99,8 +100,9 @@
           <HtInput
             v-model="form.data"
             label="Data desejada"
-            type="date"
+            type="datetime-local"
             hint="Opcional — deixe em branco para combinar com o prestador"
+            :openPickerOnFocus="true"
           />
 
           <!-- Informação sobre data em branco -->
@@ -180,7 +182,7 @@ async function handleSubmit() {
       payload.valor = Number(form.valor)
     }
     if (form.data) {
-      payload.dataDesejada = form.data
+      payload.dataDesejada = new Date(form.data).toISOString()
     }
 
     await api.post('/api/ServicoOferecido/CriarServico', payload)

@@ -112,13 +112,12 @@
             />
           </div>
 
-          <HtInput
+          <HtSearchSelect
             ref="inputEstado"
             v-model="form.estado"
             label="Estado (UF)"
-            regra="required"
-            placeholder="SP"
-            :maxlength="2"
+            :options="UF_OPTIONS"
+            placeholder="Busque pela UF"
             required
           />
 
@@ -159,12 +158,14 @@ import api from '@/services/api'
 import { validarCampos } from '@/shared/validacao'
 import type { CadastroForm } from '@/types'
 import HtInput from '@/components/ui/HtInput.vue'
+import HtSearchSelect from '@/components/ui/HtSearchSelect.vue'
 import HtSelect from '@/components/ui/HtSelect.vue'
 import HtTextarea from '@/components/ui/HtTextarea.vue'
 import HtButton from '@/components/ui/HtButton.vue'
 import HtCard from '@/components/ui/HtCard.vue'
 import HtAlert from '@/components/ui/HtAlert.vue'
 import HtDivider from '@/components/ui/HtDivider.vue'
+import { UF_OPTIONS } from '@/statics/selects'
 
 const router = useRouter()
 
@@ -205,7 +206,7 @@ const inputCep       = ref<InstanceType<typeof HtInput> | null>(null)
 const inputEndereco  = ref<InstanceType<typeof HtInput> | null>(null)
 const inputBairro    = ref<InstanceType<typeof HtInput> | null>(null)
 const inputCidade    = ref<InstanceType<typeof HtSelect> | null>(null)
-const inputEstado    = ref<InstanceType<typeof HtInput> | null>(null)
+const inputEstado    = ref<InstanceType<typeof HtSearchSelect> | null>(null)
 const inputDescricao = ref<InstanceType<typeof HtInput> | null>(null)
 
 type CidadeApi = {

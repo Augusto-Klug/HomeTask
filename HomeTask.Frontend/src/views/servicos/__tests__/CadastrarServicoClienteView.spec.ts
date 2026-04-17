@@ -49,9 +49,10 @@ function mountView() {
 
 function preencherFormCliente(vm: ExposedVm, overrides: Partial<ServicoClienteForm> = {}) {
   Object.assign(vm.form, {
+    titulo: 'Faxina completa',
     descricao: 'Preciso de faxina na minha casa',
     categoria: '1',
-    tipoValor: 'por_hora',
+    unidadeCobranca: 'por_hora',
     valor: '80',
     data: '',
     ...overrides,
@@ -82,7 +83,7 @@ describe('CadastrarServicoClienteView', () => {
   it('oculta campo de valor quando tipoValor é a_combinar', async () => {
     const wrapper = mountView()
     const vm = wrapper.vm as unknown as ExposedVm
-    vm.form.tipoValor = 'a_combinar'
+    vm.form.unidadeCobranca = 'a_combinar'
     await wrapper.vm.$nextTick()
     const inputs = wrapper.findAllComponents(HtInput)
     const valorInput = inputs.find(i => i.props('label') === 'Valor (R$)')
@@ -92,7 +93,7 @@ describe('CadastrarServicoClienteView', () => {
   it('exibe campo de valor quando tipoValor é por_hora', async () => {
     const wrapper = mountView()
     const vm = wrapper.vm as unknown as ExposedVm
-    vm.form.tipoValor = 'por_hora'
+    vm.form.unidadeCobranca = 'por_hora'
     await wrapper.vm.$nextTick()
     const inputs = wrapper.findAllComponents(HtInput)
     const valorInput = inputs.find(i => i.props('label') === 'Valor (R$)')
@@ -102,11 +103,20 @@ describe('CadastrarServicoClienteView', () => {
   it('exibe campo de valor quando tipoValor é total', async () => {
     const wrapper = mountView()
     const vm = wrapper.vm as unknown as ExposedVm
-    vm.form.tipoValor = 'total'
+    vm.form.unidadeCobranca = 'total'
     await wrapper.vm.$nextTick()
     const inputs = wrapper.findAllComponents(HtInput)
     const valorInput = inputs.find(i => i.props('label') === 'Valor (R$)')
     expect(valorInput).toBeDefined()
+  })
+
+  it('exibe a data desejada com seletor nativo de data e hora', () => {
+    const wrapper = mountView()
+    const dateInput = wrapper.findAllComponents(HtInput)
+      .find(input => input.props('label') === 'Data desejada')
+
+    expect(dateInput?.props('type')).toBe('datetime-local')
+    expect(dateInput?.props('openPickerOnFocus')).toBe(true)
   })
 
   it('chama a API ao submeter o formulário com dados válidos', async () => {
@@ -129,7 +139,7 @@ describe('CadastrarServicoClienteView', () => {
 
     const wrapper = mountView()
     const vm = wrapper.vm as unknown as ExposedVm
-    preencherFormCliente(vm, { tipoValor: 'a_combinar', valor: '' })
+    preencherFormCliente(vm, { unidadeCobranca: 'a_combinar', valor: '' })
 
     await vm.handleSubmit()
     await flushPromises()
@@ -143,12 +153,31 @@ describe('CadastrarServicoClienteView', () => {
 
     const wrapper = mountView()
     const vm = wrapper.vm as unknown as ExposedVm
-    preencherFormCliente(vm, { tipoValor: 'a_combinar', valor: '' })
+    preencherFormCliente(vm, { unidadeCobranca: 'a_combinar', valor: '' })
 
     await vm.handleSubmit()
     await flushPromises()
     await wrapper.vm.$nextTick()
 
     expect(wrapper.findAllComponents(HtAlert).length).toBeGreaterThanOrEqual(1)
+  })
+
+  it('envia a data desejada com hora quando preenchida', async () => {
+    const api = await import('@/services/api')
+    vi.mocked(api.default.post).mockResolvedValueOnce({ data: {} })
+
+    const wrapper = mountView()
+    const vm = wrapper.vm as unknown as ExposedVm
+    preencherFormCliente(vm, { data: '2026-04-20T14:30' })
+
+    await vm.handleSubmit()
+    await flushPromises()
+
+    expect(api.default.post).toHaveBeenCalledWith(
+      '/api/ServicoOferecido/CriarServico',
+      expect.objectContaining({
+        dataDesejada: expect.stringContaining('2026-04-20T'),
+      }),
+    )
   })
 })

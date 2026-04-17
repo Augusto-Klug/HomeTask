@@ -22,6 +22,7 @@
           v-model="filtroPrecoStr"
           label="Preço máximo (R$)"
           type="number"
+          :allowNegative="false"
           placeholder="Ex: 150"
         />
       </div>
@@ -77,7 +78,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import api from '@/services/api'
 import type { Servico, BuscarFiltro } from '@/types'
@@ -116,8 +117,20 @@ const filtroPrecoStr = ref('')
 const servicos = ref<Servico[]>([])
 const carregando = ref(false)
 const buscou = ref(false)
+let debounceId: ReturnType<typeof setTimeout> | null = null
 
 onMounted(() => buscar())
+onBeforeUnmount(() => limparDebounce())
+
+watch(
+  [() => filtro.categoria, () => filtro.cidade, () => filtroPrecoStr.value],
+  () => {
+    limparDebounce()
+    debounceId = setTimeout(() => {
+      void buscar()
+    }, 700)
+  },
+)
 
 async function buscar() {
   carregando.value = true
@@ -145,5 +158,12 @@ function formatarPreco(valor: number): string {
 function estrelas(media: number): string {
   const cheias = Math.floor(media ?? 0)
   return '★'.repeat(cheias) + '☆'.repeat(5 - cheias)
+}
+
+function limparDebounce() {
+  if (!debounceId) return
+
+  clearTimeout(debounceId)
+  debounceId = null
 }
 </script>

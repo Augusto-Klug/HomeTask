@@ -27,13 +27,15 @@
         :id="inputId"
         ref="inputEl"
         v-bind="$attrs"
-        :value="modelValue"
+        :value="modelValue ?? ''"
         :type="inputType"
         :disabled="disabled"
         :placeholder="placeholder"
         :maxlength="maxlength"
+        :min="minValue"
         class="grow bg-transparent border-none outline-none text-sm disabled:text-base-content disabled:opacity-100 disabled:[-webkit-text-fill-color:var(--color-base-content)]"
         @input="handleInput"
+        @focus="handleFocus"
         @blur="handleBlur"
       />
 
@@ -89,7 +91,7 @@ type Regra = 'required' | 'email' | 'cpf' | 'cnpj' | 'documento' | 'cep' | 'tele
 
 const props = withDefaults(
   defineProps<{
-    modelValue: string
+    modelValue: string | number | null
     label?: string
     placeholder?: string
     hint?: string
@@ -100,12 +102,16 @@ const props = withDefaults(
     required?: boolean
     maxlength?: number
     validarAoDigitar?: boolean
+    allowNegative?: boolean
+    openPickerOnFocus?: boolean
   }>(),
   {
     type: 'text',
     disabled: false,
     required: false,
     validarAoDigitar: false,
+    allowNegative: true,
+    openPickerOnFocus: false,
   },
 )
 
@@ -127,6 +133,11 @@ const inputType = computed(() => {
   return props.type
 })
 
+const minValue = computed(() => {
+  if (props.type === 'number' && !props.allowNegative) return 0
+  return undefined
+})
+
 function aplicarMascara(v: string): string {
   switch (props.regra) {
     case 'cpf':       return mascaraCPF(v)
@@ -140,7 +151,8 @@ function aplicarMascara(v: string): string {
 
 function handleInput(e: Event) {
   const raw = (e.target as HTMLInputElement).value
-  const masked = aplicarMascara(raw)
+  const sanitized = sanitizarNumero(raw)
+  const masked = aplicarMascara(sanitized)
   emit('update:modelValue', masked)
 
   if (masked !== raw && inputEl.value) {
@@ -154,8 +166,27 @@ function handleBlur() {
   if (props.regra || props.required) validar()
 }
 
+function handleFocus() {
+  if (!props.openPickerOnFocus) return
+  if (!['date', 'time', 'datetime-local', 'month', 'week'].includes(props.type)) return
+
+  const pickerInput = inputEl.value as (HTMLInputElement & { showPicker?: () => void }) | null
+  pickerInput?.showPicker?.()
+}
+
+function sanitizarNumero(value: string): string {
+  if (props.type !== 'number' || props.allowNegative || !value) return value
+
+  const numericValue = Number(value)
+  if (!Number.isNaN(numericValue) && numericValue < 0) {
+    return '0'
+  }
+
+  return value
+}
+
 function validar(): boolean {
-  const v = props.modelValue?.trim() ?? ''
+  const v = String(props.modelValue ?? '').trim()
 
   if (!v) {
     if (props.required || props.regra) {

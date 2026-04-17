@@ -4,9 +4,11 @@ import { useAuthStore } from '@/stores/auth'
 import api from '@/services/api'
 import type { PerfilForm } from '@/types'
 import HtInput from '@/components/ui/HtInput.vue'
+import HtSearchSelect from '@/components/ui/HtSearchSelect.vue'
 import HtButton from '@/components/ui/HtButton.vue'
 import HtAlert from '@/components/ui/HtAlert.vue'
 import HtSpinner from '@/components/ui/HtSpinner.vue'
+import { UF_OPTIONS } from '@/statics/selects'
 
 const auth = useAuthStore()
 
@@ -153,9 +155,11 @@ async function salvar() {
                   :disabled="!editando"
                 />
               </div>
-              <HtInput
+              <HtSearchSelect
                 v-model="form.estado"
                 label="Estado"
+                :options="UF_OPTIONS"
+                required
                 :disabled="!editando"
               />
             </div>

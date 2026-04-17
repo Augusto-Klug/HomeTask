@@ -1,5 +1,6 @@
 export { default as HtButton }   from './HtButton.vue'
 export { default as HtInput }    from './HtInput.vue'
+export { default as HtSearchSelect } from './HtSearchSelect.vue'
 export { default as HtTextarea } from './HtTextarea.vue'
 export { default as HtSelect }   from './HtSelect.vue'
 export { default as HtSidenav }  from './HtSidenav.vue'
