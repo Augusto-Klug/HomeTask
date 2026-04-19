@@ -55,7 +55,7 @@ async function salvar() {
   salvando.value = true
   erro.value = ''
   try {
-    await api.put('/api/Usuario/ObterPerfilUsuario', { ...form }) 
+      await api.put('/api/Usuario/AtualizarPrefilUsuario', { ...form }) 
     sucesso.value = true
   } catch (e: any) {
     erro.value = e.response?.data?.message ?? 'Erro ao salvar. Tente novamente.'

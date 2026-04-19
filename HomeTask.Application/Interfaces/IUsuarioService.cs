@@ -1,3 +1,4 @@
+using HomeTask.Domain.Contratos;
 using HomeTask.Domain.Entities;
 
 namespace HomeTask.Application.Interfaces;
@@ -14,4 +15,6 @@ public interface IUsuarioService
     Task<bool> ValidarSenhaAsync(string email, string senha, CancellationToken cancellationToken = default);
     Task<bool> ExisteEmailAsync(string email, CancellationToken cancellationToken = default);
     Task<bool> ExisteCpfAsync(string cpf, CancellationToken cancellationToken = default);
+    Task<bool> AtualizarPerfilAsync(Guid usuarioId, PerfilContrato contrato, CancellationToken cancellationToken = default);
+
 }

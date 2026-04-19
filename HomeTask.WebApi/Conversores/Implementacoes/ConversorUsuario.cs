@@ -55,6 +55,20 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
                     contrato.UltimoAcesso,
                     contrato.Ativo);
 
+            var endereco = new Endereco();
+            endereco.DefinirDados(
+                contrato.Id, // idCliente
+                contrato.CidadeId,
+                contrato.Logradouro,
+                contrato.Numero,
+                contrato.Complemento,
+                contrato.Bairro,
+                contrato.Cep,
+                true // define como principal   
+                );
+
+                retorno.AdicionarEnderecos(endereco);
+
                 return retorno;
         }
 
@@ -185,5 +199,34 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
                 TotalServicosConcluidos = contrato.TotalServicosConcluidos
             };
         }
+
+        public PerfilContrato ConverterPerfilViewModelparaPerfilContrato(PerfilViewModel viewModel)
+        {
+            if (viewModel == null)
+            {
+                throw new ArgumentNullException(nameof(viewModel), "ViewModel não pode ser nula");
+            }
+
+            return new PerfilContrato
+            {
+                Nome = viewModel.Nome,
+                Tipo = viewModel.Tipo,
+                Email = viewModel.Email,
+                Documento = viewModel.Documento,
+                Telefone = viewModel.Telefone,
+                Cep = viewModel.Cep,
+                Logradouro = viewModel.Logradouro,
+                Bairro = viewModel.Bairro,
+                Estado = viewModel.Estado,
+                Cidade = viewModel.Cidade,
+                Descricao = viewModel.Descricao,
+                RaioAtendimentoKm = viewModel.RaioAtendimentoKm,
+                Status = viewModel.Status,
+                MediaAvaliacoes = viewModel.MediaAvaliacoes,
+                TotalAvaliacoes = viewModel.TotalAvaliacoes,
+                TotalServicosConcluidos = viewModel.TotalServicosConcluidos
+            };
+        }
+
     }
 }

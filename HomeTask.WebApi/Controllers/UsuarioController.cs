@@ -92,8 +92,8 @@ namespace HomeTask.WebApi.Controller
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> ObterPerfilUsuario(CancellationToken cancellationToken) { 
-           
+        public async Task<IActionResult> ObterPerfilUsuario(CancellationToken cancellationToken) {
+
             var IdUsuarioClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (!Guid.TryParse(IdUsuarioClaim, out var idUsuario) || IdUsuarioClaim == null)
@@ -102,14 +102,36 @@ namespace HomeTask.WebApi.Controller
             }
 
             var Usuario = await _usuarioService.ObterPorIdAsync(idUsuario, cancellationToken);
-            
+
             if (Usuario == null)
                 return NotFound();
 
-            var PerfilContrato =  _conversorUsuario.ConverterUsuarioparaPerfilContrato(Usuario);
+            var PerfilContrato = _conversorUsuario.ConverterUsuarioparaPerfilContrato(Usuario);
             var PerfilViewModel = _conversorUsuario.ConverterPerfilContratoparaPerfilViewModel(PerfilContrato);
 
             return Ok(PerfilViewModel);
-        } 
+        }
+
+        [HttpPut]
+        [Authorize]
+        public async Task<IActionResult> AtualizarPrefilUsuario(PerfilViewModel viewModel, CancellationToken cancellationToken)
+        {
+            var idUsuarioClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (!Guid.TryParse(idUsuarioClaim, out var idUsuario))
+            {
+                return Unauthorized("Erro ao obter o ID do usuario.");
+            }
+
+            var contrato = _conversorUsuario.ConverterPerfilViewModelparaPerfilContrato(viewModel);
+
+            var sucesso = await _usuarioService.AtualizarPerfilAsync(idUsuario, contrato, cancellationToken);
+
+            if (!sucesso)
+                return NotFound();
+
+            return Ok();
+
+        }
     }
 }
