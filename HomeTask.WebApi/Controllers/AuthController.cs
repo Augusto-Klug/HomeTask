@@ -36,6 +36,15 @@ namespace HomeTask.WebApi.Controller
 
             var token = GerarToken(usuario.Id, usuario.Email, usuario.Nome, (int)usuario.TipoUsuario);
 
+            Response.Cookies.Append("access_token", token, new CookieOptions
+            {
+                HttpOnly = true, 
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddHours(double.Parse(_configuration["Jwt:ExpirationHours"]!))
+            });
+
+
             return Ok(new LoginResponse
             {
                 Token = token,

@@ -1,7 +1,9 @@
 using HomeTask.Application.Interfaces;
 using HomeTask.Domain.ViewModel;
 using HomeTask.WebApi.Conversores.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace HomeTask.WebApi.Controller
 {
@@ -87,5 +89,27 @@ namespace HomeTask.WebApi.Controller
 
             return Ok(viewModel);
         }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> ObterPerfilUsuario(CancellationToken cancellationToken) { 
+           
+            var IdUsuarioClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (!Guid.TryParse(IdUsuarioClaim, out var idUsuario) || IdUsuarioClaim == null)
+            {
+                return Unauthorized("Erro ao obter o ID do usuario.");
+            }
+
+            var Usuario = await _usuarioService.ObterPorIdAsync(idUsuario, cancellationToken);
+            
+            if (Usuario == null)
+                return NotFound();
+
+            var PerfilContrato =  _conversorUsuario.ConverterUsuarioparaPerfilContrato(Usuario);
+            var PerfilViewModel = _conversorUsuario.ConverterPerfilContratoparaPerfilViewModel(PerfilContrato);
+
+            return Ok(PerfilViewModel);
+        } 
     }
 }

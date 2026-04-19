@@ -21,6 +21,8 @@ public class UsuarioService : IUsuarioService
         return await _context.Usuarios
             .Include(u => u.Cliente)
             .Include(u => u.Prestador)
+            .Include(u => u.Enderecos)
+                .ThenInclude(e => e.Cidade)
             .FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
     }
 
@@ -37,7 +39,7 @@ public class UsuarioService : IUsuarioService
         usuario.DefinirSenhaHash(HashSenha(senha));
         usuario.DefinirDataCadastro(DateTime.UtcNow);
 
-        // garante que o endereço informado no cadastro seja o principal
+        // garante que o endereço seja o principal
         var enderecoPrincipal = usuario.Enderecos.FirstOrDefault();
         if (enderecoPrincipal != null)
             enderecoPrincipal.DefinirPrincipal(true);

@@ -109,5 +109,81 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
 
                 return retorno;
         }
+
+        public PerfilContrato ConverterUsuarioparaPerfilContrato(Usuario usuario, Prestador? prestador = null)
+        {
+            if (usuario == null)
+            {
+                throw new ArgumentNullException("Usuário null no conversor para Perfil!");
+            }
+
+            // Informaçoes gerais do usuario
+            var perfilContrato = new PerfilContrato
+            {
+                Nome = usuario.Nome,
+                Tipo = (int)usuario.TipoUsuario,
+                Email = usuario.Email,
+                Documento = usuario.Documento,
+                Telefone = usuario.Telefone
+            };
+
+            // busca o endereco principal do usuario
+            var enderecoPrincipal = usuario.Enderecos.FirstOrDefault(e => e.Principal)
+                                    ?? usuario.Enderecos.FirstOrDefault();
+
+            if (enderecoPrincipal != null)
+            {
+                perfilContrato.Cep = enderecoPrincipal.Cep;
+                perfilContrato.Logradouro = enderecoPrincipal.Logradouro;
+                perfilContrato.Bairro = enderecoPrincipal.Bairro;
+
+                if (enderecoPrincipal.Cidade != null)
+                {
+                    perfilContrato.Cidade = enderecoPrincipal.Cidade.Nome;
+                    perfilContrato.Estado = enderecoPrincipal.Cidade.Estado;
+                }
+            }
+
+            var prestadorDados = prestador ?? usuario.Prestador;
+            if (prestadorDados != null)
+            {
+                perfilContrato.Descricao = prestadorDados.Descricao;
+                perfilContrato.RaioAtendimentoKm = prestadorDados.RaioAtendimentoKm;
+                perfilContrato.Status = prestadorDados.Status;
+                perfilContrato.MediaAvaliacoes = prestadorDados.MediaAvaliacoes;
+                perfilContrato.TotalAvaliacoes = prestadorDados.TotalAvaliacoes;
+                perfilContrato.TotalServicosConcluidos = prestadorDados.TotalServicosConcluidos;
+            }
+
+            return perfilContrato;
+        }
+
+        public PerfilViewModel ConverterPerfilContratoparaPerfilViewModel(PerfilContrato contrato)
+        {
+            if (contrato == null)
+            {
+                return null;
+            }
+
+            return new PerfilViewModel
+            {
+                Tipo = contrato.Tipo,
+                Nome = contrato.Nome,
+                Email = contrato.Email,
+                Documento = contrato.Documento,
+                Telefone = contrato.Telefone,
+                Cep = contrato.Cep,
+                Logradouro = contrato.Logradouro,
+                Bairro = contrato.Bairro,
+                Estado = contrato.Estado,
+                Cidade = contrato.Cidade,
+                Descricao = contrato.Descricao,
+                RaioAtendimentoKm = contrato.RaioAtendimentoKm,
+                Status = contrato.Status,
+                MediaAvaliacoes = contrato.MediaAvaliacoes,
+                TotalAvaliacoes = contrato.TotalAvaliacoes,
+                TotalServicosConcluidos = contrato.TotalServicosConcluidos
+            };
+        }
     }
 }
