@@ -36,7 +36,7 @@ const isPrestador = computed(() => auth.user?.tipo === 2 || auth.user?.tipo === 
 
 onMounted(async () => {
   try {
-    const { data } = await api.get<PerfilForm>('/api/Usuarios/perfil')
+    const { data } = await api.get<PerfilForm>('/api/Usuario/ObterPerfilUsuario')
     Object.assign(form, data)
   } catch {
     erro.value = 'Não foi possível carregar seus dados.'
@@ -55,8 +55,7 @@ async function salvar() {
   salvando.value = true
   erro.value = ''
   try {
-    await api.put('/api/Usuarios/perfil', { ...form })
-    editando.value = false
+      await api.put('/api/Usuario/AtualizarPrefilUsuario', { ...form }) 
     sucesso.value = true
   } catch (e: any) {
     erro.value = e.response?.data?.message ?? 'Erro ao salvar. Tente novamente.'

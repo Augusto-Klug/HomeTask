@@ -1,10 +1,11 @@
-using Microsoft.EntityFrameworkCore;
 using HomeTask.Application.Interfaces;
+using HomeTask.Domain.Contratos;
 using HomeTask.Domain.Entities;
+using HomeTask.Domain.Enums;
 using HomeTask.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Text;
-using HomeTask.Domain.Enums;
 
 namespace HomeTask.Infrastructure.Services;
 public class UsuarioService : IUsuarioService
@@ -21,6 +22,8 @@ public class UsuarioService : IUsuarioService
         return await _context.Usuarios
             .Include(u => u.Cliente)
             .Include(u => u.Prestador)
+            .Include(u => u.Enderecos)
+                .ThenInclude(e => e.Cidade)
             .FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
     }
 
@@ -37,7 +40,7 @@ public class UsuarioService : IUsuarioService
         usuario.DefinirSenhaHash(HashSenha(senha));
         usuario.DefinirDataCadastro(DateTime.UtcNow);
 
-        // garante que o endereço informado no cadastro seja o principal
+        // garante que o endereço seja o principal
         var enderecoPrincipal = usuario.Enderecos.FirstOrDefault();
         if (enderecoPrincipal != null)
             enderecoPrincipal.DefinirPrincipal(true);
@@ -97,4 +100,63 @@ public class UsuarioService : IUsuarioService
         var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(senha));
         return Convert.ToBase64String(bytes);
     }
+
+    public async Task<bool> AtualizarPerfilAsync(Guid usuarioId, PerfilContrato contrato, CancellationToken cancellationToken = default)
+    {
+        var usuarioBanco = await ObterPorIdAsync(usuarioId, cancellationToken);
+
+        if (usuarioBanco == null) {
+            return false;
+        }
+
+        usuarioBanco.DefinirDados(
+            usuarioBanco.Id,
+            contrato.Nome,
+            usuarioBanco.Email,
+            contrato.Documento,
+            contrato.Telefone ?? string.Empty,
+            usuarioBanco.TipoUsuario,
+            usuarioBanco.DataCadastro,
+            DateTime.UtcNow,
+            usuarioBanco.Ativo
+        );
+
+        var enderecoPrincipal = usuarioBanco.Enderecos.FirstOrDefault(e => e.Principal)
+                                ?? usuarioBanco.Enderecos.FirstOrDefault();
+        if (enderecoPrincipal != null)
+        {
+            enderecoPrincipal.DefinirDados(
+                enderecoPrincipal.UsuarioId,
+                enderecoPrincipal.CidadeId,
+                contrato.Logradouro ?? string.Empty,
+                enderecoPrincipal.Numero,
+                enderecoPrincipal.Complemento,
+                contrato.Bairro ?? string.Empty,
+                contrato.Cep ?? string.Empty,
+                true
+            );
+        }
+
+        if (usuarioBanco.Prestador != null)
+        {
+            usuarioBanco.Prestador.DefinirDados(
+                usuarioBanco.Prestador.Id,
+                usuarioBanco.Id,
+                contrato.Descricao,
+                contrato.RaioAtendimentoKm,
+                contrato.Status ?? usuarioBanco.Prestador.Status,
+                contrato.MediaAvaliacoes ?? usuarioBanco.Prestador.MediaAvaliacoes,
+                contrato.TotalAvaliacoes ?? usuarioBanco.Prestador.TotalAvaliacoes,
+                contrato.TotalServicosConcluidos ?? usuarioBanco.Prestador.TotalServicosConcluidos,
+                usuarioBanco.Prestador.DataVerificacao
+            );
+        }
+
+        _context.Usuarios.Update(usuarioBanco);
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return true;
+    }
+
+
 }

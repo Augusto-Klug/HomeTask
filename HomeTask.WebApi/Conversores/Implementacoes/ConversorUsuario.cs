@@ -55,6 +55,20 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
                     contrato.UltimoAcesso,
                     contrato.Ativo);
 
+            var endereco = new Endereco();
+            endereco.DefinirDados(
+                contrato.Id, // idCliente
+                contrato.CidadeId,
+                contrato.Logradouro,
+                contrato.Numero,
+                contrato.Complemento,
+                contrato.Bairro,
+                contrato.Cep,
+                true // define como principal   
+                );
+
+                retorno.AdicionarEnderecos(endereco);
+
                 return retorno;
         }
 
@@ -109,5 +123,110 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
 
                 return retorno;
         }
+
+        public PerfilContrato ConverterUsuarioparaPerfilContrato(Usuario usuario, Prestador? prestador = null)
+        {
+            if (usuario == null)
+            {
+                throw new ArgumentNullException("Usuário null no conversor para Perfil!");
+            }
+
+            // Informaçoes gerais do usuario
+            var perfilContrato = new PerfilContrato
+            {
+                Nome = usuario.Nome,
+                Tipo = (int)usuario.TipoUsuario,
+                Email = usuario.Email,
+                Documento = usuario.Documento,
+                Telefone = usuario.Telefone
+            };
+
+            // busca o endereco principal do usuario
+            var enderecoPrincipal = usuario.Enderecos.FirstOrDefault(e => e.Principal)
+                                    ?? usuario.Enderecos.FirstOrDefault();
+
+            if (enderecoPrincipal != null)
+            {
+                perfilContrato.Cep = enderecoPrincipal.Cep;
+                perfilContrato.Logradouro = enderecoPrincipal.Logradouro;
+                perfilContrato.Bairro = enderecoPrincipal.Bairro;
+
+                if (enderecoPrincipal.Cidade != null)
+                {
+                    perfilContrato.Cidade = enderecoPrincipal.Cidade.Nome;
+                    perfilContrato.Estado = enderecoPrincipal.Cidade.Estado;
+                }
+            }
+
+            var prestadorDados = prestador ?? usuario.Prestador;
+            if (prestadorDados != null)
+            {
+                perfilContrato.Descricao = prestadorDados.Descricao;
+                perfilContrato.RaioAtendimentoKm = prestadorDados.RaioAtendimentoKm;
+                perfilContrato.Status = prestadorDados.Status;
+                perfilContrato.MediaAvaliacoes = prestadorDados.MediaAvaliacoes;
+                perfilContrato.TotalAvaliacoes = prestadorDados.TotalAvaliacoes;
+                perfilContrato.TotalServicosConcluidos = prestadorDados.TotalServicosConcluidos;
+            }
+
+            return perfilContrato;
+        }
+
+        public PerfilViewModel ConverterPerfilContratoparaPerfilViewModel(PerfilContrato contrato)
+        {
+            if (contrato == null)
+            {
+                return null;
+            }
+
+            return new PerfilViewModel
+            {
+                Tipo = contrato.Tipo,
+                Nome = contrato.Nome,
+                Email = contrato.Email,
+                Documento = contrato.Documento,
+                Telefone = contrato.Telefone,
+                Cep = contrato.Cep,
+                Logradouro = contrato.Logradouro,
+                Bairro = contrato.Bairro,
+                Estado = contrato.Estado,
+                Cidade = contrato.Cidade,
+                Descricao = contrato.Descricao,
+                RaioAtendimentoKm = contrato.RaioAtendimentoKm,
+                Status = contrato.Status,
+                MediaAvaliacoes = contrato.MediaAvaliacoes,
+                TotalAvaliacoes = contrato.TotalAvaliacoes,
+                TotalServicosConcluidos = contrato.TotalServicosConcluidos
+            };
+        }
+
+        public PerfilContrato ConverterPerfilViewModelparaPerfilContrato(PerfilViewModel viewModel)
+        {
+            if (viewModel == null)
+            {
+                throw new ArgumentNullException(nameof(viewModel), "ViewModel não pode ser nula");
+            }
+
+            return new PerfilContrato
+            {
+                Nome = viewModel.Nome,
+                Tipo = viewModel.Tipo,
+                Email = viewModel.Email,
+                Documento = viewModel.Documento,
+                Telefone = viewModel.Telefone,
+                Cep = viewModel.Cep,
+                Logradouro = viewModel.Logradouro,
+                Bairro = viewModel.Bairro,
+                Estado = viewModel.Estado,
+                Cidade = viewModel.Cidade,
+                Descricao = viewModel.Descricao,
+                RaioAtendimentoKm = viewModel.RaioAtendimentoKm,
+                Status = viewModel.Status,
+                MediaAvaliacoes = viewModel.MediaAvaliacoes,
+                TotalAvaliacoes = viewModel.TotalAvaliacoes,
+                TotalServicosConcluidos = viewModel.TotalServicosConcluidos
+            };
+        }
+
     }
 }

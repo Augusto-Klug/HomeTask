@@ -64,4 +64,10 @@ public class Usuario
     {
         Prestador = prestador;
     }
+
+    public void AdicionarEnderecos(Endereco endereco)
+    {
+        Enderecos.Add(endereco);
+    }
+
 }

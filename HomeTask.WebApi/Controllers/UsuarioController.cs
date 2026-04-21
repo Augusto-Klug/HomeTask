@@ -1,7 +1,9 @@
 using HomeTask.Application.Interfaces;
 using HomeTask.Domain.ViewModel;
 using HomeTask.WebApi.Conversores.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace HomeTask.WebApi.Controller
 {
@@ -86,6 +88,50 @@ namespace HomeTask.WebApi.Controller
             var viewModel = _conversorUsuario.ConverterContratoparaViewModel(usuarioContrato);
 
             return Ok(viewModel);
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> ObterPerfilUsuario(CancellationToken cancellationToken) {
+
+            var IdUsuarioClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (!Guid.TryParse(IdUsuarioClaim, out var idUsuario) || IdUsuarioClaim == null)
+            {
+                return Unauthorized("Erro ao obter o ID do usuario.");
+            }
+
+            var Usuario = await _usuarioService.ObterPorIdAsync(idUsuario, cancellationToken);
+
+            if (Usuario == null)
+                return NotFound();
+
+            var PerfilContrato = _conversorUsuario.ConverterUsuarioparaPerfilContrato(Usuario);
+            var PerfilViewModel = _conversorUsuario.ConverterPerfilContratoparaPerfilViewModel(PerfilContrato);
+
+            return Ok(PerfilViewModel);
+        }
+
+        [HttpPut]
+        [Authorize]
+        public async Task<IActionResult> AtualizarPrefilUsuario(PerfilViewModel viewModel, CancellationToken cancellationToken)
+        {
+            var idUsuarioClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (!Guid.TryParse(idUsuarioClaim, out var idUsuario))
+            {
+                return Unauthorized("Erro ao obter o ID do usuario.");
+            }
+
+            var contrato = _conversorUsuario.ConverterPerfilViewModelparaPerfilContrato(viewModel);
+
+            var sucesso = await _usuarioService.AtualizarPerfilAsync(idUsuario, contrato, cancellationToken);
+
+            if (!sucesso)
+                return NotFound();
+
+            return Ok();
+
         }
     }
 }
