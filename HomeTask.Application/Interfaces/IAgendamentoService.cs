@@ -9,7 +9,7 @@ namespace HomeTask.Application.Interfaces;
 public interface IAgendamentoService
 {
     Task<Agendamento?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken = default);
-    Task<Agendamento> CriarAsync(Agendamento agendamento, CancellationToken cancellationToken = default);
+    Task<Agendamento> CriarAsync(Agendamento agendamento, List<Guid> servicosIds, CancellationToken cancellationToken = default);
     Task<Agendamento> AceitarAsync(Guid agendamentoId, CancellationToken cancellationToken = default);
     Task<Agendamento> RecusarAsync(Guid agendamentoId, string motivo, CancellationToken cancellationToken = default);
     Task<Agendamento> IniciarAsync(Guid agendamentoId, CancellationToken cancellationToken = default);

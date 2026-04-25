@@ -305,7 +305,7 @@ const MOCK_AGENDAMENTOS_CLIENTE: AgendamentoResumo[] = [
         precoBase: 50,
         duracaoEstimadaMinutos: 180,
         unidadeCobranca: "por_hora",
-        tipoAnuncio: "PrestadorOferece",
+        tipoAnuncio: 1,
         categoria: { id: "cat-6", nome: "Babysitter", icone: "child_care" },
       },
     ],
@@ -552,8 +552,8 @@ export const handlers = [
     );
   }),
 
-  // POST /api/ServicoOferecido/CriarServico
-  http.post("*/api/ServicoOferecido/CriarServico", async () => {
+  // POST /api/ServicoOferecido/CriarServicoCliente
+  http.post("*/api/ServicoOferecido/CriarServicoCliente", async () => {
     await delay(MOCK_DELAY);
     return HttpResponse.json(
       { id: Math.floor(Math.random() * 9000) + 1000 },

@@ -79,7 +79,7 @@
           <HtInput
             v-if="form.unidadeCobranca && form.unidadeCobranca !== 'a_combinar'"
             ref="refValor"
-            v-model="form.valor"
+            v-model="form.precoBase"
             label="Valor (R$)"
             type="number"
             :allowNegative="false"
@@ -88,7 +88,6 @@
             required
             regra="required"
           />
-
           <!-- Informação sobre valor a combinar -->
           <HtAlert
             v-if="form.unidadeCobranca === 'a_combinar'"
@@ -150,8 +149,9 @@ const form = reactive<ServicoClienteForm>({
   descricao: '',
   categoria: '',
   unidadeCobranca: '',
-  valor: '',
+  precoBase: '',
   data: '',
+  tipo: 2,
 })
 
 const refTitulo     = ref<InstanceType<typeof HtInput>   | null>(null)
@@ -172,20 +172,25 @@ async function handleSubmit() {
   erro.value = null
   carregando.value = true
   try {
+    const categoriaSelecionada = Number(form.categoria)
+    if (!categoriaSelecionada) {
+      throw new Error('Selecione uma categoria válida.')
+    }
+
     const payload: Record<string, unknown> = {
       titulo:      form.titulo,
       descricao:   form.descricao,
-      categoriaId: Number(form.categoria),
+      categoria:   categoriaSelecionada,
       unidadeCobranca:   form.unidadeCobranca,
     }
-    if (form.unidadeCobranca !== 'a_combinar' && form.valor) {
-      payload.valor = Number(form.valor)
+    if (form.unidadeCobranca !== 'a_combinar' && form.precoBase) {
+      payload.precoBase = Number(form.precoBase.toString().replace(',', '.'))
     }
     if (form.data) {
       payload.dataDesejada = new Date(form.data).toISOString()
     }
 
-    await api.post('/api/ServicoOferecido/CriarServico', payload)
+    await api.post('/api/ServicoOferecido/CriarServicoCliente', payload)
     sucesso.value = true
   } catch (err: unknown) {
     const e = err as { response?: { data?: unknown } }
@@ -203,7 +208,7 @@ function reiniciar() {
   form.descricao = ''
   form.categoria = ''
   form.unidadeCobranca = ''
-  form.valor = ''
+  form.precoBase = ''
   form.data = ''
   erro.value = null
   sucesso.value = false

@@ -14,8 +14,7 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
                 throw new ArgumentNullException(nameof(usuario));
 
             // pega o endereço principal para exibir no retorno
-            var enderecoPrincipal = usuario.Enderecos.FirstOrDefault(e => e.Principal)
-                                    ?? usuario.Enderecos.FirstOrDefault();
+            var enderecoPrincipal = usuario.Endereco;
 
             var retorno = new UsuarioContrato();
                 retorno.Id = usuario.Id;
@@ -57,17 +56,15 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
 
             var endereco = new Endereco();
             endereco.DefinirDados(
-                contrato.Id, // idCliente
                 contrato.CidadeId,
                 contrato.Logradouro,
                 contrato.Numero,
                 contrato.Complemento,
                 contrato.Bairro,
-                contrato.Cep,
-                true // define como principal   
+                contrato.Cep
                 );
 
-                retorno.AdicionarEnderecos(endereco);
+                retorno.DefinirEndereco(endereco);
 
                 return retorno;
         }
@@ -142,8 +139,7 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
             };
 
             // busca o endereco principal do usuario
-            var enderecoPrincipal = usuario.Enderecos.FirstOrDefault(e => e.Principal)
-                                    ?? usuario.Enderecos.FirstOrDefault();
+            var enderecoPrincipal = usuario.Endereco;
 
             if (enderecoPrincipal != null)
             {

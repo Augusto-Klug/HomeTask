@@ -21,7 +21,8 @@ public class Usuario
     // Navegação
     public Cliente? Cliente { get; private set; }
     public Prestador? Prestador { get; private set; }
-    public ICollection<Endereco> Enderecos { get; private set; } = [];
+    public Guid? EnderecoId { get; private set; }
+    public Endereco? Endereco { get; private set; }
 
     public void DefinirDados(
         Guid id,
@@ -65,9 +66,10 @@ public class Usuario
         Prestador = prestador;
     }
 
-    public void AdicionarEnderecos(Endereco endereco)
+    public void DefinirEndereco(Endereco? endereco)
     {
-        Enderecos.Add(endereco);
+        Endereco = endereco;
+        EnderecoId = endereco?.Id;
     }
 
 }

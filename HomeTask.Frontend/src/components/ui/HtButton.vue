@@ -15,7 +15,7 @@ import { computed } from 'vue'
 
 const props = withDefaults(
   defineProps<{
-    variant?: 'primary' | 'outline' | 'ghost' | 'danger'
+    variant?: 'primary' | 'outline' | 'ghost' | 'danger'| 'error' | 'success'
     size?: 'sm' | 'md' | 'lg'
     loading?: boolean
     disabled?: boolean

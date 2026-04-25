@@ -24,9 +24,9 @@ public class AgendamentoServicoMap : IEntityTypeConfiguration<AgendamentoServico
             .HasForeignKey(a => a.AgendamentoId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(a => a.ServicoOferecido)
+        builder.HasOne(a => a.ServicoBase)
             .WithMany(s => s.AgendamentoServicos)
-            .HasForeignKey(a => a.ServicoOferecidoId)
+            .HasForeignKey(a => a.ServicoBaseId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

@@ -4,6 +4,7 @@ using HomeTask.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HomeTask.Infrastructure.Migrations
 {
     [DbContext(typeof(HomeTaskDbContext))]
-    partial class HomeTaskDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260425163711_StandardizeCategoryEnum")]
+    partial class StandardizeCategoryEnum
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -133,9 +136,17 @@ namespace HomeTask.Infrastructure.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("varchar(10)");
 
+                    b.Property<bool>("Principal")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("char(36)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CidadeId");
+
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("Enderecos");
                 });
@@ -545,9 +556,6 @@ namespace HomeTask.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
-                    b.Property<Guid?>("EnderecoId")
-                        .HasColumnType("char(36)");
-
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -575,8 +583,6 @@ namespace HomeTask.Infrastructure.Migrations
 
                     b.HasIndex("Email")
                         .IsUnique();
-
-                    b.HasIndex("EnderecoId");
 
                     b.ToTable("Usuarios");
                 });
@@ -660,7 +666,15 @@ namespace HomeTask.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("HomeTask.Domain.Entities.Usuario", "Usuario")
+                        .WithMany("Enderecos")
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Cidade");
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("HomeTask.Domain.Entities.Agendamento", b =>
@@ -809,16 +823,6 @@ namespace HomeTask.Infrastructure.Migrations
                     b.Navigation("Usuario");
                 });
 
-            modelBuilder.Entity("HomeTask.Domain.Entities.Usuario", b =>
-                {
-                    b.HasOne("HomeTask.Domain.Entidades.Endereco", "Endereco")
-                        .WithMany()
-                        .HasForeignKey("EnderecoId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("Endereco");
-                });
-
             modelBuilder.Entity("HomeTask.Domain.Entidades.ServicoCliente", b =>
                 {
                     b.HasOne("HomeTask.Domain.Entities.Cliente", "Cliente")
@@ -901,6 +905,8 @@ namespace HomeTask.Infrastructure.Migrations
             modelBuilder.Entity("HomeTask.Domain.Entities.Usuario", b =>
                 {
                     b.Navigation("Cliente");
+
+                    b.Navigation("Enderecos");
 
                     b.Navigation("Prestador");
                 });

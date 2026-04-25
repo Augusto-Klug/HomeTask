@@ -22,7 +22,7 @@ public class Prestador
     public DateTime? DataVerificacao { get; private set; }
 
     // Navegação
-    public ICollection<ServicoOferecido> ServicosOferecidos { get; private set; } = [];
+    public ICollection<ServicoPrestador> ServicosOferecidos { get; private set; } = [];
     public ICollection<Agendamento> Agendamentos { get; private set; } = [];
     public ICollection<Avaliacao> Avaliacoes { get; private set; } = [];
     public ICollection<Certificacao> Certificacoes { get; private set; } = [];

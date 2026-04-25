@@ -15,7 +15,7 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
                 retorno.Id = agendamento.Id;
                 retorno.ClienteId = agendamento.ClienteId;
                 retorno.PrestadorId = agendamento.PrestadorId;
-                retorno.ServicosOferecidosIds = agendamento.AgendamentoServicos.Select(s => s.ServicoOferecidoId).ToList();
+                retorno.ServicosOferecidosIds = agendamento.AgendamentoServicos.Select(s => s.ServicoBaseId).ToList();
                 retorno.DataHoraAgendada = agendamento.DataHoraAgendada;
                 retorno.DuracaoMinutos = agendamento.DuracaoMinutos;
                 retorno.Status = agendamento.Status;
