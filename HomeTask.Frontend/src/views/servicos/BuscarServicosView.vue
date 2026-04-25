@@ -53,19 +53,27 @@
           <div class="flex items-start justify-between mb-2">
             <div>
               <h3 class="text-sm font-semibold text-foreground">{{ s.titulo }}</h3>
-              <p class="text-xs text-muted mt-0.5">{{ s.prestadorNome }}</p>
+              <!-- Nome do Prestador ou do Cliente -->
+              <p class="text-xs text-muted mt-0.5">
+                {{ 'prestadorId' in s ? 'Prestador: ' : 'Solicitante: ' }}
+                {{ (s as any).prestadorNome || (s as any).clienteNome || 'N/A' }}
+              </p>
             </div>
             <HtBadge>{{ s.categoria }}</HtBadge>
           </div>
 
           <p class="text-xs text-muted mb-3 flex items-center gap-1">
             <span class="material-symbols-rounded text-sm">location_on</span>
-            {{ s.cidade }}/{{ s.estado }}
+            {{ (s as any).cidade || 'N/A' }}/{{ (s as any).estado || 'N/A' }}
           </p>
 
           <div class="flex items-center justify-between mb-4">
-            <span class="text-sm font-bold text-primary">R$ {{ formatarPreco(s.preco) }}/h</span>
-            <span class="text-sm text-yellow-500">{{ estrelas(s.mediaAvaliacoes) }}</span>
+            <span class="text-sm font-bold text-primary">
+              R$ {{ formatarPreco(s.precoBase) }}{{ s.unidadeCobranca === 'por_hora' ? '/h' : '' }}
+            </span>
+            <span v-if="'mediaAvaliacoes' in s" class="text-sm text-yellow-500">
+              {{ estrelas((s as any).mediaAvaliacoes) }}
+            </span>
           </div>
 
           <router-link :to="`/servicos/detalhes/${s.id}`">
@@ -117,20 +125,6 @@ const filtroPrecoStr = ref('')
 const servicos = ref<Servico[]>([])
 const carregando = ref(false)
 const buscou = ref(false)
-let debounceId: ReturnType<typeof setTimeout> | null = null
-
-onMounted(() => buscar())
-onBeforeUnmount(() => limparDebounce())
-
-watch(
-  [() => filtro.categoria, () => filtro.cidade, () => filtroPrecoStr.value],
-  () => {
-    limparDebounce()
-    debounceId = setTimeout(() => {
-      void buscar()
-    }, 700)
-  },
-)
 
 async function buscar() {
   carregando.value = true
@@ -158,12 +152,5 @@ function formatarPreco(valor: number): string {
 function estrelas(media: number): string {
   const cheias = Math.floor(media ?? 0)
   return '★'.repeat(cheias) + '☆'.repeat(5 - cheias)
-}
-
-function limparDebounce() {
-  if (!debounceId) return
-
-  clearTimeout(debounceId)
-  debounceId = null
 }
 </script>

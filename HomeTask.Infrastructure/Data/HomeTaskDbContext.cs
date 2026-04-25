@@ -20,8 +20,9 @@ public class HomeTaskDbContext : DbContext
     public DbSet<Endereco> Enderecos => Set<Endereco>();
 
     // Serviços
-    public DbSet<Categoria> Categorias => Set<Categoria>();
-    public DbSet<ServicoOferecido> ServicosOferecidos => Set<ServicoOferecido>();
+    public DbSet<ServicoBase> Servicos => Set<ServicoBase>();
+    public DbSet<ServicoPrestador> ServicosPrestadores => Set<ServicoPrestador>();
+    public DbSet<ServicoCliente> ServicosClientes => Set<ServicoCliente>();
     public DbSet<Disponibilidade> Disponibilidades => Set<Disponibilidade>();
     public DbSet<Certificacao> Certificacoes => Set<Certificacao>();
     public DbSet<Portfolio> Portfolios => Set<Portfolio>();

@@ -47,7 +47,7 @@ public class ClienteService : IClienteService
             .Include(a => a.Prestador)
                 .ThenInclude(p => p.Usuario)
             .Include(a => a.AgendamentoServicos)
-                .ThenInclude(s => s.ServicoOferecido)
+                .ThenInclude(s => s.ServicoBase)
             .Include(a => a.Avaliacao)
             .Include(a => a.Pagamento)
             .Where(a => a.ClienteId == clienteId)

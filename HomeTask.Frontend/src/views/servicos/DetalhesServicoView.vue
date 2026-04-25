@@ -30,7 +30,10 @@
         <div class="flex flex-wrap items-start justify-between gap-3 mb-4">
           <div>
             <h1 class="text-xl font-bold text-foreground">{{ servico.titulo }}</h1>
-            <p class="text-sm text-muted mt-0.5">{{ servico.prestadorNome }}</p>
+            <p class="text-sm text-muted mt-0.5">
+              {{ 'prestadorId' in servico ? 'Prestador: ' : 'Solicitante: ' }}
+              {{ (servico as any).prestadorNome || (servico as any).clienteNome || 'N/A' }}
+            </p>
           </div>
           <HtBadge variant="primary">{{ servico.categoria }}</HtBadge>
         </div>
@@ -39,24 +42,43 @@
 
         <div class="flex items-center gap-2 text-sm text-muted mb-2">
           <span class="material-symbols-rounded text-base">location_on</span>
-          {{ servico.cidade }}/{{ servico.estado }}
+          {{ (servico as any).cidade || 'N/A' }}/{{ (servico as any).estado || 'N/A' }}
         </div>
 
         <div class="flex items-center justify-between mb-4">
-          <span class="text-lg font-bold text-primary">R$ {{ formatarPreco(servico.preco) }}/h</span>
-          <span class="text-sm text-yellow-500">{{ estrelas(servico.mediaAvaliacoes) }}</span>
+          <div class="flex flex-col">
+            <span class="text-lg font-bold text-primary">
+              R$ {{ formatarPreco((servico as any).precoBase) }}
+              <span class="text-sm font-normal text-muted">
+                {{ servico.unidadeCobranca === 'por_hora' ? '/ hora' : '/ total' }}
+              </span>
+            </span>
+          </div>
+          <span v-if="'mediaAvaliacoes' in servico" class="text-sm text-yellow-500">
+            {{ estrelas((servico as any).mediaAvaliacoes) }}
+          </span>
         </div>
 
-        <p v-if="servico.descricao" class="text-sm text-foreground mb-4">{{ servico.descricao }}</p>
+        <div v-if="(servico as any).dataDesejada" class="mb-4 p-3 bg-primary/5 rounded-lg border border-primary/10">
+          <p class="text-xs text-primary font-semibold uppercase mb-1">Data Desejada para Execução</p>
+          <p class="text-sm text-foreground flex items-center gap-2">
+            <span class="material-symbols-rounded text-base">event</span>
+            {{ formatarData((servico as any).dataDesejada) }} às {{ formatarHora((servico as any).dataDesejada) }}
+          </p>
+        </div>
+
+        <p v-if="servico.descricao" class="text-sm text-foreground mb-6 leading-relaxed">
+          {{ servico.descricao }}
+        </p>
 
         <HtButton v-if="auth.isLoggedIn" @click="irParaAgendamento">
           <span class="material-symbols-rounded text-base">calendar_month</span>
-          Agendar
+          {{ 'prestadorId' in servico ? 'Agendar agora' : 'Enviar Proposta' }}
         </HtButton>
         <router-link v-else :to="`/login?redirect=/servicos/detalhes/${props.id}`">
           <HtButton variant="outline">
             <span class="material-symbols-rounded text-base">login</span>
-            Faça login para agendar
+            Faça login para prosseguir
           </HtButton>
         </router-link>
       </HtCard>
@@ -84,6 +106,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/services/api'
 import { useAuthStore } from '@/stores/auth'
+import { CATEGORIAS_SERVICO } from '@/types'
 import type { Servico, Avaliacao } from '@/types'
 import HtButton from '@/components/ui/HtButton.vue'
 import HtCard from '@/components/ui/HtCard.vue'
@@ -141,5 +164,17 @@ function estrelas(media: number): string {
 
 function formatarData(dataStr: string): string {
   return new Date(dataStr).toLocaleDateString('pt-BR')
+}
+
+function formatarHora(dataStr: string): string {
+  return new Date(dataStr).toLocaleTimeString('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
+
+function obterNomeCategoria(id: number | string): string {
+  const cat = CATEGORIAS_SERVICO.find(c => String(c.value) === String(id))
+  return cat ? cat.label : 'N/A'
 }
 </script>

@@ -28,11 +28,6 @@ public class EnderecoMap : IEntityTypeConfiguration<Endereco>
             .IsRequired()
             .HasMaxLength(10);
 
-        builder.HasOne(e => e.Usuario)
-            .WithMany(u => u.Enderecos)
-            .HasForeignKey(e => e.UsuarioId)
-            .OnDelete(DeleteBehavior.Cascade);
-
         builder.HasOne(e => e.Cidade)
             .WithMany(c => c.Enderecos)
             .HasForeignKey(e => e.CidadeId)

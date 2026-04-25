@@ -76,7 +76,7 @@
           <!-- Valor -->
           <HtInput
             ref="refValor"
-            v-model="form.valor"
+            v-model="form.precoBase"
             label="Valor (R$)"
             type="number"
             :allowNegative="false"
@@ -146,8 +146,9 @@ const form = reactive<ServicoPrestadorForm>({
   descricao: '',
   categoria: '',
   unidadeCobranca: '',
-  valor: '',
+  precoBase: '',
   aceitaPagamentoAposFinalizacao: false,
+  tipo: 1,
 })
 
 const refTitulo    = ref<InstanceType<typeof HtInput>   | null>(null)
@@ -166,12 +167,17 @@ async function handleSubmit() {
   erro.value = null
   carregando.value = true
   try {
-    await api.post('/api/ServicoOferecido/CriarServico', {
+    const categoriaSelecionada = Number(form.categoria)
+    if (!categoriaSelecionada) {
+      throw new Error('Selecione uma categoria válida.')
+    }
+
+    await api.post('/api/ServicoOferecido/CriarServicoPrestador', {
       titulo:                          form.titulo,
       descricao:                       form.descricao,
-      categoriaId:                     Number(form.categoria),
-      UnidadeCobranca:                 form.unidadeCobranca,
-      valor:                           Number(form.valor),
+      categoria:                       categoriaSelecionada,
+      unidadeCobranca:                 form.unidadeCobranca,
+      precoBase:                       Number(form.precoBase.toString().replace(',', '.')),
       aceitaPagamentoAposFinalizacao:  form.aceitaPagamentoAposFinalizacao,
     })
     sucesso.value = true
@@ -191,8 +197,9 @@ function reiniciar() {
   form.descricao = ''
   form.categoria = ''
   form.unidadeCobranca = ''
-  form.valor = ''
+  form.precoBase = ''
   form.aceitaPagamentoAposFinalizacao = false
+  form.tipo = 1
   erro.value = null
   sucesso.value = false
 }

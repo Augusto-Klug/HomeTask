@@ -1,9 +1,11 @@
-    using HomeTask.Application.Interfaces;
+using HomeTask.Application.Interfaces;
 using HomeTask.Domain.Entidades;
 using HomeTask.Domain.Enums;
 using HomeTask.Domain.ViewModel;
 using HomeTask.WebApi.Conversores.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace HomeTask.WebApi.Controller
 {
@@ -11,98 +13,164 @@ namespace HomeTask.WebApi.Controller
     [Route("api/[controller]/[action]")]
     public class ServicoOferecidoController : ControllerBase
     {
-        private readonly IServicoService _servicoService;
+        private readonly IServicoPrestadorService _servicoPrestadorService;
+        private readonly IServicoClienteService _servicoClienteService;
+        private readonly IClienteService _clienteService;
+        private readonly IPrestadorService _prestadorService;
         private readonly IConversorServicoOferecido _conversorServico;
 
-        public ServicoOferecidoController(IServicoService servicoService, IConversorServicoOferecido conversorServico)
+        public ServicoOferecidoController(
+            IServicoPrestadorService servicoPrestadorService, 
+            IServicoClienteService servicoClienteService,
+            IClienteService clienteService,
+            IPrestadorService prestadorService,
+            IConversorServicoOferecido conversorServico)
         {
-            _servicoService = servicoService;
+            _servicoPrestadorService = servicoPrestadorService;
+            _servicoClienteService = servicoClienteService;
+            _clienteService = clienteService;
+            _prestadorService = prestadorService;
             _conversorServico = conversorServico;
         }
 
         [HttpGet]
         public async Task<IActionResult> ObterServicoPorId([FromQuery] Guid id, CancellationToken cancellationToken)
         {
-            var servico = await _servicoService.ObterPorIdAsync(id, cancellationToken);
+            var servicoPrestador = await _servicoPrestadorService.ObterPorIdAsync(id, cancellationToken);
+            if (servicoPrestador != null)
+            {
+                var contrato = _conversorServico.ConverterEntidadeparaPrestadorContrato(servicoPrestador);
+                var viewModel = _conversorServico.ConverterContratoparaPrestadorViewModel(contrato);
+                return Ok(viewModel);
+            }
 
-            if (servico == null)
-                return NotFound();
+            var servicoCliente = await _servicoClienteService.ObterPorIdAsync(id, cancellationToken);
+            if (servicoCliente != null)
+            {
+                var contrato = _conversorServico.ConverterEntidadeparaClienteContrato(servicoCliente);
+                var viewModel = _conversorServico.ConverterContratoparaClienteViewModel(contrato);
+                return Ok(viewModel);
+            }
 
-            var servicoContrato = _conversorServico.ConverterServicoOferecidoparaContrato(servico);
-            var viewModel = _conversorServico.ConverterContratoparaViewModel(servicoContrato);
-
-            return Ok(viewModel);
+            return NotFound();
         }
 
         [HttpGet]
         public async Task<IActionResult> ObterServicosPorPrestador([FromQuery] Guid prestadorId, CancellationToken cancellationToken)
         {
-            var servicos = await _servicoService.ObterPorPrestadorAsync(prestadorId, cancellationToken);
-
+            var servicos = await _servicoPrestadorService.ObterPorPrestadorAsync(prestadorId, cancellationToken);
             var viewModels = servicos.Select(s =>
             {
-                var c = _conversorServico.ConverterServicoOferecidoparaContrato(s);
-                return _conversorServico.ConverterContratoparaViewModel(c);
+                var c = _conversorServico.ConverterEntidadeparaPrestadorContrato(s);
+                return _conversorServico.ConverterContratoparaPrestadorViewModel(c);
             });
 
             return Ok(viewModels);
         }
 
         [HttpGet]
-        public async Task<IActionResult> BuscarServicos(Guid? categoriaId, string? cidade, decimal? precoMaximo, CancellationToken cancellationToken)
+        public async Task<IActionResult> BuscarServicos(CategoriaServico? categoria, string? cidade, decimal? precoMaximo, CancellationToken cancellationToken)
         {
-            var servicos = await _servicoService.BuscarAsync(categoriaId, cidade, precoMaximo, cancellationToken);
-
+            var servicos = await _servicoPrestadorService.BuscarTodosAsync(categoria, cidade, precoMaximo, cancellationToken);
+            
             var viewModels = servicos.Select(s =>
             {
-                var c = _conversorServico.ConverterServicoOferecidoparaContrato(s);
-                return _conversorServico.ConverterContratoparaViewModel(c);
+                if (s is ServicoPrestador sp)
+                {
+                    var c = _conversorServico.ConverterEntidadeparaPrestadorContrato(sp);
+                    return (object)_conversorServico.ConverterContratoparaPrestadorViewModel(c);
+                }
+                else
+                {
+                    var sc = (ServicoCliente)s;
+                    var c = _conversorServico.ConverterEntidadeparaClienteContrato(sc);
+                    return (object)_conversorServico.ConverterContratoparaClienteViewModel(c);
+                }
+            });
+
+            return Ok(viewModels);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> BuscarPedidos(CategoriaServico? categoria, string? cidade, decimal? precoMaximo, CancellationToken cancellationToken)
+        {
+            var servicos = await _servicoClienteService.BuscarPedidosAsync(categoria, cidade, precoMaximo, cancellationToken);
+            var viewModels = servicos.Select(s =>
+            {
+                var c = _conversorServico.ConverterEntidadeparaClienteContrato(s);
+                return _conversorServico.ConverterContratoparaClienteViewModel(c);
             });
 
             return Ok(viewModels);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CriarServico(ServicoOferecidoViewModel viewmodel, CancellationToken cancellationToken)
+        [Authorize]
+        public async Task<IActionResult> CriarServicoPrestador(ServicoPrestadorViewModel viewmodel, CancellationToken cancellationToken)
         {
-            var contrato = _conversorServico.ConverterViewModelparaContrato(viewmodel);
-            var servico = _conversorServico.ConverterContratoparaServicoOferecido(contrato);
+            var idUsuario = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
+            var prestador = await _prestadorService.ObterPorUsuarioIdAsync(idUsuario, cancellationToken);
+            
+            if (prestador == null)
+                return Forbid("Usuário não possui um perfil de prestador.");
 
-            if (servico == null)
-                return BadRequest();
+            viewmodel.PrestadorId = prestador.Id;
+            var contrato = _conversorServico.ConverterPrestadorViewModelparaContrato(viewmodel);
+            var servico = _conversorServico.ConverterPrestadorContratoparaEntidade(contrato);
 
-            var servicoCriado = await _servicoService.CriarAsync(servico, cancellationToken);
-            var servicoContrato = _conversorServico.ConverterServicoOferecidoparaContrato(servicoCriado);
-            var viewModel = _conversorServico.ConverterContratoparaViewModel(servicoContrato);
+            if (servico == null) return BadRequest();
 
-            return Ok(viewModel);
+            var servicoCriado = await _servicoPrestadorService.CriarAsync(servico, cancellationToken);
+            var contratoCriado = _conversorServico.ConverterEntidadeparaPrestadorContrato(servicoCriado);
+            var viewModelCriado = _conversorServico.ConverterContratoparaPrestadorViewModel(contratoCriado);
+
+            return Ok(viewModelCriado);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> CriarServicoCliente(ServicoClienteViewModel viewmodel, CancellationToken cancellationToken)
+        {
+            var idUsuario = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
+            var cliente = await _clienteService.ObterPorUsuarioIdAsync(idUsuario, cancellationToken);
+
+            if (cliente == null)
+                return Forbid("Usuário não possui um perfil de cliente.");
+
+            viewmodel.ClienteId = cliente.Id;
+            var contrato = _conversorServico.ConverterClienteViewModelparaContrato(viewmodel);
+            var servico = _conversorServico.ConverterClienteContratoparaEntidade(contrato);
+
+            if (servico == null) return BadRequest();
+
+            var servicoCriado = await _servicoClienteService.CriarAsync(servico, cancellationToken);
+            var contratoCriado = _conversorServico.ConverterEntidadeparaClienteContrato(servicoCriado);
+            var viewModelCriado = _conversorServico.ConverterContratoparaClienteViewModel(contratoCriado);
+
+            return Ok(viewModelCriado);
         }
 
         [HttpPut]
-        public async Task<IActionResult> AtualizarServico(ServicoOferecidoViewModel viewmodel, CancellationToken cancellationToken)
+        [Authorize]
+        public async Task<IActionResult> AtualizarServicoPrestador(ServicoPrestadorViewModel viewmodel, CancellationToken cancellationToken)
         {
-            var contrato = _conversorServico.ConverterViewModelparaContrato(viewmodel);
-            var servico = _conversorServico.ConverterContratoparaServicoOferecido(contrato);
+            var contrato = _conversorServico.ConverterPrestadorViewModelparaContrato(viewmodel);
+            var servico = _conversorServico.ConverterPrestadorContratoparaEntidade(contrato);
+            if (servico == null) return BadRequest();
 
-            if (servico == null)
-                return BadRequest();
-
-            var servicoAtualizado = await _servicoService.AtualizarAsync(servico, cancellationToken);
-            var servicoContrato = _conversorServico.ConverterServicoOferecidoparaContrato(servicoAtualizado);
-            var viewModel = _conversorServico.ConverterContratoparaViewModel(servicoContrato);
-
-            return Ok(viewModel);
+            var servicoAtualizado = await _servicoPrestadorService.AtualizarAsync(servico, cancellationToken);
+            var contratoAtualizado = _conversorServico.ConverterEntidadeparaPrestadorContrato(servicoAtualizado);
+            return Ok(_conversorServico.ConverterContratoparaPrestadorViewModel(contratoAtualizado));
         }
 
         [HttpDelete]
-        public async Task<IActionResult> RemoverServico(ServicoOferecidoViewModel viewmodel, CancellationToken cancellationToken)
+        [Authorize]
+        public async Task<IActionResult> RemoverServico(Guid id, CancellationToken cancellationToken)
         {
-            var contrato = _conversorServico.ConverterViewModelparaContrato(viewmodel);
-            var removido = await _servicoService.RemoverAsync(contrato.Id, cancellationToken);
+            var removido = await _servicoPrestadorService.RemoverAsync(id, cancellationToken) || 
+                           await _servicoClienteService.RemoverAsync(id, cancellationToken);
 
-            if (!removido)
-                return NotFound();
-
+            if (!removido) return NotFound();
             return Ok();
         }
     }

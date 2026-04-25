@@ -15,6 +15,7 @@ public class Cliente
     public Usuario Usuario { get; private set; } = null!;
 
     // Navegação
+    public ICollection<ServicoCliente> ServicosClientes { get; private set; } = [];
     public ICollection<Agendamento> Agendamentos { get; private set; } = [];
     public ICollection<Avaliacao> Avaliacoes { get; private set; } = [];
     public ICollection<Conversa> Conversas { get; private set; } = [];

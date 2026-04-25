@@ -48,9 +48,9 @@ namespace HomeTask.WebApi.Controller
         }
 
         [HttpGet]
-        public async Task<IActionResult> BuscarPrestadores(Guid? categoriaId, string? cidade, DateTime? dataDisponivel, CancellationToken cancellationToken)
+        public async Task<IActionResult> BuscarPrestadores(CategoriaServico? categoria, string? cidade, DateTime? dataDisponivel, CancellationToken cancellationToken)
         {
-            var prestadores = await _prestadorService.BuscarAsync(categoriaId, cidade, dataDisponivel, cancellationToken);
+            var prestadores = await _prestadorService.BuscarAsync(categoria, cidade, dataDisponivel, cancellationToken);
 
             var viewModels = prestadores.Select(p =>
             {

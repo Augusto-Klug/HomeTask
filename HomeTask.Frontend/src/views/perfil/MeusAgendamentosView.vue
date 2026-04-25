@@ -27,7 +27,7 @@ function isFuturo(iso: string) {
 }
 
 function isPendente(status: StatusAgendamento) {
-  return status === "Solicitado" || status === "Confirmado";
+  return status === "Solicitado" || status === "Aceito";
 }
 
 function filtrar(lista: AgendamentoResumo[]) {
@@ -48,7 +48,7 @@ onMounted(async () => {
     const reqs: Promise<void>[] = [];
     if (isCliente.value) {
       reqs.push(
-        api.get<AgendamentoResumo[]>("/api/Agendamentos/cliente").then((r) => {
+        api.get<AgendamentoResumo[]>("/api/Agendamento/ObterAgendamentosPorCliente").then((r) => {
           agendamentosCliente.value = r.data;
         }),
       );
@@ -56,7 +56,7 @@ onMounted(async () => {
     if (isPrestador.value) {
       reqs.push(
         api
-          .get<AgendamentoResumo[]>("/api/Agendamentos/prestador")
+          .get<AgendamentoResumo[]>("/api/Agendamento/ObterAgendamentosPorPrestador")
           .then((r) => {
             agendamentosPrestador.value = r.data;
           }),
@@ -69,8 +69,9 @@ onMounted(async () => {
 });
 
 const STATUS_LABEL: Record<StatusAgendamento, string> = {
-  Solicitado: "Solicitado",
   Confirmado: "Confirmado",
+  Solicitado: "Solicitado",
+  Aceito: "Aceito",
   EmAndamento: "Em andamento",
   Concluido: "Concluído",
   Cancelado: "Cancelado",
@@ -81,8 +82,9 @@ const STATUS_VARIANT: Record<
   StatusAgendamento,
   "default" | "primary" | "success" | "error" | "outline"
 > = {
-  Solicitado: "outline",
   Confirmado: "primary",
+  Solicitado: "outline",
+  Aceito: "primary",
   EmAndamento: "default",
   Concluido: "success",
   Cancelado: "error",
@@ -139,7 +141,7 @@ function formatarMoeda(v: number) {
         </div>
 
         <div v-else class="flex flex-col gap-3">
-          <HtCard v-for="ag in clienteFiltrado" :key="ag.id">
+          <HtCard v-for="ag in clienteFiltrado" :key="ag.id" @click="$router.push(`/agendamento/detalhes/${ag.id}`)" class="cursor-pointer hover:border-primary/50 transition-colors">
             <div class="flex items-start justify-between gap-3">
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2 mb-1 flex-wrap">
@@ -218,7 +220,7 @@ function formatarMoeda(v: number) {
         </div>
 
         <div v-else class="flex flex-col gap-3">
-          <HtCard v-for="ag in prestadorFiltrado" :key="ag.id">
+          <HtCard v-for="ag in prestadorFiltrado" :key="ag.id" @click="$router.push(`/agendamento/detalhes/${ag.id}`)" class="cursor-pointer hover:border-primary/50 transition-colors">
             <div class="flex items-start justify-between gap-3">
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2 mb-1 flex-wrap">

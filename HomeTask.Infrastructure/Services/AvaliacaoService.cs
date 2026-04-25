@@ -66,7 +66,7 @@ public class AvaliacaoService : IAvaliacaoService
                 .ThenInclude(c => c.Usuario)
             .Include(a => a.Agendamento)
                 .ThenInclude(ag => ag.AgendamentoServicos)
-                    .ThenInclude(ag => ag.ServicoOferecido)
+                    .ThenInclude(ag => ag.ServicoBase)
             .Where(a => a.PrestadorId == prestadorId && a.Visivel)
             .OrderByDescending(a => a.DataAvaliacao)
             .ToListAsync(cancellationToken);
@@ -79,7 +79,7 @@ public class AvaliacaoService : IAvaliacaoService
                 .ThenInclude(p => p.Usuario)
             .Include(a => a.Agendamento)
                 .ThenInclude(ag => ag.AgendamentoServicos)
-                    .ThenInclude(ags => ags.ServicoOferecido)
+                    .ThenInclude(ags => ags.ServicoBase)
             .Where(a => a.ClienteId == clienteId)
             .OrderByDescending(a => a.DataAvaliacao)
             .ToListAsync(cancellationToken);

@@ -22,7 +22,7 @@ public class UsuarioService : IUsuarioService
         return await _context.Usuarios
             .Include(u => u.Cliente)
             .Include(u => u.Prestador)
-            .Include(u => u.Enderecos)
+            .Include(u => u.Endereco)
                 .ThenInclude(e => e.Cidade)
             .FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
     }
@@ -39,11 +39,6 @@ public class UsuarioService : IUsuarioService
     {
         usuario.DefinirSenhaHash(HashSenha(senha));
         usuario.DefinirDataCadastro(DateTime.UtcNow);
-
-        // garante que o endereço seja o principal
-        var enderecoPrincipal = usuario.Enderecos.FirstOrDefault();
-        if (enderecoPrincipal != null)
-            enderecoPrincipal.DefinirPrincipal(true);
 
         if (usuario.TipoUsuario == TipoUsuario.Cliente || usuario.TipoUsuario == TipoUsuario.Ambos)
         {
@@ -121,19 +116,16 @@ public class UsuarioService : IUsuarioService
             usuarioBanco.Ativo
         );
 
-        var enderecoPrincipal = usuarioBanco.Enderecos.FirstOrDefault(e => e.Principal)
-                                ?? usuarioBanco.Enderecos.FirstOrDefault();
-        if (enderecoPrincipal != null)
+        var endereco = usuarioBanco.Endereco;
+        if (endereco != null)
         {
-            enderecoPrincipal.DefinirDados(
-                enderecoPrincipal.UsuarioId,
-                enderecoPrincipal.CidadeId,
+            endereco.DefinirDados(
+                endereco.CidadeId,
                 contrato.Logradouro ?? string.Empty,
-                enderecoPrincipal.Numero,
-                enderecoPrincipal.Complemento,
+                endereco.Numero,
+                endereco.Complemento,
                 contrato.Bairro ?? string.Empty,
-                contrato.Cep ?? string.Empty,
-                true
+                contrato.Cep ?? string.Empty
             );
         }
 
@@ -157,6 +149,4 @@ public class UsuarioService : IUsuarioService
 
         return true;
     }
-
-
 }

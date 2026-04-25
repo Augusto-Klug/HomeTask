@@ -70,16 +70,16 @@ export interface BuscarFiltro {
 }
 
 export const CATEGORIAS_SERVICO = [
-  { value: '1',  label: 'Faxina' },
-  { value: '2',  label: 'Jardinagem' },
-  { value: '3',  label: 'Reparos' },
-  { value: '4',  label: 'Lavanderia' },
-  { value: '5',  label: 'Passadoria' },
-  { value: '6',  label: 'Babysitter' },
-  { value: '7',  label: 'Cuidador de Idosos' },
-  { value: '8',  label: 'Pet Sitter' },
-  { value: '9',  label: 'Cozinheiro' },
-  { value: '10', label: 'Serviços Gerais' },
+  { value: 1,  label: 'Faxina' },
+  { value: 2,  label: 'Jardinagem' },
+  { value: 3,  label: 'Reparos' },
+  { value: 4,  label: 'Lavanderia' },
+  { value: 5,  label: 'Passadoria' },
+  { value: 6,  label: 'Babysitter' },
+  { value: 7,  label: 'Cuidador de Idosos' },
+  { value: 8,  label: 'Pet Sitter' },
+  { value: 9,  label: 'Cozinheiro' },
+  { value: 10, label: 'Serviços Gerais' },
 ] as const
 
 export type TipoValorCliente = 'por_hora' | 'total' | 'a_combinar'
@@ -88,18 +88,14 @@ export type TipoValorPrestador = 'por_hora' | 'total'
 export type StatusAgendamento =
   | 'Solicitado'
   | 'Confirmado'
+  | 'Aceito'
   | 'EmAndamento'
   | 'Concluido'
   | 'Cancelado'
   | 'Recusado'
 
-export type TipoAnuncio = 'PrestadorOferece' | 'ClienteSolicitou'
-
-export interface CategoriaResumo {
-  id: string
-  nome: string
-  icone: string
-}
+export type TipoAnuncioCliente = 2
+export type TipoAnuncioPrestador = 1
 
 export interface ServicoOferecido {
   id: string
@@ -108,8 +104,10 @@ export interface ServicoOferecido {
   precoBase: number
   duracaoEstimadaMinutos: number | null
   unidadeCobranca: string
-  tipoAnuncio: TipoAnuncio
-  categoria: CategoriaResumo
+  tipoAnuncio: TipoAnuncioCliente | TipoAnuncioPrestador
+  categoria: number
+  dataDesejada?: string | null
+  aceitaPagamentoAposFinalizacao?: boolean
 }
 
 export interface AgendamentoEndereco {
@@ -155,17 +153,19 @@ export interface PerfilForm {
 export interface ServicoClienteForm {
   titulo: string
   descricao: string
-  categoria: string
+  categoria: string | number
   unidadeCobranca: TipoValorCliente | ''
-  valor: string
+  precoBase: string
   data: string
+  tipo? : TipoAnuncioCliente
 }
 
 export interface ServicoPrestadorForm {
   titulo: string
   descricao: string
-  categoria: string
+  categoria: string | number
   unidadeCobranca: TipoValorPrestador | ''
-  valor: string
+  precoBase: string
   aceitaPagamentoAposFinalizacao: boolean
+  tipo? : TipoAnuncioPrestador
 }

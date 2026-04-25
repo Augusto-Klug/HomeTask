@@ -174,7 +174,7 @@ describe('CadastrarServicoClienteView', () => {
     await flushPromises()
 
     expect(api.default.post).toHaveBeenCalledWith(
-      '/api/ServicoOferecido/CriarServico',
+      '/api/ServicoOferecido/CriarServicoCliente',
       expect.objectContaining({
         dataDesejada: expect.stringContaining('2026-04-20T'),
       }),

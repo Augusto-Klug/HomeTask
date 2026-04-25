@@ -82,6 +82,11 @@ const router = createRouter({
       name: "agendamento-sucesso",
       component: () => import("@/views/agendamento/AgendamentoSucessoView.vue"),
     },
+    {
+      path: "/agendamento/detalhes/:id",
+      name: "agendamento-detalhes",
+      component: () => import("@/views/agendamento/DetalhesAgendamentoView.vue"),
+    },
     // Perfil
     {
       path: "/perfil/agendamentos",

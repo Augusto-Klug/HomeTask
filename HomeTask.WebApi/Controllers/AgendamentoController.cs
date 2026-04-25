@@ -72,7 +72,7 @@ namespace HomeTask.WebApi.Controller
             if (agendamento == null)
                 return BadRequest();
 
-            var agendamentoCriado = await _agendamentoService.CriarAsync(agendamento, cancellationToken);
+            var agendamentoCriado = await _agendamentoService.CriarAsync(agendamento, contrato.ServicosOferecidosIds, cancellationToken);
             var agendamentoContrato = _conversorAgendamento.ConverterAgendamentoparaContrato(agendamentoCriado);
             var viewModel = _conversorAgendamento.ConverterContratoparaViewModel(agendamentoContrato);
 

@@ -53,27 +53,26 @@ public class PrestadorService : IPrestadorService
         return prestador;
     }
 
-    public async Task<IEnumerable<Prestador>> BuscarAsync(Guid? categoriaId, string? cidade, DateTime? dataDisponivel, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Prestador>> BuscarAsync(CategoriaServico? categoria, string? cidade, DateTime? dataDisponivel, CancellationToken cancellationToken = default)
     {
         var query = _context.Prestadores
             .Include(p => p.Usuario)
-                .ThenInclude(u => u.Enderecos)
+                .ThenInclude(u => u.Endereco)
                     .ThenInclude(e => e.Cidade)
             .Include(p => p.ServicosOferecidos)
-                .ThenInclude(s => s.Categoria)
             .Include(p => p.Avaliacoes)
             .Where(p => p.Status == StatusPrestador.Ativo);
 
-        if (categoriaId.HasValue)
+        if (categoria.HasValue)
         {
             query = query.Where(p => p.ServicosOferecidos
-                .Any(s => s.CategoriaId == categoriaId.Value && s.Ativo));
+                .Any(s => s.Categoria == categoria.Value && s.Ativo));
         }
 
         if (!string.IsNullOrWhiteSpace(cidade))
         {
-            query = query.Where(p => p.Usuario.Enderecos
-                .Any(e => e.Principal && e.Cidade.Nome.Contains(cidade)));
+            query = query.Where(p => p.Usuario.Endereco != null && 
+                                     p.Usuario.Endereco.Cidade.Nome.Contains(cidade));
         }
 
         if (dataDisponivel.HasValue)
@@ -99,7 +98,7 @@ public class PrestadorService : IPrestadorService
             .Include(a => a.Cliente)
                 .ThenInclude(c => c.Usuario)
             .Include(a => a.AgendamentoServicos)
-                .ThenInclude(s => s.ServicoOferecido)
+                .ThenInclude(s => s.ServicoBase)
             .Include(a => a.Avaliacao)
             .Where(a => a.PrestadorId == prestadorId)
             .OrderByDescending(a => a.DataHoraAgendada)

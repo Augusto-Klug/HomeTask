@@ -3,6 +3,7 @@ using HomeTask.Application.Interfaces;
 using HomeTask.Domain.Entities;
 using HomeTask.Domain.Enums;
 using HomeTask.Infrastructure.Data;
+using HomeTask.Domain.Entidades;
 
 namespace HomeTask.Infrastructure.Services;
 
@@ -27,15 +28,84 @@ public class AgendamentoService : IAgendamentoService
                 .ThenInclude(p => p.Usuario)
             .Include(a => a.Endereco)
             .Include(a => a.AgendamentoServicos)
-                .ThenInclude(s => s.ServicoOferecido)
+                .ThenInclude(s => s.ServicoBase)
             .Include(a => a.Pagamento)
             .Include(a => a.Avaliacao)
             .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
     }
 
-    public async Task<Agendamento> CriarAsync(Agendamento agendamento, CancellationToken cancellationToken = default)
+    public async Task<Agendamento> CriarAsync(Agendamento agendamento, List<Guid> servicosIds, CancellationToken cancellationToken = default)
     {
-        agendamento.DefinirComoSolicitado(DateTime.UtcNow);
+        var servicos = await _context.Servicos
+            .Where(s => servicosIds.Contains(s.Id))
+            .ToListAsync(cancellationToken);
+
+        if (servicos == null || !servicos.Any())
+            throw new InvalidOperationException("Nenhum serviço válido encontrado para o agendamento.");
+
+        decimal valorTotal = 0;
+        int duracaoTotal = 0;
+        Guid prestadorId = agendamento.PrestadorId;
+        Guid clienteId = agendamento.ClienteId;
+
+        foreach (var servico in servicos)
+        {
+            if (servico is ServicoPrestador sp)
+            {
+                if (prestadorId == Guid.Empty || prestadorId == default)
+                {
+                    prestadorId = sp.PrestadorId;
+                }
+                duracaoTotal += sp.DuracaoEstimadaMinutos ?? 0;
+            }
+
+            if (servico is ServicoCliente sc)
+            {
+                if (clienteId == Guid.Empty || clienteId == default)
+                {
+                    clienteId = sc.ClienteId;
+                }
+            }
+
+            var agendamentoServico = new AgendamentoServico();
+            agendamentoServico.DefinirDados(agendamento.Id, servico.Id, 1, servico.PrecoBase);
+            agendamento.AdicionarServico(agendamentoServico);
+
+            valorTotal += servico.PrecoBase;
+        }
+
+        // Busca endereço principal se não informado
+        Guid enderecoId = agendamento.EnderecoId;
+        if (enderecoId == Guid.Empty || enderecoId == default)
+        {
+            var enderecoUsuario = await _context.Enderecos
+                .FirstOrDefaultAsync(e => _context.Usuarios.Any(u => u.Cliente!.Id == clienteId && u.EnderecoId == e.Id), cancellationToken);
+
+            if (enderecoUsuario != null)
+            {
+                enderecoId = enderecoUsuario.Id;
+            }
+        }
+
+        if (enderecoId == Guid.Empty || enderecoId == default)
+            throw new InvalidOperationException("Cliente não possui endereço cadastrado para o agendamento.");
+
+        // Atualiza os dados do agendamento com o que foi calculado/descoberto
+        agendamento.DefinirDados(
+            agendamento.Id,
+            clienteId,
+            prestadorId,
+            agendamento.DataHoraAgendada,
+            duracaoTotal > 0 ? duracaoTotal : agendamento.DuracaoMinutos,
+            StatusAgendamento.Solicitado,
+            enderecoId,
+            agendamento.Observacoes,
+            valorTotal,
+            DateTime.UtcNow,
+            null,
+            null,
+            null
+        );
 
         _context.Agendamentos.Add(agendamento);
         await _context.SaveChangesAsync(cancellationToken);
@@ -131,7 +201,7 @@ public class AgendamentoService : IAgendamentoService
             .Include(a => a.Prestador)
                 .ThenInclude(p => p.Usuario)
             .Include(a => a.AgendamentoServicos)
-                .ThenInclude(s => s.ServicoOferecido)
+                .ThenInclude(s => s.ServicoBase)
             .Where(a => a.ClienteId == clienteId)
             .OrderByDescending(a => a.DataHoraAgendada)
             .ToListAsync(cancellationToken);
@@ -143,7 +213,7 @@ public class AgendamentoService : IAgendamentoService
             .Include(a => a.Cliente)
                 .ThenInclude(c => c.Usuario)
             .Include(a => a.AgendamentoServicos)
-                .ThenInclude(s => s.ServicoOferecido)
+                .ThenInclude(s => s.ServicoBase)
             .Where(a => a.PrestadorId == prestadorId)
             .OrderByDescending(a => a.DataHoraAgendada)
             .ToListAsync(cancellationToken);
@@ -155,7 +225,7 @@ public class AgendamentoService : IAgendamentoService
             .Include(a => a.Cliente)
             .Include(a => a.Prestador)
             .Include(a => a.AgendamentoServicos)
-                .ThenInclude(s => s.ServicoOferecido)
+                .ThenInclude(s => s.ServicoBase)
             .Where(a => a.Status == status)
             .OrderByDescending(a => a.DataSolicitacao)
             .ToListAsync(cancellationToken);

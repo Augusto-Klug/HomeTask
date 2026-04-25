@@ -61,6 +61,11 @@ public class Agendamento
     public Avaliacao? Avaliacao { get; private set; }
     public ICollection<AgendamentoServico> AgendamentoServicos { get; private set; } = [];
 
+    public void AdicionarServico(AgendamentoServico servico)
+    {
+        AgendamentoServicos.Add(servico);
+    }
+
     public void DefinirDados(
         Guid id,
         Guid clienteId,
