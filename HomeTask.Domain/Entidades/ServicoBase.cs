@@ -1,4 +1,3 @@
-using HomeTask.Domain.Entities;
 using HomeTask.Domain.Enums;
 
 namespace HomeTask.Domain.Entidades;
@@ -12,7 +11,7 @@ public abstract class ServicoBase
     public string Titulo { get; protected set; } = null!;
     public string Descricao { get; protected set; } = null!;
     public decimal PrecoBase { get; protected set; }
-    public string UnidadeCobranca { get; protected set; } = null!;
+    public FormatoCobranca UnidadeCobranca { get; protected set; }
     public TipoAnuncio TipoAnuncio { get; protected set; }
 
     public ICollection<AgendamentoServico> AgendamentoServicos { get; protected set; } = [];

@@ -1,5 +1,6 @@
 using HomeTask.Domain.Entidades;
 using HomeTask.Domain.Enums;
+using HomeTask.Domain.Contratos;
 
 namespace HomeTask.Application.Interfaces;
 
@@ -11,7 +12,14 @@ public interface IServicoPrestadorService
     Task<bool> RemoverAsync(Guid id, CancellationToken cancellationToken = default);
     Task<IEnumerable<ServicoPrestador>> ObterPorPrestadorAsync(Guid prestadorId, CancellationToken cancellationToken = default);
     Task<IEnumerable<ServicoPrestador>> BuscarAsync(CategoriaServico? categoria, string? cidade, decimal? precoMaximo, CancellationToken cancellationToken = default);
-    Task<IEnumerable<ServicoBase>> BuscarTodosAsync(CategoriaServico? categoria, string? cidade, decimal? precoMaximo, CancellationToken cancellationToken = default);
+    Task<PaginacaoResultado<ServicoBase>> BuscarTodosPaginadoAsync(
+        CategoriaServico? categoria,
+        string? cidade,
+        decimal? precoMaximo,
+        Guid? usuarioId,
+        int pagina,
+        int tamanhoPagina,
+        CancellationToken cancellationToken = default);
 }
 
 public interface IServicoClienteService

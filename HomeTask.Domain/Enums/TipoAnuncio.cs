@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿namespace HomeTask.Domain.Enums;
 
 /// <summary>
 /// Define se o anúncio foi criado por um prestador oferecendo serviço

@@ -1,7 +1,6 @@
-using HomeTask.Domain.Entidades;
 using HomeTask.Domain.Enums;
 
-namespace HomeTask.Domain.Entities;
+namespace HomeTask.Domain.Entidades;
 
 public class Usuario
 {

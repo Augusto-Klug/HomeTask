@@ -4,7 +4,7 @@ using HomeTask.Domain.ViewModel;
 using HomeTask.WebApi.Conversores.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HomeTask.WebApi.Controller
+namespace HomeTask.WebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]/[action]")]

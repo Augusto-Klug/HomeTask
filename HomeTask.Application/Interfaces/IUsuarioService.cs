@@ -1,5 +1,5 @@
 using HomeTask.Domain.Contratos;
-using HomeTask.Domain.Entities;
+using HomeTask.Domain.Entidades;
 
 namespace HomeTask.Application.Interfaces;
 

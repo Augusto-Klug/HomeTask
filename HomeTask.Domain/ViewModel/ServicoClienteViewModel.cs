@@ -20,8 +20,7 @@ namespace HomeTask.Domain.ViewModel
         public string Descricao { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "A unidade de cobrança é obrigatória")]
-        [MaxLength(20)]
-        public string UnidadeCobranca { get; set; } = string.Empty;
+        public FormatoCobranca UnidadeCobranca { get; set; }
 
         public decimal PrecoBase { get; set; }
         

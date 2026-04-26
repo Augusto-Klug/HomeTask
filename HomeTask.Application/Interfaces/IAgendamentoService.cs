@@ -1,4 +1,4 @@
-using HomeTask.Domain.Entities;
+using HomeTask.Domain.Entidades;
 using HomeTask.Domain.Enums;
 
 namespace HomeTask.Application.Interfaces;

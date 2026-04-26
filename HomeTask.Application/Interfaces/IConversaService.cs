@@ -1,5 +1,4 @@
 using HomeTask.Domain.Entidades;
-using HomeTask.Domain.Entities;
 
 namespace HomeTask.Application.Interfaces;
 

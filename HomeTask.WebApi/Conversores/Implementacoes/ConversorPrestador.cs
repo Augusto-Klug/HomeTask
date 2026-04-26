@@ -1,4 +1,5 @@
 using HomeTask.Domain.Contratos;
+using HomeTask.Domain.Entidades;
 using HomeTask.Domain.ViewModel;
 using HomeTask.WebApi.Conversores.Interfaces;
 
@@ -6,7 +7,7 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
 {
     public class ConversorPrestador : IConversorPrestador
     {
-        public PrestadorContrato ConverterPrestadorparaContrato(Domain.Entities.Prestador? prestador)
+        public PrestadorContrato ConverterPrestadorparaContrato(Prestador? prestador)
         {
             if (prestador == null)
                 throw new ArgumentNullException(nameof(prestador));
@@ -25,12 +26,12 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
                 return retorno;
         }
 
-        public Domain.Entities.Prestador? ConverterContratoparaPrestador(PrestadorContrato contrato)
+        public Prestador? ConverterContratoparaPrestador(PrestadorContrato contrato)
         {
             if (contrato == null)
                 throw new ArgumentNullException(nameof(contrato));
 
-            var retorno = new Domain.Entities.Prestador();
+            var retorno = new Prestador();
                 retorno.DefinirDados(
                     contrato.Id,
                     contrato.UsuarioId,

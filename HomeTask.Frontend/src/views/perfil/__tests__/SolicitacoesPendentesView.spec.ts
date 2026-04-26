@@ -5,7 +5,7 @@ import { createRouter, createMemoryHistory } from "vue-router";
 import SolicitacoesPendentesView from "../SolicitacoesPendentesView.vue";
 import { useAuthStore } from "@/stores/auth";
 import * as apiModule from "@/services/api";
-import type { AgendamentoResumo } from "@/types";
+import { UnidadeCobranca, type AgendamentoResumo } from "@/types";
 
 vi.mock("@/services/api", () => ({ default: { get: vi.fn(), post: vi.fn() } }));
 
@@ -41,7 +41,7 @@ const makeSolicitacao = (
   dataResposta: null,
   dataConclusao: null,
   motivoRecusa: null,
-  servicos: [{ id: "srv-1", titulo: "Faxina", descricao: "", precoBase: 120, duracaoEstimadaMinutos: 90, unidadeCobranca: "total", tipoAnuncio: 1, categoria: 1 }],
+  servicos: [{ id: "srv-1", titulo: "Faxina", descricao: "", precoBase: 120, duracaoEstimadaMinutos: 90, unidadeCobranca: UnidadeCobranca.Total, tipoAnuncio: 1, categoria: 1 }],
   ...overrides,
 });
 

@@ -1,6 +1,5 @@
 using HomeTask.Domain.Contratos;
 using HomeTask.Domain.Entidades;
-using HomeTask.Domain.Entities;
 using HomeTask.Domain.ViewModel;
 using HomeTask.WebApi.Conversores.Interfaces;
 

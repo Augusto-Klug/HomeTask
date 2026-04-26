@@ -12,7 +12,7 @@ namespace HomeTask.Domain.Contratos
         public bool Ativo { get; set; }
         public string Titulo { get; set; } = string.Empty;
         public string Descricao { get; set; } = string.Empty;
-        public string UnidadeCobranca { get; set; } = string.Empty;
+        public FormatoCobranca UnidadeCobranca { get; set; }
         public decimal PrecoBase { get; set; }
         public int? DuracaoEstimadaMinutos { get; set; }
         public bool AceitaPagamentoAposFinalizacao { get; set; }

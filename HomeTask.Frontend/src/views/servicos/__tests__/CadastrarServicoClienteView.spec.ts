@@ -8,7 +8,7 @@ import HtSelect from '@/components/ui/HtSelect.vue'
 import HtInput from '@/components/ui/HtInput.vue'
 import HtAlert from '@/components/ui/HtAlert.vue'
 import HtCard from '@/components/ui/HtCard.vue'
-import type { ServicoClienteForm } from '@/types'
+import { UnidadeCobranca, type ServicoClienteForm } from '@/types'
 
 vi.mock('@/services/api', () => ({
   default: { post: vi.fn(), get: vi.fn() },
@@ -52,8 +52,8 @@ function preencherFormCliente(vm: ExposedVm, overrides: Partial<ServicoClienteFo
     titulo: 'Faxina completa',
     descricao: 'Preciso de faxina na minha casa',
     categoria: '1',
-    unidadeCobranca: 'por_hora',
-    valor: '80',
+    unidadeCobranca: String(UnidadeCobranca.PorHora),
+    precoBase: '80',
     data: '',
     ...overrides,
   })
@@ -83,7 +83,7 @@ describe('CadastrarServicoClienteView', () => {
   it('oculta campo de valor quando tipoValor é a_combinar', async () => {
     const wrapper = mountView()
     const vm = wrapper.vm as unknown as ExposedVm
-    vm.form.unidadeCobranca = 'a_combinar'
+    vm.form.unidadeCobranca = `${UnidadeCobranca.ACombinar}`
     await wrapper.vm.$nextTick()
     const inputs = wrapper.findAllComponents(HtInput)
     const valorInput = inputs.find(i => i.props('label') === 'Valor (R$)')
@@ -93,7 +93,7 @@ describe('CadastrarServicoClienteView', () => {
   it('exibe campo de valor quando tipoValor é por_hora', async () => {
     const wrapper = mountView()
     const vm = wrapper.vm as unknown as ExposedVm
-    vm.form.unidadeCobranca = 'por_hora'
+    vm.form.unidadeCobranca = `${UnidadeCobranca.PorHora}`
     await wrapper.vm.$nextTick()
     const inputs = wrapper.findAllComponents(HtInput)
     const valorInput = inputs.find(i => i.props('label') === 'Valor (R$)')
@@ -103,7 +103,7 @@ describe('CadastrarServicoClienteView', () => {
   it('exibe campo de valor quando tipoValor é total', async () => {
     const wrapper = mountView()
     const vm = wrapper.vm as unknown as ExposedVm
-    vm.form.unidadeCobranca = 'total'
+    vm.form.unidadeCobranca = `${UnidadeCobranca.Total}`
     await wrapper.vm.$nextTick()
     const inputs = wrapper.findAllComponents(HtInput)
     const valorInput = inputs.find(i => i.props('label') === 'Valor (R$)')
@@ -139,7 +139,7 @@ describe('CadastrarServicoClienteView', () => {
 
     const wrapper = mountView()
     const vm = wrapper.vm as unknown as ExposedVm
-    preencherFormCliente(vm, { unidadeCobranca: 'a_combinar', valor: '' })
+    preencherFormCliente(vm, { unidadeCobranca: `${UnidadeCobranca.ACombinar}`, valor: '' })
 
     await vm.handleSubmit()
     await flushPromises()
@@ -153,7 +153,7 @@ describe('CadastrarServicoClienteView', () => {
 
     const wrapper = mountView()
     const vm = wrapper.vm as unknown as ExposedVm
-    preencherFormCliente(vm, { unidadeCobranca: 'a_combinar', valor: '' })
+    preencherFormCliente(vm, { unidadeCobranca: `${UnidadeCobranca.ACombinar}`, valor: '' })
 
     await vm.handleSubmit()
     await flushPromises()

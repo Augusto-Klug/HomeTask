@@ -1,6 +1,6 @@
 using HomeTask.Domain.Enums;
 
-namespace HomeTask.Domain.Entities;
+namespace HomeTask.Domain.Entidades;
 
 /// <summary>
 /// Pagamento de serviço contratado (RF05, NEG04)

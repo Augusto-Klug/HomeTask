@@ -5,7 +5,7 @@ import { createRouter, createMemoryHistory } from 'vue-router'
 import MeusAgendamentosView from '../MeusAgendamentosView.vue'
 import { useAuthStore } from '@/stores/auth'
 import * as apiModule from '@/services/api'
-import type { AgendamentoResumo } from '@/types'
+import { UnidadeCobranca, type AgendamentoResumo } from '@/types'
 
 vi.mock('@/services/api', () => ({ default: { get: vi.fn() } }))
 
@@ -32,7 +32,7 @@ const makeAgendamento = (overrides: Partial<AgendamentoResumo> = {}): Agendament
       descricao: 'Limpeza residencial',
       precoBase: 80,
       duracaoEstimadaMinutos: 60,
-      unidadeCobranca: 'total',
+      unidadeCobranca: UnidadeCobranca.Total,
       tipoAnuncio: 'PrestadorOferece',
       categoria: { id: 'cat-1', nome: 'Faxina', icone: 'cleaning_services' },
     },

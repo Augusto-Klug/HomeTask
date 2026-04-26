@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using HomeTask.Application.Interfaces;
+using HomeTask.Domain.Contratos;
 using HomeTask.Domain.Enums;
 using HomeTask.Infrastructure.Data;
 using HomeTask.Domain.Entidades;
@@ -91,8 +92,33 @@ public class ServicoPrestadorService : IServicoPrestadorService
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<ServicoBase>> BuscarTodosAsync(CategoriaServico? categoria, string? cidade, decimal? precoMaximo, CancellationToken cancellationToken = default)
+    public async Task<PaginacaoResultado<ServicoBase>> BuscarTodosPaginadoAsync(
+        CategoriaServico? categoria,
+        string? cidade,
+        decimal? precoMaximo,
+        Guid? usuarioId,
+        int pagina,
+        int tamanhoPagina,
+        CancellationToken cancellationToken = default)
     {
+        var paginaAtual = pagina < 1 ? 1 : pagina;
+        var tamanhoPaginaNormalizado = tamanhoPagina is 10 or 30 or 50 ? tamanhoPagina : 30;
+        Guid? prestadorAtualId = null;
+        Guid? clienteAtualId = null;
+
+        if (usuarioId.HasValue)
+        {
+            prestadorAtualId = await _context.Prestadores
+                .Where(p => p.UsuarioId == usuarioId.Value)
+                .Select(p => (Guid?)p.Id)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            clienteAtualId = await _context.Clientes
+                .Where(c => c.UsuarioId == usuarioId.Value)
+                .Select(c => (Guid?)c.Id)
+                .FirstOrDefaultAsync(cancellationToken);
+        }
+
         var query = _context.Servicos
             .Include(s => (s as ServicoPrestador).Prestador).ThenInclude(p => p.Usuario).ThenInclude(u => u.Endereco).ThenInclude(e => e.Cidade)
             .Include(s => (s as ServicoCliente).Cliente).ThenInclude(c => c.Usuario).ThenInclude(u => u.Endereco).ThenInclude(e => e.Cidade)
@@ -112,8 +138,34 @@ public class ServicoPrestadorService : IServicoPrestadorService
             );
         }
 
-        return await query
+        if (prestadorAtualId.HasValue)
+        {
+            query = query.Where(s => !(s is ServicoPrestador) || (s as ServicoPrestador).PrestadorId != prestadorAtualId.Value);
+        }
+
+        if (clienteAtualId.HasValue)
+        {
+            query = query.Where(s => !(s is ServicoCliente) || (s as ServicoCliente).ClienteId != clienteAtualId.Value);
+        }
+
+        var totalRegistros = await query.CountAsync(cancellationToken);
+        var totalPaginas = totalRegistros == 0
+            ? 0
+            : (int)Math.Ceiling(totalRegistros / (double)tamanhoPaginaNormalizado);
+
+        var itens = await query
             .OrderByDescending(s => s.DataCriacao)
+            .Skip((paginaAtual - 1) * tamanhoPaginaNormalizado)
+            .Take(tamanhoPaginaNormalizado)
             .ToListAsync(cancellationToken);
+
+        return new PaginacaoResultado<ServicoBase>
+        {
+            Itens = itens,
+            PaginaAtual = paginaAtual,
+            TamanhoPagina = tamanhoPaginaNormalizado,
+            TotalRegistros = totalRegistros,
+            TotalPaginas = totalPaginas
+        };
     }
 }

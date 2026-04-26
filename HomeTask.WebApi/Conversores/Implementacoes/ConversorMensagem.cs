@@ -1,4 +1,5 @@
 using HomeTask.Domain.Contratos;
+using HomeTask.Domain.Entidades;
 using HomeTask.Domain.ViewModel;
 using HomeTask.WebApi.Conversores.Interfaces;
 
@@ -6,7 +7,7 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
 {
     public class ConversorMensagem : IConversorMensagem
     {
-        public MensagemContrato ConverterMensagemparaContrato(Domain.Entities.Mensagem? mensagem)
+        public MensagemContrato ConverterMensagemparaContrato(Mensagem? mensagem)
         {
             if (mensagem == null)
                 throw new ArgumentNullException(nameof(mensagem));
@@ -24,12 +25,12 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
                 return retorno;
         }
 
-        public Domain.Entities.Mensagem? ConverterContratoparaMensagem(MensagemContrato contrato)
+        public Mensagem? ConverterContratoparaMensagem(MensagemContrato contrato)
         {
             if (contrato == null)
                 throw new ArgumentNullException(nameof(contrato));
 
-            var retorno = new Domain.Entities.Mensagem();
+            var retorno = new Mensagem();
                 retorno.DefinirDados(
                     contrato.Id,
                     contrato.RemetenteId,

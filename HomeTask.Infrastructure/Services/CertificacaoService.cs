@@ -1,5 +1,5 @@
 ﻿using HomeTask.Application.Interfaces;
-using HomeTask.Domain.Entities;
+using HomeTask.Domain.Entidades;
 using HomeTask.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,4 +1,5 @@
 using HomeTask.Domain.Contratos;
+using HomeTask.Domain.Entidades;
 using HomeTask.Domain.ViewModel;
 using HomeTask.WebApi.Conversores.Interfaces;
 
@@ -6,7 +7,7 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
 {
     public class ConversorAgendamento : IConversorAgendamento
     {
-        public AgendamentoContrato ConverterAgendamentoparaContrato(Domain.Entities.Agendamento? agendamento)
+        public AgendamentoContrato ConverterAgendamentoparaContrato(Agendamento? agendamento)
         {
             if (agendamento == null)
                 throw new ArgumentNullException(nameof(agendamento));
@@ -30,12 +31,12 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
                 return retorno;
         }
 
-        public Domain.Entities.Agendamento? ConverterContratoparaAgendamento(AgendamentoContrato contrato)
+        public Agendamento? ConverterContratoparaAgendamento(AgendamentoContrato contrato)
         {
             if (contrato == null)
                 throw new ArgumentNullException(nameof(contrato));
 
-            var retorno = new Domain.Entities.Agendamento();
+            var retorno = new Agendamento();
                 retorno.DefinirDados(
                     contrato.Id,
                     contrato.ClienteId,
@@ -112,7 +113,8 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
                 {
                     Id = s.Id,
                     Titulo = s.Titulo,
-                    PrecoBase = s.PrecoBase
+                    PrecoBase = s.PrecoBase,
+                    UnidadeCobranca = s.UnidadeCobranca
                 }).ToList()
             };
         }
@@ -144,7 +146,7 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
 
         }
 
-        public AgendamentoResumoContrato ConverterAgendamentoparaResumoContrato(Domain.Entities.Agendamento? agendamento)
+        public AgendamentoResumoContrato ConverterAgendamentoparaResumoContrato(Agendamento? agendamento)
         {
             if (agendamento == null)
                 throw new ArgumentNullException(nameof(agendamento));
@@ -176,7 +178,8 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
                 {
                     Id = s.ServicoBaseId,
                     Titulo = s.ServicoBase?.Titulo ?? string.Empty,
-                    PrecoBase = s.ValorUnitario
+                    PrecoBase = s.ValorUnitario,
+                    UnidadeCobranca = s.ServicoBase?.UnidadeCobranca ?? HomeTask.Domain.Enums.FormatoCobranca.Total
                 }).ToList()
             };
         }

@@ -1,11 +1,11 @@
 using HomeTask.Application.Interfaces;
 using HomeTask.Domain.Contratos;
-using HomeTask.Domain.Entities;
 using HomeTask.Domain.Enums;
 using HomeTask.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Text;
+using HomeTask.Domain.Entidades;
 
 namespace HomeTask.Infrastructure.Services;
 public class UsuarioService : IUsuarioService

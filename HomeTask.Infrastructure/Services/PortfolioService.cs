@@ -1,5 +1,4 @@
 ﻿using HomeTask.Application.Interfaces;
-using HomeTask.Domain.Entities;
 using HomeTask.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -7,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using HomeTask.Domain.Entidades;
 
 namespace HomeTask.Infrastructure.Services
 {

@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using HomeTask.Application.Interfaces;
-using HomeTask.Domain.Entities;
 using HomeTask.Domain.Entidades;
 using HomeTask.Domain.Enums;
 using HomeTask.Infrastructure.Data;

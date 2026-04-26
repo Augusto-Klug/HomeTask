@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using HomeTask.Application.Interfaces;
-using HomeTask.Domain.Entities;
+using HomeTask.Domain.Entidades;
 using HomeTask.Infrastructure.Data;
 
 namespace HomeTask.Infrastructure.Services;

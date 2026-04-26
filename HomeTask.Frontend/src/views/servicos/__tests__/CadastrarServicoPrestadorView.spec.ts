@@ -6,7 +6,7 @@ import CadastrarServicoPrestadorView from '../CadastrarServicoPrestadorView.vue'
 import HtInput from '@/components/ui/HtInput.vue'
 import HtSelect from '@/components/ui/HtSelect.vue'
 import HtAlert from '@/components/ui/HtAlert.vue'
-import type { ServicoPrestadorForm } from '@/types'
+import { UnidadeCobranca, type ServicoPrestadorForm } from '@/types'
 
 vi.mock('@/services/api', () => ({
   default: { post: vi.fn(), get: vi.fn() },
@@ -50,8 +50,8 @@ function preencherFormPrestador(vm: ExposedVm, overrides: Partial<ServicoPrestad
     titulo: 'Corte de árvore',
     descricao: 'Serviço de poda e corte',
     categoria: '2',
-    tipoValor: 'por_hora',
-    valor: '80',
+    unidadeCobranca: String(UnidadeCobranca.PorHora),
+    precoBase: '80',
     aceitaPagamentoAposFinalizacao: false,
     ...overrides,
   })

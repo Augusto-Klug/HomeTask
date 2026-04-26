@@ -1,4 +1,5 @@
 using HomeTask.Domain.Contratos;
+using HomeTask.Domain.Entidades;
 using HomeTask.Domain.ViewModel;
 using HomeTask.WebApi.Conversores.Interfaces;
 
@@ -6,7 +7,7 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
 {
     public class ConversorPagamento : IConversorPagamento
     {
-        public PagamentoContrato ConverterPagamentoparaContrato(Domain.Entities.Pagamento? pagamento)
+        public PagamentoContrato ConverterPagamentoparaContrato(Pagamento? pagamento)
         {
             if (pagamento == null)
                 throw new ArgumentNullException(nameof(pagamento));
@@ -26,12 +27,12 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
                 return retorno;
         }
 
-        public Domain.Entities.Pagamento? ConverterContratoparaPagamento(PagamentoContrato contrato)
+        public Pagamento? ConverterContratoparaPagamento(PagamentoContrato contrato)
         {
             if (contrato == null)
                 throw new ArgumentNullException(nameof(contrato));
 
-            var retorno = new Domain.Entities.Pagamento();
+            var retorno = new Pagamento();
                 retorno.DefinirDados(
                     contrato.Id,
                     contrato.AgendamentoId,

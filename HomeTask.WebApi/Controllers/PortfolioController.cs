@@ -1,7 +1,7 @@
 using HomeTask.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HomeTask.WebApi.Controller;
+namespace HomeTask.WebApi.Controllers;
 
 [ApiController]
 [Route("api/prestadores/{prestadorId:guid}/portfolio")]

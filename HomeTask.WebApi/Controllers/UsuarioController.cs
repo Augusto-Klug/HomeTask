@@ -1,11 +1,11 @@
+using System.Security.Claims;
 using HomeTask.Application.Interfaces;
 using HomeTask.Domain.ViewModel;
 using HomeTask.WebApi.Conversores.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
-namespace HomeTask.WebApi.Controller
+namespace HomeTask.WebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]/[action]")]

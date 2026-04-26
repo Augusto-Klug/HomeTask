@@ -1,4 +1,5 @@
 using HomeTask.Domain.Contratos;
+using HomeTask.Domain.Entidades;
 using HomeTask.Domain.ViewModel;
 
 namespace HomeTask.WebApi.Conversores.Interfaces
@@ -7,7 +8,7 @@ namespace HomeTask.WebApi.Conversores.Interfaces
     {
         public PagamentoContrato ConverterViewModelparaContrato(PagamentoViewModel viewModel);
         public PagamentoViewModel? ConverterContratoparaViewModel(PagamentoContrato contrato);
-        public Domain.Entities.Pagamento? ConverterContratoparaPagamento(PagamentoContrato contrato);
-        public PagamentoContrato ConverterPagamentoparaContrato(Domain.Entities.Pagamento? pagamento);
+        public Pagamento? ConverterContratoparaPagamento(PagamentoContrato contrato);
+        public PagamentoContrato ConverterPagamentoparaContrato(Pagamento? pagamento);
     }
 }

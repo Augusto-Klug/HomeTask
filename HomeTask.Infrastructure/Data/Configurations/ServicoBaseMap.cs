@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using HomeTask.Domain.Entidades;
+using HomeTask.Domain.Enums;
 
 namespace HomeTask.Infrastructure.Data.Configurations;
 
@@ -17,7 +18,7 @@ public class ServicoBaseMap : IEntityTypeConfiguration<ServicoBase>
             .HasMaxLength(500);
 
         builder.Property(s => s.UnidadeCobranca)
-            .HasMaxLength(20);
+            .IsRequired();
 
         builder.Property(s => s.DataCriacao)
             .HasColumnType("datetime")

@@ -1,5 +1,5 @@
 using HomeTask.Domain.Contratos;
-using HomeTask.Domain.Entities;
+using HomeTask.Domain.Entidades;
 using HomeTask.Domain.ViewModel;
 
 namespace HomeTask.WebApi.Conversores.Interfaces
@@ -8,8 +8,8 @@ namespace HomeTask.WebApi.Conversores.Interfaces
     {
         public UsuarioContrato ConverterViewModelparaContrato(UsuarioViewModel viewModel);
         public UsuarioViewModel? ConverterContratoparaViewModel(UsuarioContrato contrato);
-        public Domain.Entities.Usuario? ConverterContratoparaUsuario(UsuarioContrato contrato);
-        public UsuarioContrato ConverterUsuarioparaContrato(Domain.Entities.Usuario? usuario);
+        public Usuario? ConverterContratoparaUsuario(UsuarioContrato contrato);
+        public UsuarioContrato ConverterUsuarioparaContrato(Usuario? usuario);
 
         // conversores do Usuario-Perfil
         public PerfilContrato ConverterPerfilViewModelparaPerfilContrato(PerfilViewModel viewModel);

@@ -1,4 +1,4 @@
-namespace HomeTask.Domain.Entities;
+namespace HomeTask.Domain.Entidades;
 
 /// <summary>
 /// Avaliação de prestador por cliente (RF06, NEG06, NEG07)

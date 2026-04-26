@@ -48,10 +48,7 @@
         <div class="flex items-center justify-between mb-4">
           <div class="flex flex-col">
             <span class="text-lg font-bold text-primary">
-              R$ {{ formatarPreco((servico as any).precoBase) }}
-              <span class="text-sm font-normal text-muted">
-                {{ servico.unidadeCobranca === 'por_hora' ? '/ hora' : '/ total' }}
-              </span>
+              {{ formatarPrecoServico(servico.precoBase, servico.unidadeCobranca) }}
             </span>
           </div>
           <span v-if="'mediaAvaliacoes' in servico" class="text-sm text-yellow-500">
@@ -105,8 +102,8 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/services/api'
+import { formatarPrecoServico } from '@/shared/utils'
 import { useAuthStore } from '@/stores/auth'
-import { CATEGORIAS_SERVICO } from '@/types'
 import type { Servico, Avaliacao } from '@/types'
 import HtButton from '@/components/ui/HtButton.vue'
 import HtCard from '@/components/ui/HtCard.vue'
@@ -153,10 +150,6 @@ function irParaAgendamento() {
   })
 }
 
-function formatarPreco(valor: number): string {
-  return Number(valor).toFixed(2).replace('.', ',')
-}
-
 function estrelas(media: number): string {
   const cheias = Math.floor(media ?? 0)
   return '★'.repeat(cheias) + '☆'.repeat(5 - cheias)
@@ -173,8 +166,4 @@ function formatarHora(dataStr: string): string {
   })
 }
 
-function obterNomeCategoria(id: number | string): string {
-  const cat = CATEGORIAS_SERVICO.find(c => String(c.value) === String(id))
-  return cat ? cat.label : 'N/A'
-}
 </script>

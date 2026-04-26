@@ -1,7 +1,6 @@
-using HomeTask.Domain.Entidades;
 using HomeTask.Domain.Enums;
 
-namespace HomeTask.Domain.Entities;
+namespace HomeTask.Domain.Entidades;
 
 /// <summary>
 /// Agendamento de serviço entre cliente e prestador (RF04, RF10)
