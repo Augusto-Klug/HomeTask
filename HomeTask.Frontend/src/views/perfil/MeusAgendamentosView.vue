@@ -21,18 +21,27 @@ const isPrestador = computed(
 );
 
 const agora = new Date();
+type StatusAgendamentoNumero = 1 | 2 | 3 | 4 | 5 | 6;
+const STATUS_NUMERO_PARA_TEXTO: Record<StatusAgendamentoNumero, StatusAgendamento> = {
+  1: "Solicitado",
+  2: "Aceito",
+  3: "Recusado",
+  4: "EmAndamento",
+  5: "Concluido",
+  6: "Cancelado",
+};
 
 function isFuturo(iso: string) {
   return new Date(iso) >= agora;
 }
 
-function isPendente(status: StatusAgendamento) {
-  return status === "Solicitado" || status === "Aceito";
+function isPrestadorAtivo(status: StatusAgendamento) {
+  return status === "Solicitado" || status === "Aceito" || status === "EmAndamento";
 }
 
-function filtrar(lista: AgendamentoResumo[]) {
+function filtrarPrestador(lista: AgendamentoResumo[]) {
   return lista
-    .filter((a) => isFuturo(a.dataHoraAgendada) && isPendente(a.status))
+    .filter((a) => isFuturo(a.dataHoraAgendada) && isPrestadorAtivo(a.status))
     .sort(
       (a, b) =>
         new Date(a.dataHoraAgendada).getTime() -
@@ -40,25 +49,35 @@ function filtrar(lista: AgendamentoResumo[]) {
     );
 }
 
-const clienteFiltrado = computed(() => filtrar(agendamentosCliente.value));
-const prestadorFiltrado = computed(() => filtrar(agendamentosPrestador.value));
+function filtrarCliente(lista: AgendamentoResumo[]) {
+  return lista
+    .filter((a) => isFuturo(a.dataHoraAgendada))
+    .sort(
+      (a, b) =>
+        new Date(a.dataHoraAgendada).getTime() -
+        new Date(b.dataHoraAgendada).getTime(),
+    );
+}
+
+const clienteFiltrado = computed(() => filtrarCliente(agendamentosCliente.value));
+const prestadorFiltrado = computed(() => filtrarPrestador(agendamentosPrestador.value));
 
 onMounted(async () => {
   try {
     const reqs: Promise<void>[] = [];
     if (isCliente.value) {
       reqs.push(
-        api.get<AgendamentoResumo[]>("/api/Agendamento/ObterAgendamentosPorCliente").then((r) => {
-          agendamentosCliente.value = r.data;
+        api.get<AgendamentoResumo[]>("/api/Agendamento/ObterMeusAgendamentosCliente").then((r) => {
+          agendamentosCliente.value = r.data.map(normalizarAgendamento);
         }),
       );
     }
     if (isPrestador.value) {
       reqs.push(
         api
-          .get<AgendamentoResumo[]>("/api/Agendamento/ObterAgendamentosPorPrestador")
+          .get<AgendamentoResumo[]>("/api/Agendamento/ObterMeusAgendamentosPrestador")
           .then((r) => {
-            agendamentosPrestador.value = r.data;
+            agendamentosPrestador.value = r.data.map(normalizarAgendamento);
           }),
       );
     }
@@ -76,6 +95,16 @@ const STATUS_LABEL: Record<StatusAgendamento, string> = {
   Concluido: "Concluído",
   Cancelado: "Cancelado",
   Recusado: "Recusado",
+};
+
+const STATUS_LABEL_CLIENTE: Record<StatusAgendamento, string> = {
+  Confirmado: "Agendado",
+  Solicitado: "Pendente aprovação",
+  Aceito: "Agendado",
+  EmAndamento: "Em andamento",
+  Concluido: "Concluído",
+  Cancelado: "Cancelado",
+  Recusado: "Cancelado",
 };
 
 const STATUS_VARIANT: Record<
@@ -114,6 +143,41 @@ function formatarEndereco(e: AgendamentoResumo["endereco"]) {
 function formatarMoeda(v: number) {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
+
+function normalizarStatus(status: unknown): StatusAgendamento {
+  if (typeof status === "number" && status in STATUS_NUMERO_PARA_TEXTO) {
+    return STATUS_NUMERO_PARA_TEXTO[status as StatusAgendamentoNumero];
+  }
+
+  if (typeof status === "string") {
+    if (status === "Confirmado") return "Aceito";
+    if (status in STATUS_LABEL) return status as StatusAgendamento;
+  }
+
+  return "Solicitado";
+}
+
+function normalizarAgendamento(data: AgendamentoResumo): AgendamentoResumo {
+  const seguro = data as Partial<AgendamentoResumo> & { status?: unknown };
+  return {
+    id: seguro.id ?? "",
+    clienteId: seguro.clienteId ?? "",
+    clienteNome: seguro.clienteNome ?? "",
+    prestadorId: seguro.prestadorId ?? "",
+    prestadorNome: seguro.prestadorNome ?? "",
+    dataHoraAgendada: seguro.dataHoraAgendada ?? new Date().toISOString(),
+    duracaoMinutos: seguro.duracaoMinutos ?? 0,
+    status: normalizarStatus(seguro.status),
+    endereco: seguro.endereco ?? { logradouro: "", bairro: "", cidade: "", estado: "" },
+    observacoes: seguro.observacoes ?? null,
+    valorTotal: seguro.valorTotal ?? 0,
+    dataSolicitacao: seguro.dataSolicitacao ?? new Date().toISOString(),
+    dataResposta: seguro.dataResposta ?? null,
+    dataConclusao: seguro.dataConclusao ?? null,
+    motivoRecusa: seguro.motivoRecusa ?? null,
+    servicos: seguro.servicos ?? [],
+  };
+}
 </script>
 
 <template>
@@ -149,7 +213,7 @@ function formatarMoeda(v: number) {
                     ag.prestadorNome
                   }}</span>
                   <HtBadge :variant="STATUS_VARIANT[ag.status]">{{
-                    STATUS_LABEL[ag.status]
+                    STATUS_LABEL_CLIENTE[ag.status]
                   }}</HtBadge>
                 </div>
                 <p

@@ -95,6 +95,12 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: "/perfil/solicitacoes-pendentes",
+      name: "perfil-solicitacoes-pendentes",
+      component: () => import("@/views/perfil/SolicitacoesPendentesView.vue"),
+      meta: { requiresAuth: true },
+    },
+    {
       path: "/perfil/minha-conta",
       name: "perfil-minha-conta",
       component: () => import("@/views/perfil/MinhaContaView.vue"),

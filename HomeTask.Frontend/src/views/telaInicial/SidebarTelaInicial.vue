@@ -27,6 +27,17 @@
 
       <!-- Links para usuários logados -->
       <template v-if="auth.isLoggedIn">
+        <li>
+          <router-link
+            to="/perfil/agendamentos"
+            class="ht-sidenav-link"
+            @click="open = false"
+          >
+            <span class="material-symbols-rounded text-xl">calendar_month</span>
+            Agendamentos
+          </router-link>
+        </li>
+
         <!-- Cliente ou Ambos (tipo 1 ou 3) -->
         <li v-if="auth.user?.tipo === 1 || auth.user?.tipo === 3">
           <router-link
@@ -48,6 +59,17 @@
           >
             <span class="material-symbols-rounded text-xl">work</span>
             Oferecer Serviço
+          </router-link>
+        </li>
+
+        <li v-if="auth.user?.tipo === 2 || auth.user?.tipo === 3">
+          <router-link
+            to="/perfil/solicitacoes-pendentes"
+            class="ht-sidenav-link"
+            @click="open = false"
+          >
+            <span class="material-symbols-rounded text-xl">notifications</span>
+            Solicitações Pendentes
           </router-link>
         </li>
       </template>

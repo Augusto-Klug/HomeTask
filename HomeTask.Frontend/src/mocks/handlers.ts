@@ -228,6 +228,7 @@ const MOCK_USER: AuthResponse = {
 };
 
 const MOCK_CLIENTE = { id: 1, usuarioId: 1, nome: "Usuário Demo" };
+const MOCK_PRESTADOR = { id: 1, usuarioId: 1, nome: "Usuário Demo" };
 
 // ---------------------------------------------------------------------------
 // Mocks — Agendamentos
@@ -543,6 +544,12 @@ export const handlers = [
     return HttpResponse.json(MOCK_CLIENTE);
   }),
 
+  // GET /api/Prestador/ObterPrestadorPorUsuarioId
+  http.get("*/api/Prestador/ObterPrestadorPorUsuarioId", async () => {
+    await delay(MOCK_DELAY);
+    return HttpResponse.json(MOCK_PRESTADOR);
+  }),
+
   // POST /api/Agendamento/CriarAgendamento
   http.post("*/api/Agendamento/CriarAgendamento", async () => {
     await delay(MOCK_DELAY);
@@ -550,6 +557,67 @@ export const handlers = [
       { id: Math.floor(Math.random() * 9000) + 1000 },
       { status: 201 },
     );
+  }),
+
+  // GET /api/Agendamento/ObterAgendamentosPorPrestador
+  http.get("*/api/Agendamento/ObterAgendamentosPorPrestador", async () => {
+    await delay(MOCK_DELAY);
+    return HttpResponse.json(MOCK_AGENDAMENTOS_PRESTADOR);
+  }),
+
+  // GET /api/Agendamento/ObterMeusAgendamentosPrestador
+  http.get("*/api/Agendamento/ObterMeusAgendamentosPrestador", async () => {
+    await delay(MOCK_DELAY);
+    return HttpResponse.json(MOCK_AGENDAMENTOS_PRESTADOR);
+  }),
+
+  // GET /api/Agendamento/ObterMeusAgendamentosCliente
+  http.get("*/api/Agendamento/ObterMeusAgendamentosCliente", async () => {
+    await delay(MOCK_DELAY);
+    return HttpResponse.json(MOCK_AGENDAMENTOS_CLIENTE);
+  }),
+
+  // GET /api/Agendamento/ObterAgendamentoPorId
+  http.get("*/api/Agendamento/ObterAgendamentoPorId", async ({ request }) => {
+    await delay(MOCK_DELAY);
+    const url = new URL(request.url);
+    const id = url.searchParams.get("id");
+    const todos = [...MOCK_AGENDAMENTOS_CLIENTE, ...MOCK_AGENDAMENTOS_PRESTADOR];
+    const alvo = todos.find((a) => a.id === id);
+    return HttpResponse.json(alvo ?? null, { status: alvo ? 200 : 404 });
+  }),
+
+  // GET /api/Agendamento/ObterSolicitacoesPendentesPrestador
+  http.get("*/api/Agendamento/ObterSolicitacoesPendentesPrestador", async () => {
+    await delay(MOCK_DELAY);
+    return HttpResponse.json(
+      MOCK_AGENDAMENTOS_PRESTADOR.filter((a) => a.status === "Solicitado"),
+    );
+  }),
+
+  // POST /api/Agendamento/AceitarAgendamento
+  http.post("*/api/Agendamento/AceitarAgendamento", async ({ request }) => {
+    await delay(MOCK_DELAY);
+    const body = (await request.json()) as { id?: string };
+    const alvo = MOCK_AGENDAMENTOS_PRESTADOR.find((a) => a.id === body.id);
+    if (alvo) {
+      alvo.status = "Aceito";
+      alvo.dataResposta = new Date().toISOString();
+    }
+    return HttpResponse.json(alvo ?? { ok: true });
+  }),
+
+  // POST /api/Agendamento/RecusarAgendamento
+  http.post("*/api/Agendamento/RecusarAgendamento", async ({ request }) => {
+    await delay(MOCK_DELAY);
+    const body = (await request.json()) as { id?: string; motivoRecusa?: string };
+    const alvo = MOCK_AGENDAMENTOS_PRESTADOR.find((a) => a.id === body.id);
+    if (alvo) {
+      alvo.status = "Recusado";
+      alvo.dataResposta = new Date().toISOString();
+      alvo.motivoRecusa = body.motivoRecusa ?? "Sem motivo informado";
+    }
+    return HttpResponse.json(alvo ?? { ok: true });
   }),
 
   // POST /api/ServicoOferecido/CriarServicoCliente

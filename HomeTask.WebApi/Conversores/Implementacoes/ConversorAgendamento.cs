@@ -80,6 +80,43 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
             return null;
         }
 
+        public AgendamentoResumoViewModel? ConverterResumoContratoparaViewModel(AgendamentoResumoContrato contrato)
+        {
+            if (contrato == null)
+                return null;
+
+            return new AgendamentoResumoViewModel
+            {
+                Id = contrato.Id,
+                ClienteId = contrato.ClienteId,
+                ClienteNome = contrato.ClienteNome,
+                PrestadorId = contrato.PrestadorId,
+                PrestadorNome = contrato.PrestadorNome,
+                DataHoraAgendada = contrato.DataHoraAgendada,
+                DuracaoMinutos = contrato.DuracaoMinutos,
+                Status = contrato.Status,
+                Observacoes = contrato.Observacoes,
+                ValorTotal = contrato.ValorTotal,
+                DataSolicitacao = contrato.DataSolicitacao,
+                DataResposta = contrato.DataResposta,
+                DataConclusao = contrato.DataConclusao,
+                MotivoRecusa = contrato.MotivoRecusa,
+                Endereco = new EnderecoResumoViewModel
+                {
+                    Logradouro = contrato.Endereco.Logradouro,
+                    Bairro = contrato.Endereco.Bairro,
+                    Cidade = contrato.Endereco.Cidade,
+                    Estado = contrato.Endereco.Estado
+                },
+                Servicos = contrato.Servicos.Select(s => new ServicoResumoViewModel
+                {
+                    Id = s.Id,
+                    Titulo = s.Titulo,
+                    PrecoBase = s.PrecoBase
+                }).ToList()
+            };
+        }
+
         public AgendamentoContrato ConverterViewModelparaContrato(AgendamentoViewModel viewModel)
         {
             if (viewModel != null)
@@ -105,6 +142,43 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
             }
             return null;
 
+        }
+
+        public AgendamentoResumoContrato ConverterAgendamentoparaResumoContrato(Domain.Entities.Agendamento? agendamento)
+        {
+            if (agendamento == null)
+                throw new ArgumentNullException(nameof(agendamento));
+
+            return new AgendamentoResumoContrato
+            {
+                Id = agendamento.Id,
+                ClienteId = agendamento.ClienteId,
+                ClienteNome = agendamento.Cliente?.Usuario?.Nome ?? string.Empty,
+                PrestadorId = agendamento.PrestadorId,
+                PrestadorNome = agendamento.Prestador?.Usuario?.Nome ?? string.Empty,
+                DataHoraAgendada = agendamento.DataHoraAgendada,
+                DuracaoMinutos = agendamento.DuracaoMinutos,
+                Status = agendamento.Status,
+                Observacoes = agendamento.Observacoes,
+                ValorTotal = agendamento.ValorTotal,
+                DataSolicitacao = agendamento.DataSolicitacao,
+                DataResposta = agendamento.DataResposta,
+                DataConclusao = agendamento.DataConclusao,
+                MotivoRecusa = agendamento.MotivoRecusa,
+                Endereco = new EnderecoResumoContrato
+                {
+                    Logradouro = agendamento.Endereco?.Logradouro ?? string.Empty,
+                    Bairro = agendamento.Endereco?.Bairro ?? string.Empty,
+                    Cidade = agendamento.Endereco?.Cidade?.Nome ?? string.Empty,
+                    Estado = agendamento.Endereco?.Cidade?.Estado ?? string.Empty
+                },
+                Servicos = agendamento.AgendamentoServicos.Select(s => new ServicoResumoContrato
+                {
+                    Id = s.ServicoBaseId,
+                    Titulo = s.ServicoBase?.Titulo ?? string.Empty,
+                    PrecoBase = s.ValorUnitario
+                }).ToList()
+            };
         }
     }
 }

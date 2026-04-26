@@ -39,9 +39,5 @@ public class UsuarioMap : IEntityTypeConfiguration<Usuario>
         builder.Property(u => u.UltimoAcesso)
             .IsRequired(false);
 
-        builder.HasOne(u => u.Endereco)
-            .WithMany()
-            .HasForeignKey(u => u.EnderecoId)
-            .OnDelete(DeleteBehavior.SetNull);
     }
 }
