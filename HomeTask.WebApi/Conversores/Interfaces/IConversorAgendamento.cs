@@ -8,7 +8,9 @@ namespace HomeTask.WebApi.Conversores.Interfaces
     {
         public AgendamentoContrato ConverterViewModelparaContrato(AgendamentoViewModel viewModel);
         public AgendamentoViewModel? ConverterContratoparaViewModel(AgendamentoContrato contrato);
+        public AgendamentoResumoViewModel? ConverterResumoContratoparaViewModel(AgendamentoResumoContrato contrato);
         public Agendamento? ConverterContratoparaAgendamento(AgendamentoContrato contrato);
         public AgendamentoContrato ConverterAgendamentoparaContrato(Agendamento? agendamento);
+        public AgendamentoResumoContrato ConverterAgendamentoparaResumoContrato(Agendamento? agendamento);
     }
 }

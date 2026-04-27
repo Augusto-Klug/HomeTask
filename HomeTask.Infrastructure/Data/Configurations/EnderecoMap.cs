@@ -10,6 +10,9 @@ public class EnderecoMap : IEntityTypeConfiguration<Endereco>
     {
         builder.HasKey(e => e.Id);
 
+        builder.HasIndex(e => e.UsuarioId)
+            .IsUnique();
+
         builder.Property(e => e.Logradouro)
             .IsRequired()
             .HasMaxLength(200);
@@ -32,6 +35,11 @@ public class EnderecoMap : IEntityTypeConfiguration<Endereco>
             .WithMany(c => c.Enderecos)
             .HasForeignKey(e => e.CidadeId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(e => e.Usuario)
+            .WithOne(u => u.Endereco)
+            .HasForeignKey<Endereco>(e => e.UsuarioId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(e => e.Agendamentos)
             .WithOne(a => a.Endereco)

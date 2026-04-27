@@ -21,7 +21,6 @@ public class Usuario
     // Navegação
     public Cliente? Cliente { get; private set; }
     public Prestador? Prestador { get; private set; }
-    public Guid? EnderecoId { get; private set; }
     public Endereco? Endereco { get; private set; }
 
     public void DefinirDados(
@@ -69,7 +68,7 @@ public class Usuario
     public void DefinirEndereco(Endereco? endereco)
     {
         Endereco = endereco;
-        EnderecoId = endereco?.Id;
+        endereco?.DefinirUsuarioId(Id);
     }
 
 }

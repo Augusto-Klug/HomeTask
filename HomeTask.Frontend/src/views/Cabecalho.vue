@@ -67,6 +67,15 @@
               <span class="material-symbols-rounded text-base">calendar_month</span>
               Agendamentos
             </router-link>
+            <router-link
+              v-if="auth.user?.tipo === 2 || auth.user?.tipo === 3"
+              to="/perfil/solicitacoes-pendentes"
+              class="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-base-content hover:bg-base-200 transition-colors"
+              @click="userMenuOpen = false"
+            >
+              <span class="material-symbols-rounded text-base">notifications</span>
+              Solicitações pendentes
+            </router-link>
             <div class="border-t border-base-300 my-1" />
             <button
               type="button"

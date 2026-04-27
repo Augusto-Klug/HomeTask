@@ -1,11 +1,11 @@
 <template>
   <div class="container mx-auto px-4 py-8 max-w-3xl">
     <router-link
-      to="/perfil/agendamentos"
+      :to="rotaVolta"
       class="inline-flex items-center gap-1.5 text-sm text-muted hover:text-primary mb-6 transition-colors"
     >
       <span class="material-symbols-rounded text-base">arrow_back</span>
-      Voltar para meus agendamentos
+      {{ textoVolta }}
     </router-link>
 
     <div v-if="carregando" class="flex justify-center py-16">
@@ -109,7 +109,7 @@
             <HtButton v-if="agendamento.status === 'Solicitado'" @click="mostrarModalRecusa = true" variant="outline" class="flex-1 border-error text-error hover:bg-error/10">
               Recusar
             </HtButton>
-            <HtButton v-if="agendamento.status === 'Confirmado'" @click="acaoAgendamento('Iniciar')" :loading="carregandoAcao" class="flex-1">
+            <HtButton v-if="agendamento.status === 'Aceito'" @click="acaoAgendamento('Iniciar')" :loading="carregandoAcao" class="flex-1">
               Iniciar Serviço
             </HtButton>
             <HtButton v-if="agendamento.status === 'EmAndamento'" @click="acaoAgendamento('Concluir')" :loading="carregandoAcao" class="flex-1" variant="success">
@@ -175,6 +175,28 @@ const motivo = ref("");
 const mostrarModalRecusa = ref(false);
 const mostrarModalCancelamento = ref(false);
 
+type StatusAgendamentoNumero = 1 | 2 | 3 | 4 | 5 | 6;
+const STATUS_NUMERO_PARA_TEXTO: Record<StatusAgendamentoNumero, StatusAgendamento> = {
+  1: "Solicitado",
+  2: "Aceito",
+  3: "Recusado",
+  4: "EmAndamento",
+  5: "Concluido",
+  6: "Cancelado",
+};
+
+const rotaVolta = computed(() => {
+  return route.query.origem === "pendentes"
+    ? "/perfil/solicitacoes-pendentes"
+    : "/perfil/agendamentos";
+});
+
+const textoVolta = computed(() => {
+  return route.query.origem === "pendentes"
+    ? "Voltar para solicitações pendentes"
+    : "Voltar para meus agendamentos";
+});
+
 const souOPrestador = computed(() => {
   return agendamento.value?.prestadorId === auth.user?.userId.toString();
 });
@@ -182,7 +204,7 @@ const souOPrestador = computed(() => {
 const podeCancelar = computed(() => {
   if (!agendamento.value) return false;
   const status = agendamento.value.status;
-  return status === "Solicitado" || status === "Confirmado";
+  return status === "Solicitado" || status === "Aceito";
 });
 
 async function buscarDetalhes() {
@@ -192,7 +214,7 @@ async function buscarDetalhes() {
     const { data } = await api.get<AgendamentoResumo>("/api/Agendamento/ObterAgendamentoPorId", {
       params: { id }
     });
-    agendamento.value = data;
+    agendamento.value = normalizarAgendamento(data);
   } catch (err) {
     erro.value = "Não foi possível carregar os detalhes do agendamento.";
   } finally {
@@ -270,4 +292,40 @@ function formatarMoeda(v: number) {
 }
 
 onMounted(buscarDetalhes);
+
+function normalizarStatus(status: unknown): StatusAgendamento {
+  if (typeof status === "number" && status in STATUS_NUMERO_PARA_TEXTO) {
+    return STATUS_NUMERO_PARA_TEXTO[status as StatusAgendamentoNumero];
+  }
+
+  if (typeof status === "string") {
+    if (status === "Confirmado") return "Aceito";
+    if (status in STATUS_LABEL) return status as StatusAgendamento;
+  }
+
+  return "Solicitado";
+}
+
+function normalizarAgendamento(data: AgendamentoResumo): AgendamentoResumo {
+  const seguro = data as Partial<AgendamentoResumo> & { status?: unknown };
+
+  return {
+    id: seguro.id ?? id,
+    clienteId: seguro.clienteId ?? "",
+    clienteNome: seguro.clienteNome ?? "",
+    prestadorId: seguro.prestadorId ?? "",
+    prestadorNome: seguro.prestadorNome ?? "",
+    dataHoraAgendada: seguro.dataHoraAgendada ?? new Date().toISOString(),
+    duracaoMinutos: seguro.duracaoMinutos ?? 0,
+    status: normalizarStatus(seguro.status),
+    endereco: seguro.endereco ?? { logradouro: "", bairro: "", cidade: "", estado: "" },
+    observacoes: seguro.observacoes ?? null,
+    valorTotal: seguro.valorTotal ?? 0,
+    dataSolicitacao: seguro.dataSolicitacao ?? new Date().toISOString(),
+    dataResposta: seguro.dataResposta ?? null,
+    dataConclusao: seguro.dataConclusao ?? null,
+    motivoRecusa: seguro.motivoRecusa ?? null,
+    servicos: seguro.servicos ?? [],
+  };
+}
 </script>

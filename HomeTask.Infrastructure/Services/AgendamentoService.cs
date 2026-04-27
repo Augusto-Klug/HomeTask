@@ -27,6 +27,7 @@ public class AgendamentoService : IAgendamentoService
             .Include(a => a.Prestador)
                 .ThenInclude(p => p.Usuario)
             .Include(a => a.Endereco)
+                .ThenInclude(e => e.Cidade)
             .Include(a => a.AgendamentoServicos)
                 .ThenInclude(s => s.ServicoBase)
             .Include(a => a.Pagamento)
@@ -79,7 +80,7 @@ public class AgendamentoService : IAgendamentoService
         if (enderecoId == Guid.Empty || enderecoId == default)
         {
             var enderecoUsuario = await _context.Enderecos
-                .FirstOrDefaultAsync(e => _context.Usuarios.Any(u => u.Cliente!.Id == clienteId && u.EnderecoId == e.Id), cancellationToken);
+                .FirstOrDefaultAsync(e => e.Usuario.Cliente != null && e.Usuario.Cliente.Id == clienteId, cancellationToken);
 
             if (enderecoUsuario != null)
             {
@@ -200,6 +201,10 @@ public class AgendamentoService : IAgendamentoService
         return await _context.Agendamentos
             .Include(a => a.Prestador)
                 .ThenInclude(p => p.Usuario)
+            .Include(a => a.Cliente)
+                .ThenInclude(c => c.Usuario)
+            .Include(a => a.Endereco)
+                .ThenInclude(e => e.Cidade)
             .Include(a => a.AgendamentoServicos)
                 .ThenInclude(s => s.ServicoBase)
             .Where(a => a.ClienteId == clienteId)
@@ -212,10 +217,30 @@ public class AgendamentoService : IAgendamentoService
         return await _context.Agendamentos
             .Include(a => a.Cliente)
                 .ThenInclude(c => c.Usuario)
+            .Include(a => a.Prestador)
+                .ThenInclude(p => p.Usuario)
+            .Include(a => a.Endereco)
+                .ThenInclude(e => e.Cidade)
             .Include(a => a.AgendamentoServicos)
                 .ThenInclude(s => s.ServicoBase)
             .Where(a => a.PrestadorId == prestadorId)
             .OrderByDescending(a => a.DataHoraAgendada)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<Agendamento>> ObterSolicitacoesPendentesPorPrestadorAsync(Guid prestadorId, CancellationToken cancellationToken = default)
+    {
+        return await _context.Agendamentos
+            .Include(a => a.Cliente)
+                .ThenInclude(c => c.Usuario)
+            .Include(a => a.Prestador)
+                .ThenInclude(p => p.Usuario)
+            .Include(a => a.Endereco)
+                .ThenInclude(e => e.Cidade)
+            .Include(a => a.AgendamentoServicos)
+                .ThenInclude(s => s.ServicoBase)
+            .Where(a => a.PrestadorId == prestadorId && a.Status == StatusAgendamento.Solicitado)
+            .OrderByDescending(a => a.DataSolicitacao)
             .ToListAsync(cancellationToken);
     }
 

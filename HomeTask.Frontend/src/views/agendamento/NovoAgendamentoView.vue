@@ -165,7 +165,8 @@ async function handleAgendar() {
       },
     );
 
-    const dataHora = new Date(`${form.data}T${form.hora}:00`).toISOString();
+    // Mantém o horário local escolhido pelo usuário sem deslocamento de fuso.
+    const dataHora = `${form.data}T${form.hora}:00`;
 
     await api.post("/api/Agendamento/CriarAgendamento", {
       clienteId: cliente.id,
