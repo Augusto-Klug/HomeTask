@@ -103,61 +103,65 @@ public class ServicoPrestadorService : IServicoPrestadorService
     {
         var paginaAtual = pagina < 1 ? 1 : pagina;
         var tamanhoPaginaNormalizado = tamanhoPagina is 10 or 30 or 50 ? tamanhoPagina : 30;
-        Guid? prestadorAtualId = null;
-        Guid? clienteAtualId = null;
+        var queryPrestadores = _context.ServicosPrestadores
+            .AsNoTracking()
+            .Include(s => s.Prestador)
+                .ThenInclude(p => p.Usuario)
+                    .ThenInclude(u => u.Endereco)
+                        .ThenInclude(e => e.Cidade)
+            .Where(s => s.Ativo)
+            .AsQueryable();
 
-        if (usuarioId.HasValue)
-        {
-            prestadorAtualId = await _context.Prestadores
-                .Where(p => p.UsuarioId == usuarioId.Value)
-                .Select(p => (Guid?)p.Id)
-                .FirstOrDefaultAsync(cancellationToken);
-
-            clienteAtualId = await _context.Clientes
-                .Where(c => c.UsuarioId == usuarioId.Value)
-                .Select(c => (Guid?)c.Id)
-                .FirstOrDefaultAsync(cancellationToken);
-        }
-
-        var query = _context.Servicos
-            .Include(s => (s as ServicoPrestador).Prestador).ThenInclude(p => p.Usuario).ThenInclude(u => u.Endereco).ThenInclude(e => e.Cidade)
-            .Include(s => (s as ServicoCliente).Cliente).ThenInclude(c => c.Usuario).ThenInclude(u => u.Endereco).ThenInclude(e => e.Cidade)
-            .Where(s => s.Ativo);
+        var queryClientes = _context.ServicosClientes
+            .AsNoTracking()
+            .Include(s => s.Cliente)
+                .ThenInclude(c => c.Usuario)
+                    .ThenInclude(u => u.Endereco)
+                        .ThenInclude(e => e.Cidade)
+            .Where(s => s.Ativo)
+            .AsQueryable();
 
         if (categoria.HasValue)
-            query = query.Where(s => s.Categoria == categoria.Value);
+        {
+            queryPrestadores = queryPrestadores.Where(s => s.Categoria == categoria.Value);
+            queryClientes = queryClientes.Where(s => s.Categoria == categoria.Value);
+        }
 
         if (precoMaximo.HasValue)
-            query = query.Where(s => s.PrecoBase <= precoMaximo.Value);
+        {
+            queryPrestadores = queryPrestadores.Where(s => s.PrecoBase <= precoMaximo.Value);
+            queryClientes = queryClientes.Where(s => s.PrecoBase <= precoMaximo.Value);
+        }
 
         if (!string.IsNullOrWhiteSpace(cidade))
         {
-            query = query.Where(s =>
-                (s is ServicoPrestador && (s as ServicoPrestador).Prestador.Usuario.Endereco != null && (s as ServicoPrestador).Prestador.Usuario.Endereco.Cidade.Nome.Contains(cidade)) ||
-                (s is ServicoCliente && (s as ServicoCliente).Cliente.Usuario.Endereco != null && (s as ServicoCliente).Cliente.Usuario.Endereco.Cidade.Nome.Contains(cidade))
-            );
+            queryPrestadores = queryPrestadores.Where(s =>
+                s.Prestador.Usuario.Endereco != null &&
+                s.Prestador.Usuario.Endereco.Cidade.Nome.Contains(cidade));
+
+            queryClientes = queryClientes.Where(s =>
+                s.Cliente.Usuario.Endereco != null &&
+                s.Cliente.Usuario.Endereco.Cidade.Nome.Contains(cidade));
         }
 
-        if (prestadorAtualId.HasValue)
-        {
-            query = query.Where(s => !(s is ServicoPrestador) || (s as ServicoPrestador).PrestadorId != prestadorAtualId.Value);
-        }
+        var servicosPrestadores = await queryPrestadores.ToListAsync(cancellationToken);
+        var servicosClientes = await queryClientes.ToListAsync(cancellationToken);
 
-        if (clienteAtualId.HasValue)
-        {
-            query = query.Where(s => !(s is ServicoCliente) || (s as ServicoCliente).ClienteId != clienteAtualId.Value);
-        }
+        var servicosOrdenados = servicosPrestadores
+            .Cast<ServicoBase>()
+            .Concat(servicosClientes)
+            .OrderByDescending(s => s.DataCriacao)
+            .ToList();
 
-        var totalRegistros = await query.CountAsync(cancellationToken);
+        var totalRegistros = servicosOrdenados.Count;
         var totalPaginas = totalRegistros == 0
             ? 0
             : (int)Math.Ceiling(totalRegistros / (double)tamanhoPaginaNormalizado);
 
-        var itens = await query
-            .OrderByDescending(s => s.DataCriacao)
+        var itens = servicosOrdenados
             .Skip((paginaAtual - 1) * tamanhoPaginaNormalizado)
             .Take(tamanhoPaginaNormalizado)
-            .ToListAsync(cancellationToken);
+            .ToList();
 
         return new PaginacaoResultado<ServicoBase>
         {

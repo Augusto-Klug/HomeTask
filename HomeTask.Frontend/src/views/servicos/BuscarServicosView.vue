@@ -69,7 +69,7 @@
                 {{ s.prestadorNome || s.clienteNome || 'N/A' }}
               </p>
             </div>
-            <HtBadge>{{ obterNomeCategoria(s.categoria) }}</HtBadge>
+              <HtBadge variant="primary">{{ obterNomeCategoria(s.categoria) }}</HtBadge>
           </div>
 
           <p class="mb-3 flex items-center gap-1 text-xs text-muted">
@@ -245,33 +245,33 @@ async function buscar(pagina: number) {
   }
 }
 
-function aplicarFiltros() {
-  atualizarUrl(1)
+async function aplicarFiltros() {
+  await sincronizarBusca(1)
 }
 
-function limparFiltros() {
+async function limparFiltros() {
   filtro.categoria = ''
   filtro.cidade = ''
   filtro.precoMaximo = null
   filtroPrecoStr.value = ''
   tamanhoPaginaSelecionado.value = '30'
-  atualizarUrl(1)
+  await sincronizarBusca(1)
 }
 
-function irParaPagina(pagina: number) {
+async function irParaPagina(pagina: number) {
   if (pagina < 1 || (resultado.value.totalPaginas > 0 && pagina > resultado.value.totalPaginas)) {
     return
   }
 
-  atualizarUrl(pagina)
+  await sincronizarBusca(pagina)
 }
 
-function irParaPaginaDigitada() {
+async function irParaPaginaDigitada() {
   const pagina = normalizarPagina(paginaDigitada.value)
-  irParaPagina(resultado.value.totalPaginas > 0 ? Math.min(pagina, resultado.value.totalPaginas) : pagina)
+  await irParaPagina(resultado.value.totalPaginas > 0 ? Math.min(pagina, resultado.value.totalPaginas) : pagina)
 }
 
-function atualizarUrl(pagina: number) {
+function montarQuery(pagina: number): Record<string, string> {
   const query: Record<string, string> = {
     pagina: String(pagina),
     tamanhoPagina: tamanhoPaginaSelecionado.value,
@@ -281,7 +281,32 @@ function atualizarUrl(pagina: number) {
   if (filtro.cidade) query.cidade = filtro.cidade
   if (filtroPrecoStr.value) query.precoMaximo = filtroPrecoStr.value
 
-  router.push({ query })
+  return query
+}
+
+async function sincronizarBusca(pagina: number) {
+  const query = montarQuery(pagina)
+
+  if (queriesSaoIguais(route.query, query)) {
+    await buscar(pagina)
+    return
+  }
+
+  await router.push({ query })
+}
+
+function queriesSaoIguais(
+  queryAtual: Record<string, unknown>,
+  novaQuery: Record<string, string>,
+): boolean {
+  const chavesAtuais = Object.keys(queryAtual).filter(chave => typeof queryAtual[chave] !== 'undefined')
+  const chavesNovas = Object.keys(novaQuery)
+
+  if (chavesAtuais.length !== chavesNovas.length) {
+    return false
+  }
+
+  return chavesNovas.every(chave => String(queryAtual[chave] ?? '') === novaQuery[chave])
 }
 
 function normalizarPagina(valor: unknown): number {
