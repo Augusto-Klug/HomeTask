@@ -20,8 +20,7 @@ public class PortfolioController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> Listar(Guid prestadorId, CancellationToken cancellationToken)
     {
-        var itens = await _portfolioService.ObterPorPrestadorAsync(prestadorId, cancellationToken);
-        return Ok(itens);
+        return Ok(await _portfolioService.ObterPorPrestadorAsync(prestadorId, cancellationToken));
     }
 
     [HttpPost]
@@ -40,9 +39,7 @@ public class PortfolioController : ControllerBase
             return BadRequest("Arquivo excede o tamanho máximo de 5 MB.");
 
         await using var stream = imagem.OpenReadStream();
-        var portfolio = await _portfolioService
-            .AdicionarAsync(prestadorId, stream, imagem.FileName, titulo, descricao, cancellationToken);
-
+        var portfolio = await _portfolioService.AdicionarAsync(prestadorId, stream, imagem.FileName, titulo, descricao, cancellationToken);
         return CreatedAtAction(nameof(Listar), new { prestadorId }, portfolio);
     }
 

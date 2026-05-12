@@ -20,8 +20,7 @@ namespace HomeTask.WebApi.Controllers
         [HttpGet]
         public async Task<IActionResult> Listar(CancellationToken cancellationToken)
         {
-            var cidades = await _cidadeService.ListarAsync(cancellationToken);
-            return Ok(cidades);
+            return Ok(await _cidadeService.ListarAsync(cancellationToken));
         }
 
         /// <summary>
@@ -33,15 +32,13 @@ namespace HomeTask.WebApi.Controllers
             if (string.IsNullOrWhiteSpace(termo))
                 return BadRequest("Informe um termo para busca.");
 
-            var cidades = await _cidadeService.BuscarAsync(termo, cancellationToken);
-            return Ok(cidades);
+            return Ok(await _cidadeService.BuscarAsync(termo, cancellationToken));
         }
 
         [HttpGet]
         public async Task<IActionResult> ObterPorId([FromQuery] Guid id, CancellationToken cancellationToken)
         {
             var cidade = await _cidadeService.ObterPorIdAsync(id, cancellationToken);
-
             if (cidade == null)
                 return NotFound();
 
