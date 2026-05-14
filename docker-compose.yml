@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "5000:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       # Conecta a API ao banco mysql usando o container e as credenciais abaixo
@@ -15,7 +15,21 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+    networks:
+      - app-network
 
+  frontend:
+    image: hometaskwebapp
+    build:
+      context: ./HomeTask.Frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - api
+    networks:
+      - app-network
+  
   mysql:
     image: mysql:8.0
     container_name: hometask-mysql
@@ -31,6 +45,12 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - app-network
 
 volumes:
   hometask_mysql_data:
+
+networks:
+  app-network:
+    driver: bridge
