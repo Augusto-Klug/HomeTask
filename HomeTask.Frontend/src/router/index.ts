@@ -72,10 +72,15 @@ const router = createRouter({
     {
       path: "/agendamento/novo/:servicoId",
       name: "agendamento-novo",
-      // servicoId no path; prestadorId chega via query: ?prestadorId=y
       component: () => import("@/views/agendamento/NovoAgendamentoView.vue"),
       props: true,
       // meta: { requiresAuth: true },
+    },
+    {
+      path: "/proposta/nova/:servicoId",
+      name: "proposta-nova",
+      component: () => import("@/views/agendamento/NovaPropostaView.vue"),
+      props: true,
     },
     {
       path: "/agendamento/sucesso",
@@ -97,7 +102,13 @@ const router = createRouter({
     {
       path: "/perfil/solicitacoes-pendentes",
       name: "perfil-solicitacoes-pendentes",
-      component: () => import("@/views/perfil/SolicitacoesPendentesView.vue"),
+      redirect: "/perfil/operacao",
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/perfil/operacao",
+      name: "perfil-operacao",
+      component: () => import("@/views/perfil/OperacaoPrestadorView.vue"),
       meta: { requiresAuth: true },
     },
     {

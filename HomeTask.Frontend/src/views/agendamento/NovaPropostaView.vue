@@ -9,7 +9,7 @@
     </router-link>
 
     <h1 class="text-title font-semibold text-foreground mb-6">
-      Novo Agendamento
+      Enviar Proposta
     </h1>
 
     <div v-if="carregandoServico" class="flex justify-center py-16">
@@ -21,7 +21,7 @@
       class="text-center py-16 flex flex-col items-center gap-4"
     >
       <p class="text-sm text-muted">
-        Parâmetros inválidos para criar um agendamento.
+        Parâmetros inválidos para enviar uma proposta.
       </p>
       <router-link to="/servicos/buscar">
         <HtButton variant="outline">Voltar à busca</HtButton>
@@ -34,22 +34,37 @@
           {{ servico.titulo }}
         </h2>
         <p class="text-sm text-muted">
-          {{ servico.prestadorNome || "Prestador não informado" }} · R$
-          {{ formatarPreco(servico.precoBase) }}
-          {{ servico.unidadeCobranca === "por_hora" ? "/h" : "" }}
+          Solicitante:
+          {{ servico.clienteNome || "Cliente não informado" }}
         </p>
       </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4 text-sm text-muted">
+        <div>
+          <span class="font-medium text-foreground">Preço base:</span>
+          R$ {{ formatarPreco(servico.precoBase) }}
+          {{ servico.unidadeCobranca === "por_hora" ? "/h" : "" }}
+        </div>
+        <div v-if="servico.dataDesejada">
+          <span class="font-medium text-foreground">Data desejada:</span>
+          {{ formatarDataHora(servico.dataDesejada) }}
+        </div>
+      </div>
+
+      <p v-if="servico.descricao" class="text-sm text-foreground mb-4">
+        {{ servico.descricao }}
+      </p>
 
       <HtDivider />
 
       <HtAlert v-if="erro" :message="erro" class="mb-4" />
 
-      <form class="flex flex-col gap-4" @submit.prevent="handleAgendar">
+      <form class="flex flex-col gap-4" @submit.prevent="handleEnviarProposta">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <HtInput
             ref="inputData"
             v-model="form.data"
-            label="Data"
+            label="Data sugerida"
             type="date"
             :mensagemErro="'Selecione uma data'"
             required
@@ -58,7 +73,7 @@
           <HtInput
             ref="inputHora"
             v-model="form.hora"
-            label="Horário"
+            label="Horário sugerido"
             type="time"
             :mensagemErro="'Selecione um horário'"
             required
@@ -66,24 +81,15 @@
           />
         </div>
 
-        <HtInput
-          ref="inputEndereco"
-          v-model="form.logradouro"
-          label="Endereço do serviço"
-          placeholder="Rua, número, bairro..."
-          regra="required"
-          required
-        />
-
         <HtTextarea
           v-model="form.observacoes"
           label="Observações"
-          placeholder="Alguma informação adicional..."
-          :rows="3"
+          placeholder="Detalhes adicionais para a execução do serviço..."
+          :rows="4"
         />
 
         <HtButton type="submit" :loading="carregando" class="w-full mt-2">
-          Confirmar Agendamento
+          Enviar Proposta
         </HtButton>
       </form>
     </HtCard>
@@ -103,14 +109,14 @@ import HtSpinner from "@/components/ui/HtSpinner.vue";
 import HtTextarea from "@/components/ui/HtTextarea.vue";
 import { validarCampos } from "@/shared/validacao";
 import { useAuthStore } from "@/stores/auth";
-import type { AgendamentoForm, ServicoPrestadorDetalhe } from "@/types";
+import type { AgendamentoForm, ServicoClienteDetalhe } from "@/types";
 
 const props = defineProps<{ servicoId: string }>();
 
 const router = useRouter();
 const auth = useAuthStore();
 
-const servico = ref<ServicoPrestadorDetalhe | null>(null);
+const servico = ref<ServicoClienteDetalhe | null>(null);
 const carregandoServico = ref(true);
 const carregando = ref(false);
 const erro = ref<string | null>(null);
@@ -124,18 +130,17 @@ const form = reactive<AgendamentoForm>({
 
 const inputData = ref<InstanceType<typeof HtInput> | null>(null);
 const inputHora = ref<InstanceType<typeof HtInput> | null>(null);
-const inputEndereco = ref<InstanceType<typeof HtInput> | null>(null);
 
 onMounted(async () => {
   try {
-    const { data } = await api.get<ServicoPrestadorDetalhe>(
+    const { data } = await api.get<ServicoClienteDetalhe>(
       "/api/ServicoOferecido/ObterServicoPorId",
       {
         params: { id: props.servicoId },
       },
     );
 
-    servico.value = data.tipoAnuncio === 1 ? data : null;
+    servico.value = data.tipoAnuncio === 2 ? data : null;
   } catch {
     servico.value = null;
   } finally {
@@ -143,13 +148,13 @@ onMounted(async () => {
   }
 });
 
-async function handleAgendar() {
-  if (!validarCampos([inputData.value, inputHora.value, inputEndereco.value])) {
+async function handleEnviarProposta() {
+  if (!validarCampos([inputData.value, inputHora.value])) {
     return;
   }
 
   if (!servico.value) {
-    erro.value = "Serviço inválido para este fluxo de agendamento.";
+    erro.value = "Serviço inválido para este fluxo de proposta.";
     return;
   }
 
@@ -157,8 +162,8 @@ async function handleAgendar() {
   carregando.value = true;
 
   try {
-    const { data: cliente } = await api.get(
-      "/api/Cliente/ObterClientesPorUsuarioId",
+    const { data: prestador } = await api.get(
+      "/api/Prestador/ObterPrestadorPorUsuarioId",
       {
         params: { usuarioId: auth.user?.userId },
       },
@@ -167,8 +172,7 @@ async function handleAgendar() {
     const dataHora = `${form.data}T${form.hora}:00`;
 
     await api.post("/api/Agendamento/CriarAgendamento", {
-      clienteId: cliente.id,
-      prestadorId: servico.value.prestadorId,
+      prestadorId: prestador.id,
       servicosOferecidosIds: [props.servicoId],
       dataHoraAgendada: dataHora,
       observacoes: form.observacoes,
@@ -181,7 +185,7 @@ async function handleAgendar() {
     erro.value =
       typeof msg === "string" && msg
         ? msg
-        : "Erro ao criar agendamento. Verifique os dados e tente novamente.";
+        : "Erro ao enviar proposta. Verifique os dados e tente novamente.";
   } finally {
     carregando.value = false;
   }
@@ -189,5 +193,12 @@ async function handleAgendar() {
 
 function formatarPreco(valor: number): string {
   return Number(valor).toFixed(2).replace(".", ",");
+}
+
+function formatarDataHora(valor: string): string {
+  return new Date(valor).toLocaleString("pt-BR", {
+    dateStyle: "short",
+    timeStyle: "short",
+  });
 }
 </script>

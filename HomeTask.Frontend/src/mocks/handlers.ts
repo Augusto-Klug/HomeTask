@@ -11,8 +11,9 @@ import type {
   AuthResponse,
   AgendamentoResumo,
   PerfilForm,
+  ServicoClienteDetalhe,
+  ServicoPrestadorDetalhe,
 } from "@/types";
-import { UnidadeCobranca } from "@/types";
 
 // ---------------------------------------------------------------------------
 // Dados fictícios
@@ -20,13 +21,12 @@ import { UnidadeCobranca } from "@/types";
 
 const MOCK_SERVICOS: Servico[] = [
   {
-    id: "1",
+    id: 1,
     titulo: "Faxina Residencial Completa",
     descricao:
       "Limpeza completa de residências com produtos de qualidade. Inclui cozinha, banheiros, quartos e áreas de circulação.",
-    precoBase: 80,
-    unidadeCobranca: UnidadeCobranca.Total,
-    prestadorId: "10",
+    preco: 80,
+    prestadorId: 10,
     prestadorNome: "Maria Silva",
     categoria: "Faxina",
     cidade: "Blumenau",
@@ -34,13 +34,12 @@ const MOCK_SERVICOS: Servico[] = [
     mediaAvaliacoes: 4.5,
   },
   {
-    id: "2",
+    id: 2,
     titulo: "Jardinagem e Poda de Árvores",
     descricao:
       "Serviços de jardinagem, poda, plantio e manutenção de jardins residenciais e comerciais.",
-    precoBase: 60,
-    unidadeCobranca: UnidadeCobranca.PorHora,
-    prestadorId: "11",
+    preco: 60,
+    prestadorId: 11,
     prestadorNome: "João Santos",
     categoria: "Jardinagem",
     cidade: "Blumenau",
@@ -48,13 +47,12 @@ const MOCK_SERVICOS: Servico[] = [
     mediaAvaliacoes: 4.0,
   },
   {
-    id: "3",
+    id: 3,
     titulo: "Reparos Gerais Residenciais",
     descricao:
       "Pequenos reparos elétricos, hidráulicos e de alvenaria. Montagem de móveis e instalação de equipamentos.",
-    precoBase: 90,
-    unidadeCobranca: UnidadeCobranca.Total,
-    prestadorId: "12",
+    preco: 90,
+    prestadorId: 12,
     prestadorNome: "Carlos Pereira",
     categoria: "Reparos",
     cidade: "Gaspar",
@@ -62,13 +60,12 @@ const MOCK_SERVICOS: Servico[] = [
     mediaAvaliacoes: 3.5,
   },
   {
-    id: "4",
+    id: 4,
     titulo: "Lavanderia — Entrega no Mesmo Dia",
     descricao:
       "Lavagem, secagem e passadoria de roupas. Entrega no mesmo dia para pedidos feitos até 10h.",
-    precoBase: 40,
-    unidadeCobranca: UnidadeCobranca.Total,
-    prestadorId: "13",
+    preco: 40,
+    prestadorId: 13,
     prestadorNome: "Ana Lima",
     categoria: "Lavanderia",
     cidade: "Indaial",
@@ -76,13 +73,12 @@ const MOCK_SERVICOS: Servico[] = [
     mediaAvaliacoes: 5.0,
   },
   {
-    id: "5",
+    id: 5,
     titulo: "Babysitter Experiente",
     descricao:
       "Cuidados com crianças de 0 a 12 anos. Experiência com primeiros socorros e educação infantil.",
-    precoBase: 50,
-    unidadeCobranca: UnidadeCobranca.PorHora,
-    prestadorId: "14",
+    preco: 50,
+    prestadorId: 14,
     prestadorNome: "Fernanda Costa",
     categoria: "Babysitter",
     cidade: "Blumenau",
@@ -90,13 +86,12 @@ const MOCK_SERVICOS: Servico[] = [
     mediaAvaliacoes: 4.8,
   },
   {
-    id: "6",
+    id: 6,
     titulo: "Cuidador de Idosos — Período Integral",
     descricao:
       "Acompanhamento e cuidados para idosos. Auxílio com medicamentos, higiene pessoal e atividades diárias.",
-    precoBase: 70,
-    unidadeCobranca: UnidadeCobranca.PorHora,
-    prestadorId: "15",
+    preco: 70,
+    prestadorId: 15,
     prestadorNome: "Roberto Alves",
     categoria: "Cuidador de Idosos",
     cidade: "Blumenau",
@@ -104,13 +99,12 @@ const MOCK_SERVICOS: Servico[] = [
     mediaAvaliacoes: 4.2,
   },
   {
-    id: "7",
+    id: 7,
     titulo: "Passadoria a Domicílio",
     descricao:
       "Serviço de passadoria caprichada na sua residência. Roupas entregues em cabide.",
-    precoBase: 35,
-    unidadeCobranca: UnidadeCobranca.Total,
-    prestadorId: "16",
+    preco: 35,
+    prestadorId: 16,
     prestadorNome: "Sônia Ramos",
     categoria: "Passadoria",
     cidade: "Blumenau",
@@ -118,13 +112,12 @@ const MOCK_SERVICOS: Servico[] = [
     mediaAvaliacoes: 4.3,
   },
   {
-    id: "8",
+    id: 8,
     titulo: "Pet Sitter — Cuidados para seu Animal",
     descricao:
       "Cuidados para cães e gatos enquanto você viaja: alimentação, passeios e banho.",
-    precoBase: 45,
-    unidadeCobranca: UnidadeCobranca.Total,
-    prestadorId: "17",
+    preco: 45,
+    prestadorId: 17,
     prestadorNome: "Lucas Mendes",
     categoria: "Pet Sitter",
     cidade: "Gaspar",
@@ -251,6 +244,41 @@ function diasAPartirDeHoje(dias: number, hora = "09:00") {
   return d.toISOString();
 }
 
+const MOCK_SERVICO_PRESTADOR_DETALHE: ServicoPrestadorDetalhe = {
+  id: "srv-prestador-1",
+  titulo: "Faxina Residencial Completa",
+  descricao:
+    "Limpeza completa de residências com produtos de qualidade. Inclui cozinha, banheiros, quartos e áreas de circulação.",
+  precoBase: 80,
+  unidadeCobranca: "por_hora",
+  categoria: 1,
+  ativo: true,
+  cidade: "Blumenau",
+  estado: "SC",
+  prestadorId: "10",
+  prestadorNome: "Maria Silva",
+  duracaoEstimadaMinutos: 120,
+  aceitaPagamentoAposFinalizacao: true,
+  mediaAvaliacoes: 4.5,
+  tipoAnuncio: 1,
+};
+
+const MOCK_SERVICO_CLIENTE_DETALHE: ServicoClienteDetalhe = {
+  id: "srv-cliente-1",
+  titulo: "Limpeza Pós-Obra",
+  descricao: "Preciso de limpeza completa após uma reforma no apartamento.",
+  precoBase: 160,
+  unidadeCobranca: "total",
+  categoria: 1,
+  ativo: true,
+  cidade: "Blumenau",
+  estado: "SC",
+  clienteId: "20",
+  clienteNome: "Pedro Martins",
+  dataDesejada: diasAPartirDeHoje(3, "14:00"),
+  tipoAnuncio: 2,
+};
+
 const MOCK_AGENDAMENTOS_CLIENTE: AgendamentoResumo[] = [
   {
     id: "ag-c-001",
@@ -273,6 +301,7 @@ const MOCK_AGENDAMENTOS_CLIENTE: AgendamentoResumo[] = [
     dataResposta: diasAPartirDeHoje(-2),
     dataConclusao: null,
     motivoRecusa: null,
+    aguardandoRespostaDe: null,
     servicos: [
       {
         id: "srv-001",
@@ -280,9 +309,9 @@ const MOCK_AGENDAMENTOS_CLIENTE: AgendamentoResumo[] = [
         descricao: "Limpeza completa de residências com produtos de qualidade.",
         precoBase: 80,
         duracaoEstimadaMinutos: 120,
-        unidadeCobranca: UnidadeCobranca.Total,
-        tipoAnuncio: "PrestadorOferece",
-        categoria: { id: "cat-1", nome: "Faxina", icone: "cleaning_services" },
+        unidadeCobranca: "total",
+        tipoAnuncio: 1,
+        categoria: 1,
       },
     ],
   },
@@ -307,6 +336,7 @@ const MOCK_AGENDAMENTOS_CLIENTE: AgendamentoResumo[] = [
     dataResposta: null,
     dataConclusao: null,
     motivoRecusa: null,
+    aguardandoRespostaDe: "Prestador",
     servicos: [
       {
         id: "srv-005",
@@ -314,9 +344,9 @@ const MOCK_AGENDAMENTOS_CLIENTE: AgendamentoResumo[] = [
         descricao: "Cuidados com crianças de 0 a 12 anos.",
         precoBase: 50,
         duracaoEstimadaMinutos: 180,
-        unidadeCobranca: UnidadeCobranca.PorHora,
+        unidadeCobranca: "por_hora",
         tipoAnuncio: 1,
-        categoria: { id: "cat-6", nome: "Babysitter", icone: "child_care" },
+        categoria: 6,
       },
     ],
   },
@@ -341,6 +371,7 @@ const MOCK_AGENDAMENTOS_CLIENTE: AgendamentoResumo[] = [
     dataResposta: diasAPartirDeHoje(-4),
     dataConclusao: null,
     motivoRecusa: null,
+    aguardandoRespostaDe: null,
     servicos: [
       {
         id: "srv-003",
@@ -348,9 +379,9 @@ const MOCK_AGENDAMENTOS_CLIENTE: AgendamentoResumo[] = [
         descricao: "Pequenos reparos elétricos, hidráulicos e de alvenaria.",
         precoBase: 90,
         duracaoEstimadaMinutos: 90,
-        unidadeCobranca: UnidadeCobranca.Total,
-        tipoAnuncio: "PrestadorOferece",
-        categoria: { id: "cat-3", nome: "Reparos", icone: "handyman" },
+        unidadeCobranca: "total",
+        tipoAnuncio: 1,
+        categoria: 3,
       },
     ],
   },
@@ -378,6 +409,7 @@ const MOCK_AGENDAMENTOS_PRESTADOR: AgendamentoResumo[] = [
     dataResposta: diasAPartirDeHoje(-3),
     dataConclusao: null,
     motivoRecusa: null,
+    aguardandoRespostaDe: null,
     servicos: [
       {
         id: "srv-011",
@@ -385,9 +417,9 @@ const MOCK_AGENDAMENTOS_PRESTADOR: AgendamentoResumo[] = [
         descricao: "Limpeza profunda após reformas e obras.",
         precoBase: 160,
         duracaoEstimadaMinutos: 240,
-        unidadeCobranca: UnidadeCobranca.Total,
-        tipoAnuncio: "ClienteSolicitou",
-        categoria: { id: "cat-1", nome: "Faxina", icone: "cleaning_services" },
+        unidadeCobranca: "total",
+        tipoAnuncio: 2,
+        categoria: 1,
       },
     ],
   },
@@ -412,6 +444,7 @@ const MOCK_AGENDAMENTOS_PRESTADOR: AgendamentoResumo[] = [
     dataResposta: null,
     dataConclusao: null,
     motivoRecusa: null,
+    aguardandoRespostaDe: "Prestador",
     servicos: [
       {
         id: "srv-012",
@@ -419,9 +452,9 @@ const MOCK_AGENDAMENTOS_PRESTADOR: AgendamentoResumo[] = [
         descricao: "Limpeza de apartamentos de até 60m².",
         precoBase: 80,
         duracaoEstimadaMinutos: 60,
-        unidadeCobranca: UnidadeCobranca.Total,
-        tipoAnuncio: "PrestadorOferece",
-        categoria: { id: "cat-1", nome: "Faxina", icone: "cleaning_services" },
+        unidadeCobranca: "total",
+        tipoAnuncio: 1,
+        categoria: 1,
       },
     ],
   },
@@ -468,8 +501,6 @@ export const handlers = [
     await delay(MOCK_DELAY);
     const url = new URL(request.url);
     let result = [...MOCK_SERVICOS];
-    const pagina = Math.max(Number(url.searchParams.get("pagina") ?? "1"), 1);
-    const tamanhoPagina = Number(url.searchParams.get("tamanhoPagina") ?? "30");
 
     const categoria = url.searchParams.get("categoria");
     if (categoria) {
@@ -486,19 +517,10 @@ export const handlers = [
 
     const precoMaximo = url.searchParams.get("precoMaximo");
     if (precoMaximo) {
-      result = result.filter((s) => s.precoBase <= Number(precoMaximo));
+      result = result.filter((s) => s.preco <= Number(precoMaximo));
     }
 
-    const totalRegistros = result.length;
-    const itens = result.slice((pagina - 1) * tamanhoPagina, pagina * tamanhoPagina);
-
-    return HttpResponse.json({
-      itens,
-      paginaAtual: pagina,
-      tamanhoPagina,
-      totalRegistros,
-      totalPaginas: totalRegistros === 0 ? 0 : Math.ceil(totalRegistros / tamanhoPagina),
-    });
+    return HttpResponse.json(result);
   }),
 
   // GET /api/ServicoOferecido/ObterServicoPorId
@@ -506,9 +528,41 @@ export const handlers = [
     await delay(MOCK_DELAY);
     const url = new URL(request.url);
     const id = url.searchParams.get("id");
+
+    if (id === MOCK_SERVICO_PRESTADOR_DETALHE.id) {
+      return HttpResponse.json(MOCK_SERVICO_PRESTADOR_DETALHE);
+    }
+
+    if (id === MOCK_SERVICO_CLIENTE_DETALHE.id) {
+      return HttpResponse.json(MOCK_SERVICO_CLIENTE_DETALHE);
+    }
+
     const servico = MOCK_SERVICOS.find((s) => String(s.id) === id);
     if (!servico) return new HttpResponse(null, { status: 404 });
-    return HttpResponse.json(servico);
+
+    return HttpResponse.json({
+      id: String(servico.id),
+      titulo: servico.titulo,
+      descricao: servico.descricao,
+      precoBase: servico.preco,
+      unidadeCobranca: "por_hora",
+      categoria: Object.entries(CATEGORIA_LABELS).find(
+        ([, label]) => label === servico.categoria,
+      )?.[0]
+        ? Number(
+            Object.entries(CATEGORIA_LABELS).find(
+              ([, label]) => label === servico.categoria,
+            )?.[0],
+          )
+        : 0,
+      ativo: true,
+      cidade: servico.cidade,
+      estado: servico.estado,
+      prestadorId: String(servico.prestadorId),
+      prestadorNome: servico.prestadorNome,
+      mediaAvaliacoes: servico.mediaAvaliacoes,
+      tipoAnuncio: 1,
+    } satisfies ServicoPrestadorDetalhe);
   }),
 
   // GET /api/Avaliacao/ObterAvaliacoesPorPrestador
@@ -611,7 +665,9 @@ export const handlers = [
   http.get("*/api/Agendamento/ObterSolicitacoesPendentesPrestador", async () => {
     await delay(MOCK_DELAY);
     return HttpResponse.json(
-      MOCK_AGENDAMENTOS_PRESTADOR.filter((a) => a.status === "Solicitado"),
+      MOCK_AGENDAMENTOS_PRESTADOR.filter(
+        (a) => a.status === "Solicitado" && a.aguardandoRespostaDe === "Prestador",
+      ),
     );
   }),
 

@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using HomeTask.Domain.Entidades;
-using HomeTask.Domain.Enums;
 
 namespace HomeTask.Infrastructure.Data.Configurations;
 
@@ -9,6 +9,14 @@ public class ServicoBaseMap : IEntityTypeConfiguration<ServicoBase>
 {
     public void Configure(EntityTypeBuilder<ServicoBase> builder)
     {
+        var unidadeCobrancaConverter = new ValueConverter<string, int>(
+            unidade => unidade == "por_hora" ? 1 : 
+                       unidade == "total" ? 2 : 
+                       unidade == "a_combinar" ? 3 : 0,
+            valor => valor == 1 ? "por_hora" : 
+                     valor == 2 ? "total" : 
+                     valor == 3 ? "a_combinar" : "desconhecido");
+
         builder.HasKey(s => s.Id);
 
         builder.Property(s => s.Titulo)
@@ -18,7 +26,8 @@ public class ServicoBaseMap : IEntityTypeConfiguration<ServicoBase>
             .HasMaxLength(500);
 
         builder.Property(s => s.UnidadeCobranca)
-            .IsRequired();
+            .HasConversion(unidadeCobrancaConverter)
+            .HasColumnType("int");
 
         builder.Property(s => s.DataCriacao)
             .HasColumnType("datetime")

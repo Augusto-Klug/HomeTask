@@ -1,12 +1,12 @@
 export interface User {
-  userId: string | number
+  userId: number
   nome: string
   email: string
-  tipo: number
+  tipo: number // 1=Cliente, 2=Prestador, 3=Ambos
 }
 
 export interface AuthResponse {
-  userId: string | number
+  userId: number
   nome: string
   email: string
   tipo: number
@@ -18,30 +18,17 @@ export interface Categoria {
   icone: string
 }
 
-export enum UnidadeCobranca {
-  PorHora = 1,
-  Total = 2,
-  ACombinar = 3,
-}
-
 export interface Servico {
-  id: string | number
+  id: number
   titulo: string
   descricao: string
-  precoBase: number
-  preco?: number
-  unidadeCobranca: UnidadeCobranca
-  tipoAnuncio?: number | string
-  prestadorId?: string | number
-  prestadorNome?: string
-  clienteId?: string | number
-  clienteNome?: string
-  categoria: string | number | { id: string; nome: string; icone: string }
+  preco: number
+  prestadorId: number
+  prestadorNome: string
+  categoria: string
   cidade: string
   estado: string
-  mediaAvaliacoes?: number | null
-  dataDesejada?: string | null
-  aceitaPagamentoAposFinalizacao?: boolean
+  mediaAvaliacoes: number
 }
 
 export interface Avaliacao {
@@ -79,33 +66,24 @@ export interface BuscarFiltro {
   categoria: string
   cidade: string
   precoMaximo: number | null
-}
-
-export interface ResultadoPaginado<T> {
-  itens: T[]
-  paginaAtual: number
-  tamanhoPagina: number
-  totalRegistros: number
-  totalPaginas: number
+  avaliacaoMinima: number
 }
 
 export const CATEGORIAS_SERVICO = [
-  { value: 1, label: 'Faxina' },
-  { value: 2, label: 'Jardinagem' },
-  { value: 3, label: 'Reparos' },
-  { value: 4, label: 'Lavanderia' },
-  { value: 5, label: 'Passadoria' },
-  { value: 6, label: 'Babysitter' },
-  { value: 7, label: 'Cuidador de Idosos' },
-  { value: 8, label: 'Pet Sitter' },
-  { value: 9, label: 'Cozinheiro' },
+  { value: 1,  label: 'Faxina' },
+  { value: 2,  label: 'Jardinagem' },
+  { value: 3,  label: 'Reparos' },
+  { value: 4,  label: 'Lavanderia' },
+  { value: 5,  label: 'Passadoria' },
+  { value: 6,  label: 'Babysitter' },
+  { value: 7,  label: 'Cuidador de Idosos' },
+  { value: 8,  label: 'Pet Sitter' },
+  { value: 9,  label: 'Cozinheiro' },
   { value: 10, label: 'Serviços Gerais' },
 ] as const
 
-export type TipoValorCliente = UnidadeCobranca
-export type TipoValorPrestador = UnidadeCobranca.PorHora | UnidadeCobranca.Total
-export type TipoValorClienteForm = `${UnidadeCobranca}` | ''
-export type TipoValorPrestadorForm = `${UnidadeCobranca.PorHora | UnidadeCobranca.Total}` | ''
+export type TipoValorCliente = 'por_hora' | 'total' | 'a_combinar'
+export type TipoValorPrestador = 'por_hora' | 'total'
 
 export type StatusAgendamento =
   | 'Solicitado'
@@ -118,16 +96,62 @@ export type StatusAgendamento =
 
 export type TipoAnuncioCliente = 2
 export type TipoAnuncioPrestador = 1
+export type AguardandoRespostaDe = 'Cliente' | 'Prestador'
+
+export interface ServicoDetalheBase {
+  id: string
+  titulo: string
+  descricao: string
+  precoBase: number
+  unidadeCobranca: string
+  categoria: number
+  ativo: boolean
+  cidade?: string | null
+  estado?: string | null
+}
+
+export interface ServicoBuscaResumo {
+  id: string
+  titulo: string
+  descricao: string
+  precoBase: number
+  unidadeCobranca: string
+  prestadorId: string
+  prestadorNome?: string | null
+  categoria: number
+  cidade?: string | null
+  estado?: string | null
+  mediaAvaliacoes?: number | null
+  tipoAnuncio: TipoAnuncioPrestador
+}
+
+export interface ServicoPrestadorDetalhe extends ServicoDetalheBase {
+  prestadorId: string
+  prestadorNome?: string | null
+  duracaoEstimadaMinutos?: number | null
+  aceitaPagamentoAposFinalizacao?: boolean
+  mediaAvaliacoes?: number | null
+  tipoAnuncio: TipoAnuncioPrestador
+}
+
+export interface ServicoClienteDetalhe extends ServicoDetalheBase {
+  clienteId: string
+  clienteNome?: string | null
+  dataDesejada?: string | null
+  tipoAnuncio: TipoAnuncioCliente
+}
+
+export type ServicoDetalhe = ServicoPrestadorDetalhe | ServicoClienteDetalhe
 
 export interface ServicoOferecido {
-  id: string | number
+  id: string
   titulo: string
   descricao: string
   precoBase: number
   duracaoEstimadaMinutos: number | null
-  unidadeCobranca: UnidadeCobranca
-  tipoAnuncio: TipoAnuncioCliente | TipoAnuncioPrestador | string
-  categoria: number | { id: string; nome: string; icone: string }
+  unidadeCobranca: string
+  tipoAnuncio: TipoAnuncioCliente | TipoAnuncioPrestador
+  categoria: number
   dataDesejada?: string | null
   aceitaPagamentoAposFinalizacao?: boolean
 }
@@ -141,9 +165,9 @@ export interface AgendamentoEndereco {
 
 export interface AgendamentoResumo {
   id: string
-  clienteId: string | number
+  clienteId: string
   clienteNome: string
-  prestadorId: string | number
+  prestadorId: string
   prestadorNome: string
   dataHoraAgendada: string
   duracaoMinutos: number
@@ -155,7 +179,8 @@ export interface AgendamentoResumo {
   dataResposta: string | null
   dataConclusao: string | null
   motivoRecusa: string | null
-  servicos: Array<ServicoOferecido & { unidadeCobranca: UnidadeCobranca }>
+  aguardandoRespostaDe: AguardandoRespostaDe | null
+  servicos: ServicoOferecido[]
 }
 
 export interface PerfilForm {
@@ -176,20 +201,18 @@ export interface ServicoClienteForm {
   titulo: string
   descricao: string
   categoria: string
-  unidadeCobranca: TipoValorClienteForm
+  unidadeCobranca: TipoValorCliente | ''
   precoBase: string
-  valor?: string
   data: string
-  tipo?: TipoAnuncioCliente
+  tipo? : TipoAnuncioCliente
 }
 
 export interface ServicoPrestadorForm {
   titulo: string
   descricao: string
   categoria: string
-  unidadeCobranca: TipoValorPrestadorForm
+  unidadeCobranca: TipoValorPrestador | ''
   precoBase: string
-  valor?: string
   aceitaPagamentoAposFinalizacao: boolean
-  tipo?: TipoAnuncioPrestador
+  tipo? : TipoAnuncioPrestador
 }

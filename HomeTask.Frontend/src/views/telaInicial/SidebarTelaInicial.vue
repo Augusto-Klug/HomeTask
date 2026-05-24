@@ -4,30 +4,21 @@
 
     <ul class="menu menu-sm px-2">
       <li>
-        <router-link
-          to="/"
-          class="ht-sidenav-link"
-          @click="open = false"
-        >
+        <router-link to="/" class="ht-sidenav-link" @click="open = false">
           <span class="material-symbols-rounded text-xl">home</span>
           Início
         </router-link>
       </li>
 
       <li>
-        <router-link
-          to="/servicos/buscar"
-          class="ht-sidenav-link"
-          @click="open = false"
-        >
+        <router-link to="/servicos/buscar" class="ht-sidenav-link" @click="open = false">
           <span class="material-symbols-rounded text-xl">search</span>
           Buscar Serviços
         </router-link>
       </li>
 
-      <!-- Links para usuários logados -->
       <template v-if="auth.isLoggedIn">
-        <li>
+        <li v-if="auth.user?.tipo === 1 || auth.user?.tipo === 3">
           <router-link
             to="/perfil/agendamentos"
             class="ht-sidenav-link"
@@ -38,7 +29,6 @@
           </router-link>
         </li>
 
-        <!-- Cliente ou Ambos (tipo 1 ou 3) -->
         <li v-if="auth.user?.tipo === 1 || auth.user?.tipo === 3">
           <router-link
             to="/servicos/novo-cliente"
@@ -50,7 +40,6 @@
           </router-link>
         </li>
 
-        <!-- Prestador ou Ambos (tipo 2 ou 3) -->
         <li v-if="auth.user?.tipo === 2 || auth.user?.tipo === 3">
           <router-link
             to="/servicos/novo-prestador"
@@ -64,12 +53,12 @@
 
         <li v-if="auth.user?.tipo === 2 || auth.user?.tipo === 3">
           <router-link
-            to="/perfil/solicitacoes-pendentes"
+            to="/perfil/operacao"
             class="ht-sidenav-link"
             @click="open = false"
           >
-            <span class="material-symbols-rounded text-xl">notifications</span>
-            Solicitações Pendentes
+            <span class="material-symbols-rounded text-xl">checklist</span>
+            Minha Operação
           </router-link>
         </li>
       </template>
@@ -108,19 +97,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
-import HtSidenav from '@/components/ui/HtSidenav.vue'
+import { useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
+import HtSidenav from "@/components/ui/HtSidenav.vue";
 
-const open = defineModel<boolean>('open', { default: false })
+const open = defineModel<boolean>("open", { default: false });
 
-const auth = useAuthStore()
-const router = useRouter()
+const auth = useAuthStore();
+const router = useRouter();
 
 async function handleLogout() {
-  open.value = false
-  await auth.logout()
-  router.push('/login')
+  open.value = false;
+  await auth.logout();
+  router.push("/login");
 }
 </script>
