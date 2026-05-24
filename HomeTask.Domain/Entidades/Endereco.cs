@@ -1,5 +1,3 @@
-using HomeTask.Domain.Entities;
-
 namespace HomeTask.Domain.Entidades
 {
     public class Endereco

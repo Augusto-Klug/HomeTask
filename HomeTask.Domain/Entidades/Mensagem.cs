@@ -1,6 +1,4 @@
-using HomeTask.Domain.Entidades;
-
-namespace HomeTask.Domain.Entities;
+namespace HomeTask.Domain.Entidades;
 
 /// <summary>
 /// Mensagem do chat entre cliente e prestador (RF08, NEG09)

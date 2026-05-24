@@ -1,6 +1,6 @@
+using HomeTask.Domain.Entidades;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using HomeTask.Domain.Entities;
 
 namespace HomeTask.Infrastructure.Data.Configurations;
 

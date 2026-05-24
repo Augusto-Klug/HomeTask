@@ -1,4 +1,4 @@
-using HomeTask.Domain.Entities;
+using HomeTask.Application.Dtos;
 using HomeTask.Domain.Enums;
 
 namespace HomeTask.Application.Interfaces;
@@ -8,15 +8,15 @@ namespace HomeTask.Application.Interfaces;
 /// </summary>
 public interface IAgendamentoService
 {
-    Task<Agendamento?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken = default);
-    Task<Agendamento> CriarAsync(Agendamento agendamento, List<Guid> servicosIds, CancellationToken cancellationToken = default);
-    Task<Agendamento> AceitarAsync(Guid agendamentoId, CancellationToken cancellationToken = default);
-    Task<Agendamento> RecusarAsync(Guid agendamentoId, string motivo, CancellationToken cancellationToken = default);
-    Task<Agendamento> IniciarAsync(Guid agendamentoId, CancellationToken cancellationToken = default);
-    Task<Agendamento> ConcluirAsync(Guid agendamentoId, CancellationToken cancellationToken = default);
-    Task<Agendamento> CancelarAsync(Guid agendamentoId, string motivo, CancellationToken cancellationToken = default);
-    Task<IEnumerable<Agendamento>> ObterPorClienteAsync(Guid clienteId, CancellationToken cancellationToken = default);
-    Task<IEnumerable<Agendamento>> ObterPorPrestadorAsync(Guid prestadorId, CancellationToken cancellationToken = default);
-    Task<IEnumerable<Agendamento>> ObterSolicitacoesPendentesPorPrestadorAsync(Guid prestadorId, CancellationToken cancellationToken = default);
-    Task<IEnumerable<Agendamento>> ObterPorStatusAsync(StatusAgendamento status, CancellationToken cancellationToken = default);
+    Task<AgendamentoResumoDto?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<AgendamentoDto> CriarAsync(AgendamentoDto agendamento, CancellationToken cancellationToken = default);
+    Task<AgendamentoDto> AceitarAsync(Guid agendamentoId, CancellationToken cancellationToken = default);
+    Task<AgendamentoDto> RecusarAsync(Guid agendamentoId, string motivo, CancellationToken cancellationToken = default);
+    Task<AgendamentoDto> IniciarAsync(Guid agendamentoId, CancellationToken cancellationToken = default);
+    Task<AgendamentoDto> ConcluirAsync(Guid agendamentoId, CancellationToken cancellationToken = default);
+    Task<AgendamentoDto> CancelarAsync(Guid agendamentoId, string motivo, CancellationToken cancellationToken = default);
+    Task<IEnumerable<AgendamentoResumoDto>> ObterPorClienteAsync(Guid clienteId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<AgendamentoResumoDto>> ObterPorPrestadorAsync(Guid prestadorId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<AgendamentoResumoDto>> ObterSolicitacoesPendentesPorPrestadorAsync(Guid prestadorId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<AgendamentoResumoDto>> ObterPorStatusAsync(StatusAgendamento status, CancellationToken cancellationToken = default);
 }

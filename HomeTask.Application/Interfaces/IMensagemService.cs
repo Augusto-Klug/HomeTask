@@ -1,4 +1,4 @@
-using HomeTask.Domain.Entities;
+using HomeTask.Application.Dtos;
 
 namespace HomeTask.Application.Interfaces;
 
@@ -7,10 +7,10 @@ namespace HomeTask.Application.Interfaces;
 /// </summary>
 public interface IMensagemService
 {
-    Task<Mensagem?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken = default);
-    Task<Mensagem> EnviarAsync(Mensagem mensagem, CancellationToken cancellationToken = default);
-    Task<IEnumerable<Mensagem>> ObterConversaAsync(Guid conversaId, CancellationToken cancellationToken = default);
-    Task<IEnumerable<Mensagem>> ObterConversasPorUsuarioAsync(Guid usuarioId, CancellationToken cancellationToken = default);
+    Task<MensagemDto?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<MensagemDto> EnviarAsync(MensagemDto mensagem, CancellationToken cancellationToken = default);
+    Task<IEnumerable<MensagemDto>> ObterConversaAsync(Guid conversaId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<MensagemDto>> ObterConversasPorUsuarioAsync(Guid usuarioId, CancellationToken cancellationToken = default);
     Task MarcarComoLidaAsync(Guid mensagemId, CancellationToken cancellationToken = default);
     Task<int> ObterNaoLidasAsync(Guid usuarioId, CancellationToken cancellationToken = default);
 }

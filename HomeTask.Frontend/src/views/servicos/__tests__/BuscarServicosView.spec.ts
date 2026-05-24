@@ -1,5 +1,5 @@
 import { mount, flushPromises } from '@vue/test-utils'
-import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest'
+import { describe, expect, it, vi, beforeEach } from 'vitest'
 import { createRouter, createMemoryHistory } from 'vue-router'
 
 import BuscarServicosView from '../BuscarServicosView.vue'
@@ -17,41 +17,57 @@ const router = createRouter({
 describe('BuscarServicosView', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.useFakeTimers()
-    vi.mocked(apiModule.default.get).mockResolvedValue({ data: [] })
+    vi.mocked(apiModule.default.get).mockResolvedValue({
+      data: {
+        itens: [],
+        paginaAtual: 1,
+        tamanhoPagina: 30,
+        totalRegistros: 0,
+        totalPaginas: 0,
+      },
+    })
   })
 
-  afterEach(() => {
-    vi.useRealTimers()
-  })
-
-  it('debounces service search by 700ms when the city filter changes', async () => {
+  it('carrega a busca inicial com 30 registros por página', async () => {
     router.push('/servicos/buscar')
     await router.isReady()
 
-    const wrapper = mount(BuscarServicosView, {
+    mount(BuscarServicosView, {
       global: {
         plugins: [router],
       },
     })
 
     await flushPromises()
-    expect(apiModule.default.get).toHaveBeenCalledTimes(1)
 
-    const cityInput = wrapper.get('input[placeholder="Ex: Blumenau"]')
-    await cityInput.setValue('Blu')
-
-    vi.advanceTimersByTime(699)
-    await flushPromises()
-    expect(apiModule.default.get).toHaveBeenCalledTimes(1)
-
-    vi.advanceTimersByTime(1)
-    await flushPromises()
-    expect(apiModule.default.get).toHaveBeenCalledTimes(2)
-    expect(apiModule.default.get).toHaveBeenLastCalledWith(
+    expect(apiModule.default.get).toHaveBeenCalledWith(
       '/api/ServicoOferecido/BuscarServicos',
       expect.objectContaining({
-        params: expect.objectContaining({ cidade: 'Blu' }),
+        params: expect.objectContaining({ pagina: 1, tamanhoPagina: 30 }),
+      }),
+    )
+  })
+
+  it('preserva paginação e filtros vindos da URL', async () => {
+    router.push('/servicos/buscar?cidade=Blumenau&pagina=3&tamanhoPagina=50')
+    await router.isReady()
+
+    mount(BuscarServicosView, {
+      global: {
+        plugins: [router],
+      },
+    })
+
+    await flushPromises()
+
+    expect(apiModule.default.get).toHaveBeenCalledWith(
+      '/api/ServicoOferecido/BuscarServicos',
+      expect.objectContaining({
+        params: expect.objectContaining({
+          cidade: 'Blumenau',
+          pagina: 3,
+          tamanhoPagina: 50,
+        }),
       }),
     )
   })

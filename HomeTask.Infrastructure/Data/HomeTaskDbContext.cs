@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using HomeTask.Domain.Entities;
 using HomeTask.Domain.Entidades;
 
 namespace HomeTask.Infrastructure.Data;

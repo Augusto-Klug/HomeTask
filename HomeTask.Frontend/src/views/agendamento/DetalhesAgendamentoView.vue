@@ -47,7 +47,7 @@
             <div>
               <p class="font-semibold">{{ s.titulo }}</p>
             </div>
-            <p class="font-medium">{{ formatarMoeda(s.precoBase) }}</p>
+            <p class="font-medium">{{ formatarPrecoServico(s.precoBase, s.unidadeCobranca) }}</p>
           </div>
         </HtCard>
 
@@ -156,6 +156,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import api from "@/services/api";
 import type { AgendamentoResumo, StatusAgendamento } from "@/types";
+import { formatarMoeda, formatarPrecoServico } from "@/shared/utils";
 import HtCard from "@/components/ui/HtCard.vue";
 import HtBadge from "@/components/ui/HtBadge.vue";
 import HtSpinner from "@/components/ui/HtSpinner.vue";
@@ -285,10 +286,6 @@ function formatarHora(iso: string) {
 
 function formatarEndereco(e: AgendamentoResumo["endereco"]) {
   return `${e.logradouro}, ${e.bairro} — ${e.cidade}/${e.estado}`;
-}
-
-function formatarMoeda(v: number) {
-  return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
 onMounted(buscarDetalhes);

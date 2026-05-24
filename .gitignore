@@ -534,3 +534,5 @@ appsettings.Production.json
 .env.local
 
 *secret*.yaml
+
+.codex

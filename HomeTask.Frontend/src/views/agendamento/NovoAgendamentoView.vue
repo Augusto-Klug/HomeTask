@@ -2,7 +2,7 @@
   <div class="max-w-2xl mx-auto px-4 py-8">
     <!-- Parâmetros inválidos -->
     <div
-      v-if="!servico?.id || !servico.prestadorId"
+      v-if="!servico?.id"
       class="text-center py-16 flex flex-col items-center gap-4"
     >
       <p class="text-sm text-muted">Parâmetros inválidos.</p>
@@ -38,8 +38,8 @@
             {{ servico.titulo }}
           </h2>
           <p class="text-sm text-muted">
-            {{ servico.prestadorNome }} · R$
-            {{ formatarPreco(servico.preco) }}/h
+            {{ servico.prestadorNome || servico.clienteNome }} ·
+            {{ formatarPrecoServico(servico.precoBase, servico.unidadeCobranca) }}
           </p>
         </div>
 
@@ -100,6 +100,7 @@ import { useRoute, useRouter } from "vue-router";
 import api from "@/services/api";
 import { useAuthStore } from "@/stores/auth";
 import { validarCampos } from "@/shared/validacao";
+import { formatarPrecoServico } from "@/shared/utils";
 import type { Servico, AgendamentoForm } from "@/types";
 import HtInput from "@/components/ui/HtInput.vue";
 import HtTextarea from "@/components/ui/HtTextarea.vue";
@@ -189,7 +190,4 @@ async function handleAgendar() {
   }
 }
 
-function formatarPreco(valor: number): string {
-  return Number(valor).toFixed(2).replace(".", ",");
-}
 </script>

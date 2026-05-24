@@ -34,10 +34,11 @@
         <div class="relative" ref="userMenuContainer">
           <button
             type="button"
-            class="btn btn-ghost btn-sm btn-square"
+            class="flex h-9 w-9 items-center justify-center rounded-full border border-base-300 bg-base-200 text-sm font-semibold text-base-content transition-colors hover:border-primary hover:text-primary"
+            :aria-label="`Abrir menu do usuário ${auth.user?.nome ?? ''}`"
             @click="userMenuOpen = !userMenuOpen"
           >
-            <span class="material-symbols-rounded text-xl">account_circle</span>
+            {{ inicialUsuario }}
           </button>
 
           <!-- Dropdown menu -->
@@ -107,11 +108,12 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { computed, ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import TemaPagina from "@/shared/components/TemaPagina.vue";
 import SidebarTelaInicial from "./telaInicial/SidebarTelaInicial.vue";
+import { obterInicialNome } from "@/shared/utils";
 
 const auth = useAuthStore();
 const router = useRouter();
@@ -119,6 +121,7 @@ const router = useRouter();
 const sidebarOpen = ref(false);
 const userMenuOpen = ref(false);
 const userMenuContainer = ref<HTMLElement | null>(null);
+const inicialUsuario = computed(() => obterInicialNome(auth.user?.nome));
 
 function handleClickOutside(e: MouseEvent) {
   if (

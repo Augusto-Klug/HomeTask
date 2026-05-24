@@ -1,13 +1,11 @@
+using System.Security.Claims;
+using HomeTask.Application.Dtos;
 using HomeTask.Application.Interfaces;
-using HomeTask.Domain.Entidades;
 using HomeTask.Domain.Enums;
-using HomeTask.Domain.ViewModel;
-using HomeTask.WebApi.Conversores.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
-namespace HomeTask.WebApi.Controller
+namespace HomeTask.WebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]/[action]")]
@@ -17,39 +15,37 @@ namespace HomeTask.WebApi.Controller
         private readonly IServicoClienteService _servicoClienteService;
         private readonly IClienteService _clienteService;
         private readonly IPrestadorService _prestadorService;
-        private readonly IConversorServicoOferecido _conversorServico;
 
         public ServicoOferecidoController(
             IServicoPrestadorService servicoPrestadorService, 
             IServicoClienteService servicoClienteService,
             IClienteService clienteService,
-            IPrestadorService prestadorService,
-            IConversorServicoOferecido conversorServico)
+            IPrestadorService prestadorService)
         {
             _servicoPrestadorService = servicoPrestadorService;
             _servicoClienteService = servicoClienteService;
             _clienteService = clienteService;
             _prestadorService = prestadorService;
-            _conversorServico = conversorServico;
         }
 
         [HttpGet]
         public async Task<IActionResult> ObterServicoPorId([FromQuery] Guid id, CancellationToken cancellationToken)
         {
+            var (prestadorAtualId, clienteAtualId, _) = await ObterContextoUsuarioAtualAsync(cancellationToken);
             var servicoPrestador = await _servicoPrestadorService.ObterPorIdAsync(id, cancellationToken);
             if (servicoPrestador != null)
             {
-                var contrato = _conversorServico.ConverterEntidadeparaPrestadorContrato(servicoPrestador);
-                var viewModel = _conversorServico.ConverterContratoparaPrestadorViewModel(contrato);
-                return Ok(viewModel);
+                if (!PodeVisualizar(servicoPrestador.PrestadorId, prestadorAtualId, clienteAtualId, true))
+                    return NotFound();
+                return Ok(servicoPrestador);
             }
 
             var servicoCliente = await _servicoClienteService.ObterPorIdAsync(id, cancellationToken);
             if (servicoCliente != null)
             {
-                var contrato = _conversorServico.ConverterEntidadeparaClienteContrato(servicoCliente);
-                var viewModel = _conversorServico.ConverterContratoparaClienteViewModel(contrato);
-                return Ok(viewModel);
+                if (!PodeVisualizar(servicoCliente.ClienteId, prestadorAtualId, clienteAtualId, false))
+                    return NotFound();
+                return Ok(servicoCliente);
             }
 
             return NotFound();
@@ -58,55 +54,38 @@ namespace HomeTask.WebApi.Controller
         [HttpGet]
         public async Task<IActionResult> ObterServicosPorPrestador([FromQuery] Guid prestadorId, CancellationToken cancellationToken)
         {
-            var servicos = await _servicoPrestadorService.ObterPorPrestadorAsync(prestadorId, cancellationToken);
-            var viewModels = servicos.Select(s =>
-            {
-                var c = _conversorServico.ConverterEntidadeparaPrestadorContrato(s);
-                return _conversorServico.ConverterContratoparaPrestadorViewModel(c);
-            });
-
-            return Ok(viewModels);
+            return Ok(await _servicoPrestadorService.ObterPorPrestadorAsync(prestadorId, cancellationToken));
         }
 
         [HttpGet]
-        public async Task<IActionResult> BuscarServicos(CategoriaServico? categoria, string? cidade, decimal? precoMaximo, CancellationToken cancellationToken)
+        public async Task<IActionResult> BuscarServicos(
+            CategoriaServico? categoria,
+            string? cidade,
+            decimal? precoMaximo,
+            int pagina = 1,
+            int tamanhoPagina = 30,
+            CancellationToken cancellationToken = default)
         {
-            var servicos = await _servicoPrestadorService.BuscarTodosAsync(categoria, cidade, precoMaximo, cancellationToken);
-            
-            var viewModels = servicos.Select(s =>
-            {
-                if (s is ServicoPrestador sp)
-                {
-                    var c = _conversorServico.ConverterEntidadeparaPrestadorContrato(sp);
-                    return (object)_conversorServico.ConverterContratoparaPrestadorViewModel(c);
-                }
-                else
-                {
-                    var sc = (ServicoCliente)s;
-                    var c = _conversorServico.ConverterEntidadeparaClienteContrato(sc);
-                    return (object)_conversorServico.ConverterContratoparaClienteViewModel(c);
-                }
-            });
-
-            return Ok(viewModels);
+            var (_, _, usuarioId) = await ObterContextoUsuarioAtualAsync(cancellationToken);
+            return Ok(await _servicoPrestadorService.BuscarTodosPaginadoAsync(
+                categoria,
+                cidade,
+                precoMaximo,
+                usuarioId,
+                pagina,
+                tamanhoPagina,
+                cancellationToken));
         }
 
         [HttpGet]
         public async Task<IActionResult> BuscarPedidos(CategoriaServico? categoria, string? cidade, decimal? precoMaximo, CancellationToken cancellationToken)
         {
-            var servicos = await _servicoClienteService.BuscarPedidosAsync(categoria, cidade, precoMaximo, cancellationToken);
-            var viewModels = servicos.Select(s =>
-            {
-                var c = _conversorServico.ConverterEntidadeparaClienteContrato(s);
-                return _conversorServico.ConverterContratoparaClienteViewModel(c);
-            });
-
-            return Ok(viewModels);
+            return Ok(await _servicoClienteService.BuscarPedidosAsync(categoria, cidade, precoMaximo, cancellationToken));
         }
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> CriarServicoPrestador(ServicoPrestadorViewModel viewmodel, CancellationToken cancellationToken)
+        public async Task<IActionResult> CriarServicoPrestador(ServicoPrestadorDto dto, CancellationToken cancellationToken)
         {
             var idUsuario = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
             var prestador = await _prestadorService.ObterPorUsuarioIdAsync(idUsuario, cancellationToken);
@@ -114,22 +93,13 @@ namespace HomeTask.WebApi.Controller
             if (prestador == null)
                 return Forbid("Usuário não possui um perfil de prestador.");
 
-            viewmodel.PrestadorId = prestador.Id;
-            var contrato = _conversorServico.ConverterPrestadorViewModelparaContrato(viewmodel);
-            var servico = _conversorServico.ConverterPrestadorContratoparaEntidade(contrato);
-
-            if (servico == null) return BadRequest();
-
-            var servicoCriado = await _servicoPrestadorService.CriarAsync(servico, cancellationToken);
-            var contratoCriado = _conversorServico.ConverterEntidadeparaPrestadorContrato(servicoCriado);
-            var viewModelCriado = _conversorServico.ConverterContratoparaPrestadorViewModel(contratoCriado);
-
-            return Ok(viewModelCriado);
+            dto.PrestadorId = prestador.Id;
+            return Ok(await _servicoPrestadorService.CriarAsync(dto, cancellationToken));
         }
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> CriarServicoCliente(ServicoClienteViewModel viewmodel, CancellationToken cancellationToken)
+        public async Task<IActionResult> CriarServicoCliente(ServicoClienteDto dto, CancellationToken cancellationToken)
         {
             var idUsuario = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
             var cliente = await _clienteService.ObterPorUsuarioIdAsync(idUsuario, cancellationToken);
@@ -137,30 +107,15 @@ namespace HomeTask.WebApi.Controller
             if (cliente == null)
                 return Forbid("Usuário não possui um perfil de cliente.");
 
-            viewmodel.ClienteId = cliente.Id;
-            var contrato = _conversorServico.ConverterClienteViewModelparaContrato(viewmodel);
-            var servico = _conversorServico.ConverterClienteContratoparaEntidade(contrato);
-
-            if (servico == null) return BadRequest();
-
-            var servicoCriado = await _servicoClienteService.CriarAsync(servico, cancellationToken);
-            var contratoCriado = _conversorServico.ConverterEntidadeparaClienteContrato(servicoCriado);
-            var viewModelCriado = _conversorServico.ConverterContratoparaClienteViewModel(contratoCriado);
-
-            return Ok(viewModelCriado);
+            dto.ClienteId = cliente.Id;
+            return Ok(await _servicoClienteService.CriarAsync(dto, cancellationToken));
         }
 
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> AtualizarServicoPrestador(ServicoPrestadorViewModel viewmodel, CancellationToken cancellationToken)
+        public async Task<IActionResult> AtualizarServicoPrestador(ServicoPrestadorDto dto, CancellationToken cancellationToken)
         {
-            var contrato = _conversorServico.ConverterPrestadorViewModelparaContrato(viewmodel);
-            var servico = _conversorServico.ConverterPrestadorContratoparaEntidade(contrato);
-            if (servico == null) return BadRequest();
-
-            var servicoAtualizado = await _servicoPrestadorService.AtualizarAsync(servico, cancellationToken);
-            var contratoAtualizado = _conversorServico.ConverterEntidadeparaPrestadorContrato(servicoAtualizado);
-            return Ok(_conversorServico.ConverterContratoparaPrestadorViewModel(contratoAtualizado));
+            return Ok(await _servicoPrestadorService.AtualizarAsync(dto, cancellationToken));
         }
 
         [HttpDelete]
@@ -172,6 +127,32 @@ namespace HomeTask.WebApi.Controller
 
             if (!removido) return NotFound();
             return Ok();
+        }
+
+        private async Task<(Guid? PrestadorId, Guid? ClienteId, Guid? UsuarioId)> ObterContextoUsuarioAtualAsync(CancellationToken cancellationToken)
+        {
+            var usuarioIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!Guid.TryParse(usuarioIdClaim, out var usuarioId))
+                return (null, null, null);
+
+            var prestador = await _prestadorService.ObterPorUsuarioIdAsync(usuarioId, cancellationToken);
+            var cliente = await _clienteService.ObterPorUsuarioIdAsync(usuarioId, cancellationToken);
+
+            return (prestador?.Id, cliente?.Id, usuarioId);
+        }
+
+        private static bool PodeVisualizar(Guid? donoId, Guid? prestadorAtualId, Guid? clienteAtualId, bool ehServicoPrestador)
+        {
+            if (!donoId.HasValue)
+                return true;
+
+            if (ehServicoPrestador && prestadorAtualId.HasValue)
+                return donoId.Value != prestadorAtualId.Value;
+
+            if (!ehServicoPrestador && clienteAtualId.HasValue)
+                return donoId.Value != clienteAtualId.Value;
+
+            return true;
         }
     }
 }

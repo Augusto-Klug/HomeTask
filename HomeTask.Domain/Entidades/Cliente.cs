@@ -1,7 +1,4 @@
-using HomeTask.Domain.Entidades;
-using HomeTask.Domain.Enums;
-
-namespace HomeTask.Domain.Entities;
+namespace HomeTask.Domain.Entidades;
 
 /// <summary>
 /// Entidade para clientes que contratam serviços domésticos

@@ -2,8 +2,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using HomeTask.Application.Interfaces;
+using HomeTask.Application.Services;
+using HomeTask.Domain.Repositories;
 using HomeTask.Infrastructure.Data;
-using HomeTask.Infrastructure.Services;
+using HomeTask.Infrastructure.Repositories;
+using LocalArquivoService = HomeTask.Infrastructure.Services.LocalArquivoService;
 
 namespace HomeTask.Infrastructure.DI;
 
@@ -25,6 +28,20 @@ public static class DependencyInjection
                 )
             )
         );
+
+        services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+        services.AddScoped<IClienteRepository, ClienteRepository>();
+        services.AddScoped<IPrestadorRepository, PrestadorRepository>();
+        services.AddScoped<IAgendamentoRepository, AgendamentoRepository>();
+        services.AddScoped<IAvaliacaoRepository, AvaliacaoRepository>();
+        services.AddScoped<IPagamentoRepository, PagamentoRepository>();
+        services.AddScoped<IMensagemRepository, MensagemRepository>();
+        services.AddScoped<IConversaRepository, ConversaRepository>();
+        services.AddScoped<IServicoPrestadorRepository, ServicoPrestadorRepository>();
+        services.AddScoped<IServicoClienteRepository, ServicoClienteRepository>();
+        services.AddScoped<IPortfolioRepository, PortfolioRepository>();
+        services.AddScoped<ICertificacaoRepository, CertificacaoRepository>();
+        services.AddScoped<ICidadeRepository, CidadeRepository>();
 
         services.AddScoped<IUsuarioService, UsuarioService>();
         services.AddScoped<IClienteService, ClienteService>();

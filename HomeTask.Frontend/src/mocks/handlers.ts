@@ -12,6 +12,7 @@ import type {
   AgendamentoResumo,
   PerfilForm,
 } from "@/types";
+import { UnidadeCobranca } from "@/types";
 
 // ---------------------------------------------------------------------------
 // Dados fictícios
@@ -19,12 +20,13 @@ import type {
 
 const MOCK_SERVICOS: Servico[] = [
   {
-    id: 1,
+    id: "1",
     titulo: "Faxina Residencial Completa",
     descricao:
       "Limpeza completa de residências com produtos de qualidade. Inclui cozinha, banheiros, quartos e áreas de circulação.",
-    preco: 80,
-    prestadorId: 10,
+    precoBase: 80,
+    unidadeCobranca: UnidadeCobranca.Total,
+    prestadorId: "10",
     prestadorNome: "Maria Silva",
     categoria: "Faxina",
     cidade: "Blumenau",
@@ -32,12 +34,13 @@ const MOCK_SERVICOS: Servico[] = [
     mediaAvaliacoes: 4.5,
   },
   {
-    id: 2,
+    id: "2",
     titulo: "Jardinagem e Poda de Árvores",
     descricao:
       "Serviços de jardinagem, poda, plantio e manutenção de jardins residenciais e comerciais.",
-    preco: 60,
-    prestadorId: 11,
+    precoBase: 60,
+    unidadeCobranca: UnidadeCobranca.PorHora,
+    prestadorId: "11",
     prestadorNome: "João Santos",
     categoria: "Jardinagem",
     cidade: "Blumenau",
@@ -45,12 +48,13 @@ const MOCK_SERVICOS: Servico[] = [
     mediaAvaliacoes: 4.0,
   },
   {
-    id: 3,
+    id: "3",
     titulo: "Reparos Gerais Residenciais",
     descricao:
       "Pequenos reparos elétricos, hidráulicos e de alvenaria. Montagem de móveis e instalação de equipamentos.",
-    preco: 90,
-    prestadorId: 12,
+    precoBase: 90,
+    unidadeCobranca: UnidadeCobranca.Total,
+    prestadorId: "12",
     prestadorNome: "Carlos Pereira",
     categoria: "Reparos",
     cidade: "Gaspar",
@@ -58,12 +62,13 @@ const MOCK_SERVICOS: Servico[] = [
     mediaAvaliacoes: 3.5,
   },
   {
-    id: 4,
+    id: "4",
     titulo: "Lavanderia — Entrega no Mesmo Dia",
     descricao:
       "Lavagem, secagem e passadoria de roupas. Entrega no mesmo dia para pedidos feitos até 10h.",
-    preco: 40,
-    prestadorId: 13,
+    precoBase: 40,
+    unidadeCobranca: UnidadeCobranca.Total,
+    prestadorId: "13",
     prestadorNome: "Ana Lima",
     categoria: "Lavanderia",
     cidade: "Indaial",
@@ -71,12 +76,13 @@ const MOCK_SERVICOS: Servico[] = [
     mediaAvaliacoes: 5.0,
   },
   {
-    id: 5,
+    id: "5",
     titulo: "Babysitter Experiente",
     descricao:
       "Cuidados com crianças de 0 a 12 anos. Experiência com primeiros socorros e educação infantil.",
-    preco: 50,
-    prestadorId: 14,
+    precoBase: 50,
+    unidadeCobranca: UnidadeCobranca.PorHora,
+    prestadorId: "14",
     prestadorNome: "Fernanda Costa",
     categoria: "Babysitter",
     cidade: "Blumenau",
@@ -84,12 +90,13 @@ const MOCK_SERVICOS: Servico[] = [
     mediaAvaliacoes: 4.8,
   },
   {
-    id: 6,
+    id: "6",
     titulo: "Cuidador de Idosos — Período Integral",
     descricao:
       "Acompanhamento e cuidados para idosos. Auxílio com medicamentos, higiene pessoal e atividades diárias.",
-    preco: 70,
-    prestadorId: 15,
+    precoBase: 70,
+    unidadeCobranca: UnidadeCobranca.PorHora,
+    prestadorId: "15",
     prestadorNome: "Roberto Alves",
     categoria: "Cuidador de Idosos",
     cidade: "Blumenau",
@@ -97,12 +104,13 @@ const MOCK_SERVICOS: Servico[] = [
     mediaAvaliacoes: 4.2,
   },
   {
-    id: 7,
+    id: "7",
     titulo: "Passadoria a Domicílio",
     descricao:
       "Serviço de passadoria caprichada na sua residência. Roupas entregues em cabide.",
-    preco: 35,
-    prestadorId: 16,
+    precoBase: 35,
+    unidadeCobranca: UnidadeCobranca.Total,
+    prestadorId: "16",
     prestadorNome: "Sônia Ramos",
     categoria: "Passadoria",
     cidade: "Blumenau",
@@ -110,12 +118,13 @@ const MOCK_SERVICOS: Servico[] = [
     mediaAvaliacoes: 4.3,
   },
   {
-    id: 8,
+    id: "8",
     titulo: "Pet Sitter — Cuidados para seu Animal",
     descricao:
       "Cuidados para cães e gatos enquanto você viaja: alimentação, passeios e banho.",
-    preco: 45,
-    prestadorId: 17,
+    precoBase: 45,
+    unidadeCobranca: UnidadeCobranca.Total,
+    prestadorId: "17",
     prestadorNome: "Lucas Mendes",
     categoria: "Pet Sitter",
     cidade: "Gaspar",
@@ -271,7 +280,7 @@ const MOCK_AGENDAMENTOS_CLIENTE: AgendamentoResumo[] = [
         descricao: "Limpeza completa de residências com produtos de qualidade.",
         precoBase: 80,
         duracaoEstimadaMinutos: 120,
-        unidadeCobranca: "total",
+        unidadeCobranca: UnidadeCobranca.Total,
         tipoAnuncio: "PrestadorOferece",
         categoria: { id: "cat-1", nome: "Faxina", icone: "cleaning_services" },
       },
@@ -305,7 +314,7 @@ const MOCK_AGENDAMENTOS_CLIENTE: AgendamentoResumo[] = [
         descricao: "Cuidados com crianças de 0 a 12 anos.",
         precoBase: 50,
         duracaoEstimadaMinutos: 180,
-        unidadeCobranca: "por_hora",
+        unidadeCobranca: UnidadeCobranca.PorHora,
         tipoAnuncio: 1,
         categoria: { id: "cat-6", nome: "Babysitter", icone: "child_care" },
       },
@@ -339,7 +348,7 @@ const MOCK_AGENDAMENTOS_CLIENTE: AgendamentoResumo[] = [
         descricao: "Pequenos reparos elétricos, hidráulicos e de alvenaria.",
         precoBase: 90,
         duracaoEstimadaMinutos: 90,
-        unidadeCobranca: "total",
+        unidadeCobranca: UnidadeCobranca.Total,
         tipoAnuncio: "PrestadorOferece",
         categoria: { id: "cat-3", nome: "Reparos", icone: "handyman" },
       },
@@ -376,7 +385,7 @@ const MOCK_AGENDAMENTOS_PRESTADOR: AgendamentoResumo[] = [
         descricao: "Limpeza profunda após reformas e obras.",
         precoBase: 160,
         duracaoEstimadaMinutos: 240,
-        unidadeCobranca: "total",
+        unidadeCobranca: UnidadeCobranca.Total,
         tipoAnuncio: "ClienteSolicitou",
         categoria: { id: "cat-1", nome: "Faxina", icone: "cleaning_services" },
       },
@@ -410,7 +419,7 @@ const MOCK_AGENDAMENTOS_PRESTADOR: AgendamentoResumo[] = [
         descricao: "Limpeza de apartamentos de até 60m².",
         precoBase: 80,
         duracaoEstimadaMinutos: 60,
-        unidadeCobranca: "total",
+        unidadeCobranca: UnidadeCobranca.Total,
         tipoAnuncio: "PrestadorOferece",
         categoria: { id: "cat-1", nome: "Faxina", icone: "cleaning_services" },
       },
@@ -459,6 +468,8 @@ export const handlers = [
     await delay(MOCK_DELAY);
     const url = new URL(request.url);
     let result = [...MOCK_SERVICOS];
+    const pagina = Math.max(Number(url.searchParams.get("pagina") ?? "1"), 1);
+    const tamanhoPagina = Number(url.searchParams.get("tamanhoPagina") ?? "30");
 
     const categoria = url.searchParams.get("categoria");
     if (categoria) {
@@ -475,10 +486,19 @@ export const handlers = [
 
     const precoMaximo = url.searchParams.get("precoMaximo");
     if (precoMaximo) {
-      result = result.filter((s) => s.preco <= Number(precoMaximo));
+      result = result.filter((s) => s.precoBase <= Number(precoMaximo));
     }
 
-    return HttpResponse.json(result);
+    const totalRegistros = result.length;
+    const itens = result.slice((pagina - 1) * tamanhoPagina, pagina * tamanhoPagina);
+
+    return HttpResponse.json({
+      itens,
+      paginaAtual: pagina,
+      tamanhoPagina,
+      totalRegistros,
+      totalPaginas: totalRegistros === 0 ? 0 : Math.ceil(totalRegistros / tamanhoPagina),
+    });
   }),
 
   // GET /api/ServicoOferecido/ObterServicoPorId

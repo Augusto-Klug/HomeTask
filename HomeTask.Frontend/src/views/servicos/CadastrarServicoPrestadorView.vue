@@ -80,8 +80,8 @@
             label="Valor (R$)"
             type="number"
             :allowNegative="false"
-            :placeholder="form.unidadeCobranca === 'total' ? 'Ex: 250,00 total' : 'Ex: 80,00 por hora'"
-            :hint="form.unidadeCobranca === 'total' ? 'Valor total pelo serviço' : 'Valor cobrado por hora de trabalho'"
+            :placeholder="form.unidadeCobranca === String(UnidadeCobranca.Total) ? 'Ex: 250,00 total' : 'Ex: 80,00 por hora'"
+            :hint="form.unidadeCobranca === String(UnidadeCobranca.Total) ? 'Valor total pelo serviço' : 'Valor cobrado por hora de trabalho'"
             required
             regra="required"
           />
@@ -125,7 +125,7 @@
 import { ref, reactive } from 'vue'
 import api from '@/services/api'
 import { validarCampos, type CampoValidavel } from '@/shared/validacao'
-import { CATEGORIAS_SERVICO, type ServicoPrestadorForm } from '@/types'
+import { CATEGORIAS_SERVICO, UnidadeCobranca, type ServicoPrestadorForm } from '@/types'
 import HtInput from '@/components/ui/HtInput.vue'
 import HtTextarea from '@/components/ui/HtTextarea.vue'
 import HtSelect from '@/components/ui/HtSelect.vue'
@@ -137,8 +137,8 @@ import HtDivider from '@/components/ui/HtDivider.vue'
 const categoriasOpcoes = CATEGORIAS_SERVICO.map(c => ({ value: c.value, label: c.label }))
 
 const tiposValorOpcoes = [
-  { value: 'por_hora', label: 'Por hora' },
-  { value: 'total',    label: 'Valor total fixo' },
+  { value: UnidadeCobranca.PorHora, label: 'Por hora' },
+  { value: UnidadeCobranca.Total,   label: 'Valor total fixo' },
 ]
 
 const form = reactive<ServicoPrestadorForm>({
@@ -176,7 +176,7 @@ async function handleSubmit() {
       titulo:                          form.titulo,
       descricao:                       form.descricao,
       categoria:                       categoriaSelecionada,
-      unidadeCobranca:                 form.unidadeCobranca,
+      unidadeCobranca:                 Number(form.unidadeCobranca),
       precoBase:                       Number(form.precoBase.toString().replace(',', '.')),
       aceitaPagamentoAposFinalizacao:  form.aceitaPagamentoAposFinalizacao,
     })

@@ -1,4 +1,4 @@
-namespace HomeTask.Domain.Entities;
+namespace HomeTask.Domain.Entidades;
 
 /// <summary>
 /// Portfólio do prestador com fotos de trabalhos realizados (RF02)

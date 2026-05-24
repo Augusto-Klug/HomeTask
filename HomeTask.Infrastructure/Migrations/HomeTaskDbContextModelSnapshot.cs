@@ -177,10 +177,8 @@ namespace HomeTask.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
-                    b.Property<string>("UnidadeCobranca")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
+                    b.Property<int>("UnidadeCobranca")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

@@ -1,4 +1,3 @@
-using HomeTask.Domain.Entities;
 using HomeTask.Domain.Enums;
 
 namespace HomeTask.Domain.Entidades;
@@ -21,7 +20,7 @@ public class ServicoCliente : ServicoBase
         string titulo,
         string descricao,
         decimal precoBase,
-        string unidadeCobranca,
+        FormatoCobranca unidadeCobranca,
         DateTime? dataDesejada,
         bool ativo,
         DateTime dataCriacao)

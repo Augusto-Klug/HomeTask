@@ -77,20 +77,20 @@
 
           <!-- Valor (condicional) -->
           <HtInput
-            v-if="form.unidadeCobranca && form.unidadeCobranca !== 'a_combinar'"
+            v-if="form.unidadeCobranca && form.unidadeCobranca !== String(UnidadeCobranca.ACombinar)"
             ref="refValor"
             v-model="form.precoBase"
             label="Valor (R$)"
             type="number"
             :allowNegative="false"
-            :placeholder="form.unidadeCobranca === 'por_hora' ? 'Ex: 80,00 por hora' : 'Ex: 250,00 total'"
-            :hint="form.unidadeCobranca === 'por_hora' ? 'Valor por hora de trabalho' : 'Valor total do serviço'"
+            :placeholder="form.unidadeCobranca === String(UnidadeCobranca.PorHora) ? 'Ex: 80,00 por hora' : 'Ex: 250,00 total'"
+            :hint="form.unidadeCobranca === String(UnidadeCobranca.PorHora) ? 'Valor por hora de trabalho' : 'Valor total do serviço'"
             required
             regra="required"
           />
           <!-- Informação sobre valor a combinar -->
           <HtAlert
-            v-if="form.unidadeCobranca === 'a_combinar'"
+            v-if="form.unidadeCobranca === String(UnidadeCobranca.ACombinar)"
             variant="info"
             message="O prestador poderá fazer uma oferta com o valor e horário que desejar. Você receberá uma notificação com a proposta."
           />
@@ -127,7 +127,7 @@
 import { ref, reactive } from 'vue'
 import api from '@/services/api'
 import { validarCampos, type CampoValidavel } from '@/shared/validacao'
-import { CATEGORIAS_SERVICO, type ServicoClienteForm } from '@/types'
+import { CATEGORIAS_SERVICO, UnidadeCobranca, type ServicoClienteForm } from '@/types'
 import HtInput from '@/components/ui/HtInput.vue'
 import HtTextarea from '@/components/ui/HtTextarea.vue'
 import HtSelect from '@/components/ui/HtSelect.vue'
@@ -139,9 +139,9 @@ import HtDivider from '@/components/ui/HtDivider.vue'
 const categoriasOpcoes = CATEGORIAS_SERVICO.map(c => ({ value: c.value, label: c.label }))
 
 const tiposValorOpcoes = [
-  { value: 'por_hora',    label: 'Valor por hora' },
-  { value: 'total',       label: 'Valor total fixo' },
-  { value: 'a_combinar',  label: 'A combinar com o prestador' },
+  { value: UnidadeCobranca.PorHora,   label: 'Valor por hora' },
+  { value: UnidadeCobranca.Total,     label: 'Valor total fixo' },
+  { value: UnidadeCobranca.ACombinar, label: 'A combinar com o prestador' },
 ]
 
 const form = reactive<ServicoClienteForm>({
@@ -166,7 +166,7 @@ const sucesso    = ref(false)
 
 async function handleSubmit() {
   const campos: Array<CampoValidavel | null> = [refTitulo.value, refDescricao.value, refCategoria.value, refTipoValor.value]
-  if (form.unidadeCobranca && form.unidadeCobranca !== 'a_combinar') campos.push(refValor.value)
+  if (form.unidadeCobranca && form.unidadeCobranca !== String(UnidadeCobranca.ACombinar)) campos.push(refValor.value)
   if (!validarCampos(campos)) return
 
   erro.value = null
@@ -181,9 +181,9 @@ async function handleSubmit() {
       titulo:      form.titulo,
       descricao:   form.descricao,
       categoria:   categoriaSelecionada,
-      unidadeCobranca:   form.unidadeCobranca,
+      unidadeCobranca:   Number(form.unidadeCobranca),
     }
-    if (form.unidadeCobranca !== 'a_combinar' && form.precoBase) {
+    if (form.unidadeCobranca !== String(UnidadeCobranca.ACombinar) && form.precoBase) {
       payload.precoBase = Number(form.precoBase.toString().replace(',', '.'))
     }
     if (form.data) {

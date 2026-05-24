@@ -1,8 +1,6 @@
 using System.Text;
 using HomeTask.Infrastructure.Data;
 using HomeTask.Infrastructure.DI;
-using HomeTask.WebApi.Conversores.Implementacoes;
-using HomeTask.WebApi.Conversores.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -53,15 +51,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddInfrastructure(builder.Configuration);
-
-builder.Services.AddScoped<IConversorCliente, ConversorCliente>();
-builder.Services.AddScoped<IConversorUsuario, ConversorUsuario>();
-builder.Services.AddScoped<IConversorPrestador, ConversorPrestador>();
-builder.Services.AddScoped<IConversorAgendamento, ConversorAgendamento>();
-builder.Services.AddScoped<IConversorAvaliacao, ConversorAvaliacao>();
-builder.Services.AddScoped<IConversorPagamento, ConversorPagamento>();
-builder.Services.AddScoped<IConversorMensagem, ConversorMensagem>();
-builder.Services.AddScoped<IConversorServicoOferecido, ConversorServicoOferecido>();
 
 var app = builder.Build();
 

@@ -1,4 +1,4 @@
-namespace HomeTask.Domain.Entities;
+namespace HomeTask.Domain.Entidades;
 
 /// <summary>
 /// Certificação do prestador de serviço (RF02)

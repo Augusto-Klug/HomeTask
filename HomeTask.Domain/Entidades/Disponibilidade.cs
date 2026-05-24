@@ -1,4 +1,4 @@
-namespace HomeTask.Domain.Entities;
+namespace HomeTask.Domain.Entidades;
 
 /// <summary>
 /// Disponibilidade de horários do prestador (NEG05)

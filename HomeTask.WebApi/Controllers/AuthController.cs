@@ -5,7 +5,7 @@ using HomeTask.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
-namespace HomeTask.WebApi.Controller
+namespace HomeTask.WebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]/[action]")]

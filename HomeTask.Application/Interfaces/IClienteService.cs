@@ -1,11 +1,11 @@
-using HomeTask.Domain.Entities;
+using HomeTask.Application.Dtos;
 
 namespace HomeTask.Application.Interfaces;
 public interface IClienteService
 {
-    Task<Cliente?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken = default);
-    Task<Cliente?> ObterPorUsuarioIdAsync(Guid usuarioId, CancellationToken cancellationToken = default);
-    Task<Cliente> CriarAsync(Cliente cliente, CancellationToken cancellationToken = default);
-    Task<Cliente> AtualizarAsync(Cliente cliente, CancellationToken cancellationToken = default);
-    Task<IEnumerable<Agendamento>> ObterHistoricoAgendamentosAsync(Guid clienteId, CancellationToken cancellationToken = default);
+    Task<ClienteDto?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<ClienteDto?> ObterPorUsuarioIdAsync(Guid usuarioId, CancellationToken cancellationToken = default);
+    Task<ClienteDto> CriarAsync(ClienteDto cliente, CancellationToken cancellationToken = default);
+    Task<ClienteDto> AtualizarAsync(ClienteDto cliente, CancellationToken cancellationToken = default);
+    Task<IEnumerable<AgendamentoResumoDto>> ObterHistoricoAgendamentosAsync(Guid clienteId, CancellationToken cancellationToken = default);
 }

@@ -1,4 +1,4 @@
-using HomeTask.Domain.Entities;
+using HomeTask.Application.Dtos;
 
 namespace HomeTask.Application.Interfaces;
 
@@ -7,10 +7,10 @@ namespace HomeTask.Application.Interfaces;
 /// </summary>
 public interface IAvaliacaoService
 {
-    Task<Avaliacao?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken = default);
-    Task<Avaliacao?> ObterPorAgendamentoAsync(Guid agendamentoId, CancellationToken cancellationToken = default);
-    Task<Avaliacao> CriarAsync(Avaliacao avaliacao, CancellationToken cancellationToken = default);
-    Task<IEnumerable<Avaliacao>> ObterPorPrestadorAsync(Guid prestadorId, CancellationToken cancellationToken = default);
-    Task<IEnumerable<Avaliacao>> ObterPorClienteAsync(Guid clienteId, CancellationToken cancellationToken = default);
+    Task<AvaliacaoDto?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<AvaliacaoDto?> ObterPorAgendamentoAsync(Guid agendamentoId, CancellationToken cancellationToken = default);
+    Task<AvaliacaoDto> CriarAsync(AvaliacaoDto avaliacao, CancellationToken cancellationToken = default);
+    Task<IEnumerable<AvaliacaoDto>> ObterPorPrestadorAsync(Guid prestadorId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<AvaliacaoDto>> ObterPorClienteAsync(Guid clienteId, CancellationToken cancellationToken = default);
     Task<bool> PodeAvaliarAsync(Guid clienteId, Guid agendamentoId, CancellationToken cancellationToken = default);
 }

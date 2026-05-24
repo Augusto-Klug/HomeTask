@@ -1,109 +1,68 @@
+using HomeTask.Application.Dtos;
 using HomeTask.Application.Interfaces;
-using HomeTask.Domain.ViewModel;
-using HomeTask.WebApi.Conversores.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HomeTask.WebApi.Controller
+namespace HomeTask.WebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]/[action]")]
     public class PagamentoController : ControllerBase
     {
         private readonly IPagamentoService _pagamentoService;
-        private readonly IConversorPagamento _conversorPagamento;
 
-        public PagamentoController(IPagamentoService pagamentoService, IConversorPagamento conversorPagamento)
+        public PagamentoController(IPagamentoService pagamentoService)
         {
             _pagamentoService = pagamentoService;
-            _conversorPagamento = conversorPagamento;
         }
 
         [HttpGet]
         public async Task<IActionResult> ObterPagamentoPorId([FromQuery] Guid id, CancellationToken cancellationToken)
         {
             var pagamento = await _pagamentoService.ObterPorIdAsync(id, cancellationToken);
-
             if (pagamento == null)
                 return NotFound();
 
-            var pagamentoContrato = _conversorPagamento.ConverterPagamentoparaContrato(pagamento);
-            var viewModel = _conversorPagamento.ConverterContratoparaViewModel(pagamentoContrato);
-
-            return Ok(viewModel);
+            return Ok(pagamento);
         }
 
         [HttpGet]
         public async Task<IActionResult> ObterPagamentoPorAgendamento([FromQuery] Guid agendamentoId, CancellationToken cancellationToken)
         {
             var pagamento = await _pagamentoService.ObterPorAgendamentoAsync(agendamentoId, cancellationToken);
-
             if (pagamento == null)
                 return NotFound();
 
-            var pagamentoContrato = _conversorPagamento.ConverterPagamentoparaContrato(pagamento);
-            var viewModel = _conversorPagamento.ConverterContratoparaViewModel(pagamentoContrato);
-
-            return Ok(viewModel);
+            return Ok(pagamento);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CriarPagamento(PagamentoViewModel viewmodel, CancellationToken cancellationToken)
+        public async Task<IActionResult> CriarPagamento(PagamentoDto dto, CancellationToken cancellationToken)
         {
-            var contrato = _conversorPagamento.ConverterViewModelparaContrato(viewmodel);
-            var pagamento = _conversorPagamento.ConverterContratoparaPagamento(contrato);
-
-            if (pagamento == null)
-                return BadRequest();
-
-            var pagamentoCriado = await _pagamentoService.CriarAsync(pagamento, cancellationToken);
-            var pagamentoContrato = _conversorPagamento.ConverterPagamentoparaContrato(pagamentoCriado);
-            var viewModel = _conversorPagamento.ConverterContratoparaViewModel(pagamentoContrato);
-
-            return Ok(viewModel);
+            return Ok(await _pagamentoService.CriarAsync(dto, cancellationToken));
         }
 
         [HttpPost]
-        public async Task<IActionResult> ProcessarPagamento(PagamentoViewModel viewmodel, CancellationToken cancellationToken)
+        public async Task<IActionResult> ProcessarPagamento(PagamentoDto dto, CancellationToken cancellationToken)
         {
-            var contrato = _conversorPagamento.ConverterViewModelparaContrato(viewmodel);
-            var pagamento = await _pagamentoService.ProcessarAsync(contrato.Id, cancellationToken);
-            var pagamentoContrato = _conversorPagamento.ConverterPagamentoparaContrato(pagamento);
-            var viewModel = _conversorPagamento.ConverterContratoparaViewModel(pagamentoContrato);
-
-            return Ok(viewModel);
+            return Ok(await _pagamentoService.ProcessarAsync(dto.Id, cancellationToken));
         }
 
         [HttpPost]
-        public async Task<IActionResult> ConfirmarPagamento(PagamentoViewModel viewmodel, CancellationToken cancellationToken)
+        public async Task<IActionResult> ConfirmarPagamento(PagamentoDto dto, CancellationToken cancellationToken)
         {
-            var contrato = _conversorPagamento.ConverterViewModelparaContrato(viewmodel);
-            var pagamento = await _pagamentoService.ConfirmarAsync(contrato.Id, contrato.TransacaoId ?? string.Empty, cancellationToken);
-            var pagamentoContrato = _conversorPagamento.ConverterPagamentoparaContrato(pagamento);
-            var viewModel = _conversorPagamento.ConverterContratoparaViewModel(pagamentoContrato);
-
-            return Ok(viewModel);
+            return Ok(await _pagamentoService.ConfirmarAsync(dto.Id, dto.TransacaoId ?? string.Empty, cancellationToken));
         }
 
         [HttpPost]
-        public async Task<IActionResult> RecusarPagamento(PagamentoViewModel viewmodel, CancellationToken cancellationToken)
+        public async Task<IActionResult> RecusarPagamento(PagamentoDto dto, CancellationToken cancellationToken)
         {
-            var contrato = _conversorPagamento.ConverterViewModelparaContrato(viewmodel);
-            var pagamento = await _pagamentoService.RecusarAsync(contrato.Id, contrato.MotivoRecusa ?? string.Empty, cancellationToken);
-            var pagamentoContrato = _conversorPagamento.ConverterPagamentoparaContrato(pagamento);
-            var viewModel = _conversorPagamento.ConverterContratoparaViewModel(pagamentoContrato);
-
-            return Ok(viewModel);
+            return Ok(await _pagamentoService.RecusarAsync(dto.Id, dto.MotivoRecusa ?? string.Empty, cancellationToken));
         }
 
         [HttpPost]
-        public async Task<IActionResult> EstornarPagamento(PagamentoViewModel viewmodel, CancellationToken cancellationToken)
+        public async Task<IActionResult> EstornarPagamento(PagamentoDto dto, CancellationToken cancellationToken)
         {
-            var contrato = _conversorPagamento.ConverterViewModelparaContrato(viewmodel);
-            var pagamento = await _pagamentoService.EstornarAsync(contrato.Id, cancellationToken);
-            var pagamentoContrato = _conversorPagamento.ConverterPagamentoparaContrato(pagamento);
-            var viewModel = _conversorPagamento.ConverterContratoparaViewModel(pagamentoContrato);
-
-            return Ok(viewModel);
+            return Ok(await _pagamentoService.EstornarAsync(dto.Id, cancellationToken));
         }
     }
 }
