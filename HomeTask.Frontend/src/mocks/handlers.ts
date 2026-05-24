@@ -11,6 +11,8 @@ import type {
   AuthResponse,
   AgendamentoResumo,
   PerfilForm,
+  ServicoClienteDetalhe,
+  ServicoPrestadorDetalhe,
 } from "@/types";
 
 // ---------------------------------------------------------------------------
@@ -242,6 +244,41 @@ function diasAPartirDeHoje(dias: number, hora = "09:00") {
   return d.toISOString();
 }
 
+const MOCK_SERVICO_PRESTADOR_DETALHE: ServicoPrestadorDetalhe = {
+  id: "srv-prestador-1",
+  titulo: "Faxina Residencial Completa",
+  descricao:
+    "Limpeza completa de residências com produtos de qualidade. Inclui cozinha, banheiros, quartos e áreas de circulação.",
+  precoBase: 80,
+  unidadeCobranca: "por_hora",
+  categoria: 1,
+  ativo: true,
+  cidade: "Blumenau",
+  estado: "SC",
+  prestadorId: "10",
+  prestadorNome: "Maria Silva",
+  duracaoEstimadaMinutos: 120,
+  aceitaPagamentoAposFinalizacao: true,
+  mediaAvaliacoes: 4.5,
+  tipoAnuncio: 1,
+};
+
+const MOCK_SERVICO_CLIENTE_DETALHE: ServicoClienteDetalhe = {
+  id: "srv-cliente-1",
+  titulo: "Limpeza Pós-Obra",
+  descricao: "Preciso de limpeza completa após uma reforma no apartamento.",
+  precoBase: 160,
+  unidadeCobranca: "total",
+  categoria: 1,
+  ativo: true,
+  cidade: "Blumenau",
+  estado: "SC",
+  clienteId: "20",
+  clienteNome: "Pedro Martins",
+  dataDesejada: diasAPartirDeHoje(3, "14:00"),
+  tipoAnuncio: 2,
+};
+
 const MOCK_AGENDAMENTOS_CLIENTE: AgendamentoResumo[] = [
   {
     id: "ag-c-001",
@@ -264,6 +301,7 @@ const MOCK_AGENDAMENTOS_CLIENTE: AgendamentoResumo[] = [
     dataResposta: diasAPartirDeHoje(-2),
     dataConclusao: null,
     motivoRecusa: null,
+    aguardandoRespostaDe: null,
     servicos: [
       {
         id: "srv-001",
@@ -272,8 +310,8 @@ const MOCK_AGENDAMENTOS_CLIENTE: AgendamentoResumo[] = [
         precoBase: 80,
         duracaoEstimadaMinutos: 120,
         unidadeCobranca: "total",
-        tipoAnuncio: "PrestadorOferece",
-        categoria: { id: "cat-1", nome: "Faxina", icone: "cleaning_services" },
+        tipoAnuncio: 1,
+        categoria: 1,
       },
     ],
   },
@@ -298,6 +336,7 @@ const MOCK_AGENDAMENTOS_CLIENTE: AgendamentoResumo[] = [
     dataResposta: null,
     dataConclusao: null,
     motivoRecusa: null,
+    aguardandoRespostaDe: "Prestador",
     servicos: [
       {
         id: "srv-005",
@@ -307,7 +346,7 @@ const MOCK_AGENDAMENTOS_CLIENTE: AgendamentoResumo[] = [
         duracaoEstimadaMinutos: 180,
         unidadeCobranca: "por_hora",
         tipoAnuncio: 1,
-        categoria: { id: "cat-6", nome: "Babysitter", icone: "child_care" },
+        categoria: 6,
       },
     ],
   },
@@ -332,6 +371,7 @@ const MOCK_AGENDAMENTOS_CLIENTE: AgendamentoResumo[] = [
     dataResposta: diasAPartirDeHoje(-4),
     dataConclusao: null,
     motivoRecusa: null,
+    aguardandoRespostaDe: null,
     servicos: [
       {
         id: "srv-003",
@@ -340,8 +380,8 @@ const MOCK_AGENDAMENTOS_CLIENTE: AgendamentoResumo[] = [
         precoBase: 90,
         duracaoEstimadaMinutos: 90,
         unidadeCobranca: "total",
-        tipoAnuncio: "PrestadorOferece",
-        categoria: { id: "cat-3", nome: "Reparos", icone: "handyman" },
+        tipoAnuncio: 1,
+        categoria: 3,
       },
     ],
   },
@@ -369,6 +409,7 @@ const MOCK_AGENDAMENTOS_PRESTADOR: AgendamentoResumo[] = [
     dataResposta: diasAPartirDeHoje(-3),
     dataConclusao: null,
     motivoRecusa: null,
+    aguardandoRespostaDe: null,
     servicos: [
       {
         id: "srv-011",
@@ -377,8 +418,8 @@ const MOCK_AGENDAMENTOS_PRESTADOR: AgendamentoResumo[] = [
         precoBase: 160,
         duracaoEstimadaMinutos: 240,
         unidadeCobranca: "total",
-        tipoAnuncio: "ClienteSolicitou",
-        categoria: { id: "cat-1", nome: "Faxina", icone: "cleaning_services" },
+        tipoAnuncio: 2,
+        categoria: 1,
       },
     ],
   },
@@ -403,6 +444,7 @@ const MOCK_AGENDAMENTOS_PRESTADOR: AgendamentoResumo[] = [
     dataResposta: null,
     dataConclusao: null,
     motivoRecusa: null,
+    aguardandoRespostaDe: "Prestador",
     servicos: [
       {
         id: "srv-012",
@@ -411,8 +453,8 @@ const MOCK_AGENDAMENTOS_PRESTADOR: AgendamentoResumo[] = [
         precoBase: 80,
         duracaoEstimadaMinutos: 60,
         unidadeCobranca: "total",
-        tipoAnuncio: "PrestadorOferece",
-        categoria: { id: "cat-1", nome: "Faxina", icone: "cleaning_services" },
+        tipoAnuncio: 1,
+        categoria: 1,
       },
     ],
   },
@@ -486,9 +528,41 @@ export const handlers = [
     await delay(MOCK_DELAY);
     const url = new URL(request.url);
     const id = url.searchParams.get("id");
+
+    if (id === MOCK_SERVICO_PRESTADOR_DETALHE.id) {
+      return HttpResponse.json(MOCK_SERVICO_PRESTADOR_DETALHE);
+    }
+
+    if (id === MOCK_SERVICO_CLIENTE_DETALHE.id) {
+      return HttpResponse.json(MOCK_SERVICO_CLIENTE_DETALHE);
+    }
+
     const servico = MOCK_SERVICOS.find((s) => String(s.id) === id);
     if (!servico) return new HttpResponse(null, { status: 404 });
-    return HttpResponse.json(servico);
+
+    return HttpResponse.json({
+      id: String(servico.id),
+      titulo: servico.titulo,
+      descricao: servico.descricao,
+      precoBase: servico.preco,
+      unidadeCobranca: "por_hora",
+      categoria: Object.entries(CATEGORIA_LABELS).find(
+        ([, label]) => label === servico.categoria,
+      )?.[0]
+        ? Number(
+            Object.entries(CATEGORIA_LABELS).find(
+              ([, label]) => label === servico.categoria,
+            )?.[0],
+          )
+        : 0,
+      ativo: true,
+      cidade: servico.cidade,
+      estado: servico.estado,
+      prestadorId: String(servico.prestadorId),
+      prestadorNome: servico.prestadorNome,
+      mediaAvaliacoes: servico.mediaAvaliacoes,
+      tipoAnuncio: 1,
+    } satisfies ServicoPrestadorDetalhe);
   }),
 
   // GET /api/Avaliacao/ObterAvaliacoesPorPrestador
@@ -591,7 +665,9 @@ export const handlers = [
   http.get("*/api/Agendamento/ObterSolicitacoesPendentesPrestador", async () => {
     await delay(MOCK_DELAY);
     return HttpResponse.json(
-      MOCK_AGENDAMENTOS_PRESTADOR.filter((a) => a.status === "Solicitado"),
+      MOCK_AGENDAMENTOS_PRESTADOR.filter(
+        (a) => a.status === "Solicitado" && a.aguardandoRespostaDe === "Prestador",
+      ),
     );
   }),
 

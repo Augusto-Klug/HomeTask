@@ -53,7 +53,7 @@ function preencherFormCliente(vm: ExposedVm, overrides: Partial<ServicoClienteFo
     descricao: 'Preciso de faxina na minha casa',
     categoria: '1',
     unidadeCobranca: 'por_hora',
-    valor: '80',
+    precoBase: '80',
     data: '',
     ...overrides,
   })
@@ -139,7 +139,7 @@ describe('CadastrarServicoClienteView', () => {
 
     const wrapper = mountView()
     const vm = wrapper.vm as unknown as ExposedVm
-    preencherFormCliente(vm, { unidadeCobranca: 'a_combinar', valor: '' })
+    preencherFormCliente(vm, { unidadeCobranca: 'a_combinar', precoBase: '' })
 
     await vm.handleSubmit()
     await flushPromises()
@@ -153,7 +153,7 @@ describe('CadastrarServicoClienteView', () => {
 
     const wrapper = mountView()
     const vm = wrapper.vm as unknown as ExposedVm
-    preencherFormCliente(vm, { unidadeCobranca: 'a_combinar', valor: '' })
+    preencherFormCliente(vm, { unidadeCobranca: 'a_combinar', precoBase: '' })
 
     await vm.handleSubmit()
     await flushPromises()

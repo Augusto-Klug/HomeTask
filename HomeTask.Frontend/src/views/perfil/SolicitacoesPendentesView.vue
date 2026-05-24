@@ -4,11 +4,11 @@
       <div>
         <h1 class="text-2xl font-bold">Solicitações pendentes</h1>
         <p class="text-sm text-base-content/60">
-          Pedidos aguardando resposta do prestador.
+          Solicitações aguardando sua resposta como prestador.
         </p>
       </div>
-      <router-link to="/perfil/agendamentos">
-        <HtButton variant="outline">Ver meus agendamentos</HtButton>
+      <router-link to="/perfil/operacao">
+        <HtButton variant="outline">Ver minha operação</HtButton>
       </router-link>
     </div>
 

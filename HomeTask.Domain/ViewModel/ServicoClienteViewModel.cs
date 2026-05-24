@@ -8,6 +8,7 @@ namespace HomeTask.Domain.ViewModel
     {
         public Guid Id { get; set; } = Guid.NewGuid();
         public Guid? ClienteId { get; set; }
+        public TipoAnuncio TipoAnuncio { get; set; } = TipoAnuncio.Pedido;
         public CategoriaServico Categoria { get; set; }
         public bool Ativo { get; set; } = true;
 

@@ -33,6 +33,7 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
             {
                 Id = contrato.Id,
                 PrestadorId = contrato.PrestadorId,
+                TipoAnuncio = contrato.TipoAnuncio,
                 Categoria = contrato.Categoria,
                 Titulo = contrato.Titulo,
                 Descricao = contrato.Descricao,
@@ -119,6 +120,7 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
             {
                 Id = contrato.Id,
                 ClienteId = contrato.ClienteId,
+                TipoAnuncio = contrato.TipoAnuncio,
                 Categoria = contrato.Categoria,
                 Titulo = contrato.Titulo,
                 Descricao = contrato.Descricao,

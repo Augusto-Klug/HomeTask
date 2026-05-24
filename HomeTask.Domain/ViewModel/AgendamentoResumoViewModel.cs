@@ -18,6 +18,7 @@ namespace HomeTask.Domain.ViewModel
         public DateTime? DataResposta { get; set; }
         public DateTime? DataConclusao { get; set; }
         public string? MotivoRecusa { get; set; }
+        public string? AguardandoRespostaDe { get; set; }
         public EnderecoResumoViewModel Endereco { get; set; } = new();
         public List<ServicoResumoViewModel> Servicos { get; set; } = [];
     }
@@ -35,5 +36,6 @@ namespace HomeTask.Domain.ViewModel
         public Guid Id { get; set; }
         public string Titulo { get; set; } = string.Empty;
         public decimal PrecoBase { get; set; }
+        public int? TipoAnuncio { get; set; }
     }
 }

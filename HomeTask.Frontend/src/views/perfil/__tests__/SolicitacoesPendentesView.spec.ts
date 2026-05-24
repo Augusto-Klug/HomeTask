@@ -41,6 +41,7 @@ const makeSolicitacao = (
   dataResposta: null,
   dataConclusao: null,
   motivoRecusa: null,
+  aguardandoRespostaDe: "Prestador",
   servicos: [{ id: "srv-1", titulo: "Faxina", descricao: "", precoBase: 120, duracaoEstimadaMinutos: 90, unidadeCobranca: "total", tipoAnuncio: 1, categoria: 1 }],
   ...overrides,
 });

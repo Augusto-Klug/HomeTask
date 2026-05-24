@@ -89,7 +89,8 @@ namespace HomeTask.WebApi.Controller
             {
                 var contrato = _conversorAgendamento.ConverterAgendamentoparaResumoContrato(a);
                 return _conversorAgendamento.ConverterResumoContratoparaViewModel(contrato);
-            });
+            })
+            .Where(vm => vm?.AguardandoRespostaDe == "Prestador");
 
             return Ok(viewModels);
         }

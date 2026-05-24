@@ -1,4 +1,6 @@
 using HomeTask.Domain.Contratos;
+using HomeTask.Domain.Entidades;
+using HomeTask.Domain.Enums;
 using HomeTask.Domain.ViewModel;
 using HomeTask.WebApi.Conversores.Interfaces;
 
@@ -101,6 +103,7 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
                 DataResposta = contrato.DataResposta,
                 DataConclusao = contrato.DataConclusao,
                 MotivoRecusa = contrato.MotivoRecusa,
+                AguardandoRespostaDe = contrato.AguardandoRespostaDe,
                 Endereco = new EnderecoResumoViewModel
                 {
                     Logradouro = contrato.Endereco.Logradouro,
@@ -112,7 +115,8 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
                 {
                     Id = s.Id,
                     Titulo = s.Titulo,
-                    PrecoBase = s.PrecoBase
+                    PrecoBase = s.PrecoBase,
+                    TipoAnuncio = s.TipoAnuncio
                 }).ToList()
             };
         }
@@ -165,6 +169,7 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
                 DataResposta = agendamento.DataResposta,
                 DataConclusao = agendamento.DataConclusao,
                 MotivoRecusa = agendamento.MotivoRecusa,
+                AguardandoRespostaDe = DeterminarAguardandoRespostaDe(agendamento),
                 Endereco = new EnderecoResumoContrato
                 {
                     Logradouro = agendamento.Endereco?.Logradouro ?? string.Empty,
@@ -176,9 +181,21 @@ namespace HomeTask.WebApi.Conversores.Implementacoes
                 {
                     Id = s.ServicoBaseId,
                     Titulo = s.ServicoBase?.Titulo ?? string.Empty,
-                    PrecoBase = s.ValorUnitario
+                    PrecoBase = s.ValorUnitario,
+                    TipoAnuncio = s.ServicoBase is null ? null : (int)s.ServicoBase.TipoAnuncio
                 }).ToList()
             };
+        }
+
+        private static string? DeterminarAguardandoRespostaDe(Domain.Entities.Agendamento agendamento)
+        {
+            if (agendamento.Status != StatusAgendamento.Solicitado)
+                return null;
+
+            var possuiPedidoCliente = agendamento.AgendamentoServicos
+                .Any(s => s.ServicoBase is ServicoCliente);
+
+            return possuiPedidoCliente ? "Cliente" : "Prestador";
         }
     }
 }

@@ -18,6 +18,7 @@ namespace HomeTask.Domain.Contratos
         public DateTime? DataResposta { get; set; }
         public DateTime? DataConclusao { get; set; }
         public string? MotivoRecusa { get; set; }
+        public string? AguardandoRespostaDe { get; set; }
         public EnderecoResumoContrato Endereco { get; set; } = new();
         public List<ServicoResumoContrato> Servicos { get; set; } = [];
     }
@@ -35,5 +36,6 @@ namespace HomeTask.Domain.Contratos
         public Guid Id { get; set; }
         public string Titulo { get; set; } = string.Empty;
         public decimal PrecoBase { get; set; }
+        public int? TipoAnuncio { get; set; }
     }
 }

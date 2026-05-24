@@ -96,6 +96,52 @@ export type StatusAgendamento =
 
 export type TipoAnuncioCliente = 2
 export type TipoAnuncioPrestador = 1
+export type AguardandoRespostaDe = 'Cliente' | 'Prestador'
+
+export interface ServicoDetalheBase {
+  id: string
+  titulo: string
+  descricao: string
+  precoBase: number
+  unidadeCobranca: string
+  categoria: number
+  ativo: boolean
+  cidade?: string | null
+  estado?: string | null
+}
+
+export interface ServicoBuscaResumo {
+  id: string
+  titulo: string
+  descricao: string
+  precoBase: number
+  unidadeCobranca: string
+  prestadorId: string
+  prestadorNome?: string | null
+  categoria: number
+  cidade?: string | null
+  estado?: string | null
+  mediaAvaliacoes?: number | null
+  tipoAnuncio: TipoAnuncioPrestador
+}
+
+export interface ServicoPrestadorDetalhe extends ServicoDetalheBase {
+  prestadorId: string
+  prestadorNome?: string | null
+  duracaoEstimadaMinutos?: number | null
+  aceitaPagamentoAposFinalizacao?: boolean
+  mediaAvaliacoes?: number | null
+  tipoAnuncio: TipoAnuncioPrestador
+}
+
+export interface ServicoClienteDetalhe extends ServicoDetalheBase {
+  clienteId: string
+  clienteNome?: string | null
+  dataDesejada?: string | null
+  tipoAnuncio: TipoAnuncioCliente
+}
+
+export type ServicoDetalhe = ServicoPrestadorDetalhe | ServicoClienteDetalhe
 
 export interface ServicoOferecido {
   id: string
@@ -133,6 +179,7 @@ export interface AgendamentoResumo {
   dataResposta: string | null
   dataConclusao: string | null
   motivoRecusa: string | null
+  aguardandoRespostaDe: AguardandoRespostaDe | null
   servicos: ServicoOferecido[]
 }
 
@@ -153,7 +200,7 @@ export interface PerfilForm {
 export interface ServicoClienteForm {
   titulo: string
   descricao: string
-  categoria: string | number
+  categoria: string
   unidadeCobranca: TipoValorCliente | ''
   precoBase: string
   data: string
@@ -163,7 +210,7 @@ export interface ServicoClienteForm {
 export interface ServicoPrestadorForm {
   titulo: string
   descricao: string
-  categoria: string | number
+  categoria: string
   unidadeCobranca: TipoValorPrestador | ''
   precoBase: string
   aceitaPagamentoAposFinalizacao: boolean
