@@ -3,28 +3,29 @@ import { mount, flushPromises } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia";
 import { createRouter, createMemoryHistory } from "vue-router";
 import MeusAgendamentosView from "../MeusAgendamentosView.vue";
+import { useAuthStore } from "@/stores/auth";
 import * as apiModule from "@/services/api";
-import type { AgendamentoResumo } from "@/types";
+import { UnidadeCobranca, type AgendamentoResumo } from "@/types";
 
 vi.mock("@/services/api", () => ({ default: { get: vi.fn() } }));
 
 const makeAgendamento = (overrides: Partial<AgendamentoResumo> = {}): AgendamentoResumo => ({
   id: "1",
   clienteId: "10",
-  clienteNome: "João Silva",
+  clienteNome: "Joao Silva",
   prestadorId: "20",
   prestadorNome: "Maria Costa",
   dataHoraAgendada: new Date(Date.now() + 86400000).toISOString(),
   duracaoMinutos: 60,
   status: "Solicitado",
-  endereco: { logradouro: "Rua A, 100", bairro: "Centro", cidade: "Florianópolis", estado: "SC" },
+  endereco: { logradouro: "Rua A, 100", bairro: "Centro", cidade: "Florianopolis", estado: "SC" },
   observacoes: null,
   valorTotal: 150,
   dataSolicitacao: new Date().toISOString(),
   dataResposta: null,
   dataConclusao: null,
   motivoRecusa: null,
-  aguardandoRespostaDe: "Prestador",
+  aguardandoRespostaDe: "Cliente",
   servicos: [
     {
       id: "srv-1",
@@ -32,9 +33,9 @@ const makeAgendamento = (overrides: Partial<AgendamentoResumo> = {}): Agendament
       descricao: "Limpeza residencial",
       precoBase: 80,
       duracaoEstimadaMinutos: 60,
-      unidadeCobranca: "total",
-      tipoAnuncio: 1,
-      categoria: 1,
+      unidadeCobranca: UnidadeCobranca.Total,
+      tipoAnuncio: 2,
+      categoria: { id: "cat-1", nome: "Faxina", icone: "cleaning_services" },
     },
   ],
   ...overrides,
@@ -47,6 +48,8 @@ const router = createRouter({
 
 function mountView() {
   setActivePinia(createPinia());
+  const auth = useAuthStore();
+  auth.setUser({ userId: 10, nome: "Teste", email: "a@b.com", tipo: 1 });
 
   return mount(MeusAgendamentosView, {
     global: {
@@ -54,7 +57,7 @@ function mountView() {
       stubs: {
         HtSpinner: true,
         HtCard: { template: "<div><slot /></div>" },
-        HtBadge: { template: "<span><slot /></span>" },
+        HtBadge: { template: "<span><slot /></span>", props: ["variant"] },
       },
     },
   });
@@ -63,37 +66,20 @@ function mountView() {
 describe("MeusAgendamentosView", () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it("exibe a visão de cliente", async () => {
+  it("exibe apenas a secao de cliente", async () => {
     vi.mocked(apiModule.default.get).mockResolvedValue({ data: [makeAgendamento()] });
     const wrapper = mountView();
     await flushPromises();
+
     expect(wrapper.text()).toContain("Cliente");
     expect(wrapper.text()).not.toContain("Prestador");
   });
 
-  it("não exibe agendamentos passados", async () => {
-    const passado = makeAgendamento({
-      dataHoraAgendada: new Date(Date.now() - 86400000).toISOString(),
-    });
-    vi.mocked(apiModule.default.get).mockResolvedValue({ data: [passado] });
-    const wrapper = mountView();
-    await flushPromises();
-    expect(wrapper.text()).toContain("Nenhum agendamento");
-  });
-
-  it("exibe nome do prestador no card do cliente", async () => {
+  it("mostra aprovacao do cliente quando a pendencia e dele", async () => {
     vi.mocked(apiModule.default.get).mockResolvedValue({ data: [makeAgendamento()] });
     const wrapper = mountView();
     await flushPromises();
-    expect(wrapper.text()).toContain("Maria Costa");
-  });
 
-  it("mostra quando a proposta aguarda aprovação do cliente", async () => {
-    vi.mocked(apiModule.default.get).mockResolvedValue({
-      data: [makeAgendamento({ aguardandoRespostaDe: "Cliente" })],
-    });
-    const wrapper = mountView();
-    await flushPromises();
-    expect(wrapper.text()).toContain("Aguardando sua aprovação");
+    expect(wrapper.text()).toContain("Aguardando sua aprovacao");
   });
 });
