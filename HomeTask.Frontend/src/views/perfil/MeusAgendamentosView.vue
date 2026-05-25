@@ -2,15 +2,12 @@
 import { computed, onMounted, ref } from "vue";
 import api from "@/services/api";
 import type { AgendamentoResumo, StatusAgendamento } from "@/types";
-import HtBadge from "@/components/ui/HtBadge.vue";
 import HtCard from "@/components/ui/HtCard.vue";
+import HtBadge from "@/components/ui/HtBadge.vue";
 import HtSpinner from "@/components/ui/HtSpinner.vue";
 
-const agendamentosCliente = ref<AgendamentoResumo[]>([]);
-const carregando = ref(true);
-const agora = new Date();
-
 type StatusAgendamentoNumero = 1 | 2 | 3 | 4 | 5 | 6;
+
 const STATUS_NUMERO_PARA_TEXTO: Record<StatusAgendamentoNumero, StatusAgendamento> = {
   1: "Solicitado",
   2: "Aceito",
@@ -20,20 +17,27 @@ const STATUS_NUMERO_PARA_TEXTO: Record<StatusAgendamentoNumero, StatusAgendament
   6: "Cancelado",
 };
 
-const STATUS_LABEL: Record<StatusAgendamento, string> = {
-  Confirmado: "Confirmado",
-  Solicitado: "Solicitado",
-  Aceito: "Aceito",
-  EmAndamento: "Em andamento",
-  Concluido: "Concluído",
-  Cancelado: "Cancelado",
-  Recusado: "Recusado",
-};
+const agendamentosCliente = ref<AgendamentoResumo[]>([]);
+const carregando = ref(true);
 
-const STATUS_VARIANT: Record<
-  StatusAgendamento,
-  "default" | "primary" | "success" | "error" | "outline"
-> = {
+const agora = new Date();
+
+const clienteFiltrado = computed(() =>
+  agendamentosCliente.value
+    .filter((a) => new Date(a.dataHoraAgendada) >= agora)
+    .sort((a, b) => new Date(a.dataHoraAgendada).getTime() - new Date(b.dataHoraAgendada).getTime()),
+);
+
+onMounted(async () => {
+  try {
+    const { data } = await api.get<AgendamentoResumo[]>("/api/Agendamento/ObterMeusAgendamentosCliente");
+    agendamentosCliente.value = data.map(normalizarAgendamento);
+  } finally {
+    carregando.value = false;
+  }
+});
+
+const STATUS_VARIANT: Record<StatusAgendamento, "default" | "primary" | "success" | "error" | "outline"> = {
   Confirmado: "primary",
   Solicitado: "outline",
   Aceito: "primary",
@@ -43,26 +47,20 @@ const STATUS_VARIANT: Record<
   Recusado: "error",
 };
 
-const clienteFiltrado = computed(() =>
-  agendamentosCliente.value
-    .filter((agendamento) => new Date(agendamento.dataHoraAgendada) >= agora)
-    .sort(
-      (a, b) =>
-        new Date(a.dataHoraAgendada).getTime() -
-        new Date(b.dataHoraAgendada).getTime(),
-    ),
-);
-
-onMounted(async () => {
-  try {
-    const { data } = await api.get<AgendamentoResumo[]>(
-      "/api/Agendamento/ObterMeusAgendamentosCliente",
-    );
-    agendamentosCliente.value = data.map(normalizarAgendamento);
-  } finally {
-    carregando.value = false;
+function labelCliente(ag: AgendamentoResumo): string {
+  if (ag.status === "Solicitado" && ag.aguardandoRespostaDe === "Cliente") {
+    return "Aguardando sua aprovacao";
   }
-});
+  if (ag.status === "Solicitado" && ag.aguardandoRespostaDe === "Prestador") {
+    return "Aguardando resposta do prestador";
+  }
+  if (ag.status === "Aceito") return "Agendado";
+  if (ag.status === "Concluido") return "Concluido";
+  if (ag.status === "EmAndamento") return "Em andamento";
+  if (ag.status === "Recusado") return "Recusado";
+  if (ag.status === "Cancelado") return "Cancelado";
+  return "Solicitado";
+}
 
 function formatarData(iso: string) {
   return new Date(iso).toLocaleDateString("pt-BR", {
@@ -80,26 +78,12 @@ function formatarHora(iso: string) {
   });
 }
 
-function formatarEndereco(endereco: AgendamentoResumo["endereco"]) {
-  return `${endereco.logradouro}, ${endereco.bairro} — ${endereco.cidade}/${endereco.estado}`;
+function formatarEndereco(e: AgendamentoResumo["endereco"]) {
+  return `${e.logradouro}, ${e.bairro} - ${e.cidade}/${e.estado}`;
 }
 
-function formatarMoeda(valor: number) {
-  return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-}
-
-function obterLabelCliente(agendamento: AgendamentoResumo): string {
-  if (agendamento.status === "Solicitado") {
-    return agendamento.aguardandoRespostaDe === "Cliente"
-      ? "Aguardando sua aprovação"
-      : "Aguardando resposta do prestador";
-  }
-
-  if (agendamento.status === "Aceito") {
-    return "Agendado";
-  }
-
-  return STATUS_LABEL[agendamento.status];
+function formatarMoeda(v: number) {
+  return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
 function normalizarStatus(status: unknown): StatusAgendamento {
@@ -109,7 +93,7 @@ function normalizarStatus(status: unknown): StatusAgendamento {
 
   if (typeof status === "string") {
     if (status === "Confirmado") return "Aceito";
-    if (status in STATUS_LABEL) return status as StatusAgendamento;
+    return status as StatusAgendamento;
   }
 
   return "Solicitado";
@@ -117,7 +101,6 @@ function normalizarStatus(status: unknown): StatusAgendamento {
 
 function normalizarAgendamento(data: AgendamentoResumo): AgendamentoResumo {
   const seguro = data as Partial<AgendamentoResumo> & { status?: unknown };
-
   return {
     id: seguro.id ?? "",
     clienteId: seguro.clienteId ?? "",
@@ -134,10 +117,7 @@ function normalizarAgendamento(data: AgendamentoResumo): AgendamentoResumo {
     dataResposta: seguro.dataResposta ?? null,
     dataConclusao: seguro.dataConclusao ?? null,
     motivoRecusa: seguro.motivoRecusa ?? null,
-    aguardandoRespostaDe:
-      seguro.aguardandoRespostaDe === "Cliente" || seguro.aguardandoRespostaDe === "Prestador"
-        ? seguro.aguardandoRespostaDe
-        : null,
+    aguardandoRespostaDe: seguro.aguardandoRespostaDe ?? null,
     servicos: seguro.servicos ?? [],
   };
 }
@@ -151,60 +131,45 @@ function normalizarAgendamento(data: AgendamentoResumo): AgendamentoResumo {
       <HtSpinner size="lg" />
     </div>
 
-    <template v-else>
-      <section>
-        <h2 class="text-title font-semibold text-base-content/70 uppercase tracking-wide mb-4">
-          Cliente
-        </h2>
+    <section v-else>
+      <h2 class="text-title font-semibold text-base-content/70 uppercase tracking-wide mb-4">Cliente</h2>
 
-        <div v-if="clienteFiltrado.length === 0" class="text-sm text-base-content/50 py-6 text-center">
-          Nenhum agendamento futuro pendente.
-        </div>
+      <div v-if="clienteFiltrado.length === 0" class="text-sm text-base-content/50 py-6 text-center">
+        Nenhum agendamento futuro pendente.
+      </div>
 
-        <div v-else class="flex flex-col gap-3">
-          <HtCard
-            v-for="ag in clienteFiltrado"
-            :key="ag.id"
-            @click="$router.push(`/agendamento/detalhes/${ag.id}`)"
-            class="cursor-pointer hover:border-primary/50 transition-colors"
-          >
-            <div class="flex items-start justify-between gap-3">
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-2 mb-1 flex-wrap">
-                  <span class="font-semibold text-sm">{{ ag.prestadorNome }}</span>
-                  <HtBadge :variant="STATUS_VARIANT[ag.status]">
-                    {{ obterLabelCliente(ag) }}
-                  </HtBadge>
-                </div>
-                <p v-if="ag.servicos.length" class="text-xs text-base-content/60 mb-2">
-                  {{ ag.servicos.map((s) => s.titulo).join(", ") }}
-                </p>
-                <div class="flex flex-col gap-1 text-sm text-base-content/80">
-                  <div class="flex items-center gap-2">
-                    <span class="material-symbols-rounded text-base text-base-content/40">calendar_today</span>
-                    <span class="capitalize">{{ formatarData(ag.dataHoraAgendada) }}</span>
-                  </div>
-                  <div class="flex items-center gap-2">
-                    <span class="material-symbols-rounded text-base text-base-content/40">schedule</span>
-                    <span>{{ formatarHora(ag.dataHoraAgendada) }} · {{ ag.duracaoMinutos }} min</span>
-                  </div>
-                  <div class="flex items-center gap-2">
-                    <span class="material-symbols-rounded text-base text-base-content/40">location_on</span>
-                    <span class="truncate">{{ formatarEndereco(ag.endereco) }}</span>
-                  </div>
-                  <div v-if="ag.observacoes" class="flex items-start gap-2">
-                    <span class="material-symbols-rounded text-base text-base-content/40 mt-0.5">notes</span>
-                    <span>{{ ag.observacoes }}</span>
-                  </div>
-                </div>
+      <div v-else class="flex flex-col gap-3">
+        <HtCard v-for="ag in clienteFiltrado" :key="ag.id" @click="$router.push(`/agendamento/detalhes/${ag.id}`)" class="cursor-pointer hover:border-primary/50 transition-colors">
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-1 flex-wrap">
+                <span class="font-semibold text-sm">{{ ag.prestadorNome }}</span>
+                <HtBadge :variant="STATUS_VARIANT[ag.status]">{{ labelCliente(ag) }}</HtBadge>
               </div>
-              <div class="text-right shrink-0">
-                <p class="font-semibold">{{ formatarMoeda(ag.valorTotal) }}</p>
+              <p v-if="ag.servicos.length" class="text-xs text-base-content/60 mb-2">
+                {{ ag.servicos.map((s) => s.titulo).join(", ") }}
+              </p>
+              <div class="flex flex-col gap-1 text-sm text-base-content/80">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-rounded text-base text-base-content/40">calendar_today</span>
+                  <span class="capitalize">{{ formatarData(ag.dataHoraAgendada) }}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-rounded text-base text-base-content/40">schedule</span>
+                  <span>{{ formatarHora(ag.dataHoraAgendada) }} · {{ ag.duracaoMinutos }} min</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-rounded text-base text-base-content/40">location_on</span>
+                  <span class="truncate">{{ formatarEndereco(ag.endereco) }}</span>
+                </div>
               </div>
             </div>
-          </HtCard>
-        </div>
-      </section>
-    </template>
+            <div class="text-right shrink-0">
+              <p class="font-semibold">{{ formatarMoeda(ag.valorTotal) }}</p>
+            </div>
+          </div>
+        </HtCard>
+      </div>
+    </section>
   </div>
 </template>

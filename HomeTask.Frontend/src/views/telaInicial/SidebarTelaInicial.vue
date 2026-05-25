@@ -6,59 +6,43 @@
       <li>
         <router-link to="/" class="ht-sidenav-link" @click="open = false">
           <span class="material-symbols-rounded text-xl">home</span>
-          Início
+          Inicio
         </router-link>
       </li>
 
       <li>
         <router-link to="/servicos/buscar" class="ht-sidenav-link" @click="open = false">
           <span class="material-symbols-rounded text-xl">search</span>
-          Buscar Serviços
+          Buscar Servicos
         </router-link>
       </li>
 
       <template v-if="auth.isLoggedIn">
         <li v-if="auth.user?.tipo === 1 || auth.user?.tipo === 3">
-          <router-link
-            to="/perfil/agendamentos"
-            class="ht-sidenav-link"
-            @click="open = false"
-          >
+          <router-link to="/perfil/agendamentos" class="ht-sidenav-link" @click="open = false">
             <span class="material-symbols-rounded text-xl">calendar_month</span>
             Agendamentos
           </router-link>
         </li>
 
+        <li v-if="auth.user?.tipo === 2 || auth.user?.tipo === 3">
+          <router-link to="/perfil/operacao" class="ht-sidenav-link" @click="open = false">
+            <span class="material-symbols-rounded text-xl">work_history</span>
+            Minha Operacao
+          </router-link>
+        </li>
+
         <li v-if="auth.user?.tipo === 1 || auth.user?.tipo === 3">
-          <router-link
-            to="/servicos/novo-cliente"
-            class="ht-sidenav-link"
-            @click="open = false"
-          >
+          <router-link to="/servicos/novo-cliente" class="ht-sidenav-link" @click="open = false">
             <span class="material-symbols-rounded text-xl">campaign</span>
-            Anunciar Serviço
+            Anunciar Servico
           </router-link>
         </li>
 
         <li v-if="auth.user?.tipo === 2 || auth.user?.tipo === 3">
-          <router-link
-            to="/servicos/novo-prestador"
-            class="ht-sidenav-link"
-            @click="open = false"
-          >
+          <router-link to="/servicos/novo-prestador" class="ht-sidenav-link" @click="open = false">
             <span class="material-symbols-rounded text-xl">work</span>
-            Oferecer Serviço
-          </router-link>
-        </li>
-
-        <li v-if="auth.user?.tipo === 2 || auth.user?.tipo === 3">
-          <router-link
-            to="/perfil/operacao"
-            class="ht-sidenav-link"
-            @click="open = false"
-          >
-            <span class="material-symbols-rounded text-xl">checklist</span>
-            Minha Operação
+            Oferecer Servico
           </router-link>
         </li>
       </template>
