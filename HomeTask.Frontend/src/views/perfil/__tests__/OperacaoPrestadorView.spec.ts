@@ -7,10 +7,14 @@ import { UnidadeCobranca, type AgendamentoResumo } from "@/types";
 
 vi.mock("@/services/api", () => ({ default: { get: vi.fn() } }));
 
-const router = createRouter({
-  history: createMemoryHistory(),
-  routes: [{ path: "/", component: { template: "<div />" } }],
-});
+const makeRouter = () =>
+  createRouter({
+    history: createMemoryHistory(),
+    routes: [
+      { path: "/", component: { template: "<div />" } },
+      { path: "/agendamento/detalhes/:id", component: { template: "<div />" } },
+    ],
+  });
 
 const makeAgendamento = (overrides: Partial<AgendamentoResumo> = {}): AgendamentoResumo => ({
   id: "ag-1",
@@ -29,7 +33,18 @@ const makeAgendamento = (overrides: Partial<AgendamentoResumo> = {}): Agendament
   dataConclusao: null,
   motivoRecusa: null,
   aguardandoRespostaDe: "Prestador",
-  servicos: [{ id: "srv-1", titulo: "Faxina", descricao: "", precoBase: 120, duracaoEstimadaMinutos: 90, unidadeCobranca: UnidadeCobranca.Total, tipoAnuncio: 1, categoria: 1 }],
+  servicos: [
+    {
+      id: "srv-1",
+      titulo: "Faxina",
+      descricao: "",
+      precoBase: 120,
+      duracaoEstimadaMinutos: 90,
+      unidadeCobranca: UnidadeCobranca.Total,
+      tipoAnuncio: 1,
+      categoria: 1,
+    },
+  ],
   ...overrides,
 });
 
@@ -40,6 +55,10 @@ describe("OperacaoPrestadorView", () => {
     vi.mocked(apiModule.default.get).mockResolvedValue({
       data: [makeAgendamento()],
     });
+
+    const router = makeRouter();
+    await router.push("/");
+    await router.isReady();
 
     const wrapper = mount(OperacaoPrestadorView, {
       global: {
@@ -54,5 +73,45 @@ describe("OperacaoPrestadorView", () => {
 
     await flushPromises();
     expect(wrapper.text()).toContain("Aguardando sua resposta");
+  });
+
+  it("mostra no calendario apenas servicos confirmados", async () => {
+    vi.mocked(apiModule.default.get).mockResolvedValue({
+      data: [
+        makeAgendamento({
+          id: "ag-aceito",
+          status: "Aceito",
+          aguardandoRespostaDe: null,
+          clienteNome: "Cliente Confirmado",
+        }),
+        makeAgendamento({
+          id: "ag-solicitado",
+          status: "Solicitado",
+          aguardandoRespostaDe: "Prestador",
+          clienteNome: "Cliente Pendente",
+        }),
+      ],
+    });
+
+    const router = makeRouter();
+    await router.push("/?aba=calendario");
+    await router.isReady();
+
+    const wrapper = mount(OperacaoPrestadorView, {
+      global: {
+        plugins: [router],
+        stubs: {
+          HtSpinner: true,
+          HtCard: { template: "<div><slot /></div>" },
+          HtBadge: { template: "<span><slot /></span>", props: ["variant"] },
+        },
+      },
+    });
+
+    await flushPromises();
+
+    expect(wrapper.text()).toContain("Calendario operacional");
+    expect(wrapper.text()).toContain("Cliente Confirmado");
+    expect(wrapper.text()).not.toContain("Cliente Pendente");
   });
 });
