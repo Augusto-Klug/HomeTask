@@ -51,7 +51,7 @@ const makeAgendamento = (overrides: Partial<AgendamentoResumo> = {}): Agendament
 describe("OperacaoPrestadorView", () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it("agrupa solicitado do prestador em agendados", async () => {
+  it("mostra solicitacao aguardando confirmacao do prestador", async () => {
     vi.mocked(apiModule.default.get).mockResolvedValue({
       data: [makeAgendamento()],
     });
@@ -72,7 +72,7 @@ describe("OperacaoPrestadorView", () => {
     });
 
     await flushPromises();
-    expect(wrapper.text()).toContain("Aguardando sua resposta");
+    expect(wrapper.text()).toContain("Aguardando sua confirmacao");
   });
 
   it("mostra no calendario apenas servicos confirmados", async () => {
