@@ -3,7 +3,7 @@
     <label
       v-if="label"
       :for="inputId"
-      class="fieldset-legend text-sm font-medium"
+      class="inline-flex w-fit items-center text-sm font-medium"
       :class="{ 'text-error': hasError }"
     >{{ label }}<span v-if="required" class="text-error ml-0.5">*</span></label>
 

@@ -2,7 +2,7 @@
   <div
     v-if="show"
     role="alert"
-    :class="['alert alert-soft', variantClass]"
+    :class="['alert alert-soft rounded-[4px]', variantClass]"
   >
     <span class="material-symbols-rounded text-lg shrink-0">{{ icon }}</span>
     <div class="flex-1">

@@ -172,7 +172,6 @@ const router = useRouter()
 const tipos = [
   { value: 1, label: '🏠 Cliente' },
   { value: 2, label: '🔧 Prestador' },
-  { value: 3, label: '⭐ Ambos' },
 ]
 
 const form = reactive<CadastroForm>({

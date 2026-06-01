@@ -210,8 +210,8 @@ internal static class EntityDtoMapper
                 Titulo = s.ServicoBase?.Titulo ?? string.Empty,
                 PrecoBase = s.ValorUnitario,
                 UnidadeCobranca = s.ServicoBase?.UnidadeCobranca ?? FormatoCobranca.Total
-              }).ToList()
-          };
+            }).ToList()
+        };
 
     private static string? DeterminarResponsavelPelaResposta(Agendamento agendamento)
     {
