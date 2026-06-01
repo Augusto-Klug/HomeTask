@@ -32,134 +32,71 @@
       <HtSpinner size="lg" />
     </div>
 
-    <div v-else-if="abaAtual === 'painel'" class="space-y-8">
-      <section class="grid gap-4 md:grid-cols-3">
-        <HtCard class="border-primary/15 bg-primary/5">
-          <p class="text-xs font-semibold uppercase tracking-[0.18em] text-primary/80">Agenda confirmada</p>
-          <p class="mt-3 text-3xl font-bold">{{ agendaConfirmada.length }}</p>
-          <p class="mt-2 text-sm text-base-content/65">Servicos confirmados e prontos para execucao.</p>
-        </HtCard>
-
-        <HtCard>
-          <p class="text-xs font-semibold uppercase tracking-[0.18em] text-base-content/50">Proxima visita</p>
-          <template v-if="proximoServico">
-            <p class="mt-3 text-lg font-semibold">{{ proximoServico.clienteNome }}</p>
-            <p class="mt-2 text-sm text-base-content/75">
-              {{ formatarDataCurta(proximoServico.dataHoraAgendada) }} as {{ formatarHora(proximoServico.dataHoraAgendada) }}
-            </p>
-          </template>
-          <p v-else class="mt-3 text-sm text-base-content/60">Nenhum servico confirmado no momento.</p>
-        </HtCard>
-
-        <HtCard>
-          <p class="text-xs font-semibold uppercase tracking-[0.18em] text-base-content/50">Em andamento</p>
-          <p class="mt-3 text-3xl font-bold">{{ emAndamento.length }}</p>
-          <p class="mt-2 text-sm text-base-content/65">Itens que ja foram iniciados e ainda precisam ser concluidos.</p>
-        </HtCard>
-      </section>
-
-      <section>
-        <h2 class="text-lg font-semibold mb-4">Agendados</h2>
-        <div
-          v-if="agendados.length === 0"
-          class="text-sm text-base-content/50 py-6 text-center border border-dashed border-base-300 rounded-xl"
-        >
-          Nenhum item aguardando resposta ou inicio.
-        </div>
-        <div v-else class="flex flex-col gap-3">
-          <HtCard
-            v-for="ag in agendados"
-            :key="ag.id"
-            class="cursor-pointer hover:border-primary/50 transition-colors"
-            @click="abrirDetalhes(ag.id)"
+    <div v-else-if="abaAtual === 'painel'" class="space-y-4">
+      <section v-for="painel in paineis" :key="painel.id">
+        <HtCard class="p-0 overflow-hidden" :class="classesPainel(painel.tom).container">
+          <button
+            type="button"
+            class="w-full px-5 py-4 text-left transition-colors"
+            :class="classesPainel(painel.tom).hover"
+            :aria-expanded="painelAtivo === painel.id"
+            @click="alternarPainel(painel.id)"
           >
-            <div class="flex items-start justify-between gap-3">
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-2 mb-1 flex-wrap">
-                  <span class="font-semibold text-sm">{{ ag.clienteNome }}</span>
-                  <HtBadge :variant="ag.status === 'Solicitado' ? 'outline' : 'primary'">
-                    {{ ag.status === 'Solicitado' ? 'Aguardando sua resposta' : 'Pronto para iniciar' }}
-                  </HtBadge>
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex items-start gap-3">
+                <span
+                  v-if="painel.icone"
+                  class="material-symbols-rounded text-base mt-0.5"
+                  :class="classesPainel(painel.tom).icon"
+                >
+                  {{ painel.icone }}
+                </span>
+                <div>
+                  <p class="text-xs font-semibold uppercase tracking-[0.18em] text-base-content/60">{{ painel.titulo }}</p>
+                  <p class="mt-2 text-sm text-base-content/65">{{ painel.descricao }}</p>
                 </div>
-                <p v-if="ag.servicos.length" class="text-xs text-base-content/60 mb-2">
-                  {{ ag.servicos.map((s) => s.titulo).join(", ") }}
-                </p>
-                <p class="text-sm text-base-content/80">
-                  {{ formatarDataCurta(ag.dataHoraAgendada) }} as {{ formatarHora(ag.dataHoraAgendada) }}
-                </p>
               </div>
-              <div class="text-right shrink-0">
-                <p class="font-semibold">{{ formatarMoeda(ag.valorTotal) }}</p>
+              <div class="flex items-center gap-3">
+                <span class="text-3xl font-bold" :class="classesPainel(painel.tom).count">{{ painel.itens.length }}</span>
+                <span class="material-symbols-rounded text-xl text-base-content/60">
+                  {{ painelAtivo === painel.id ? "expand_less" : "expand_more" }}
+                </span>
               </div>
             </div>
-          </HtCard>
-        </div>
-      </section>
+          </button>
 
-      <section>
-        <h2 class="text-lg font-semibold mb-4">Em andamento</h2>
-        <div
-          v-if="emAndamento.length === 0"
-          class="text-sm text-base-content/50 py-6 text-center border border-dashed border-base-300 rounded-xl"
-        >
-          Nenhum servico em andamento.
-        </div>
-        <div v-else class="flex flex-col gap-3">
-          <HtCard
-            v-for="ag in emAndamento"
-            :key="ag.id"
-            class="cursor-pointer hover:border-primary/50 transition-colors"
-            @click="abrirDetalhes(ag.id)"
-          >
-            <div class="flex items-start justify-between gap-3">
-              <div>
-                <div class="flex items-center gap-2 mb-1">
-                  <span class="font-semibold text-sm">{{ ag.clienteNome }}</span>
-                  <HtBadge variant="default">Em andamento</HtBadge>
-                </div>
-                <p class="text-sm text-base-content/80">
-                  {{ formatarDataCurta(ag.dataHoraAgendada) }} as {{ formatarHora(ag.dataHoraAgendada) }}
-                </p>
-              </div>
-              <div class="text-right shrink-0">
-                <p class="font-semibold">{{ formatarMoeda(ag.valorTotal) }}</p>
-              </div>
+          <div v-if="painelAtivo === painel.id" class="border-t border-base-300 px-5 py-4">
+            <div v-if="painel.itens.length === 0" class="text-sm text-base-content/50 py-4 text-center">
+              {{ painel.vazio }}
             </div>
-          </HtCard>
-        </div>
-      </section>
-
-      <section>
-        <h2 class="text-lg font-semibold mb-4">Concluidos</h2>
-        <div
-          v-if="concluidos.length === 0"
-          class="text-sm text-base-content/50 py-6 text-center border border-dashed border-base-300 rounded-xl"
-        >
-          Nenhum servico concluido.
-        </div>
-        <div v-else class="flex flex-col gap-3">
-          <HtCard
-            v-for="ag in concluidos"
-            :key="ag.id"
-            class="cursor-pointer hover:border-primary/50 transition-colors"
-            @click="abrirDetalhes(ag.id)"
-          >
-            <div class="flex items-start justify-between gap-3">
-              <div>
-                <div class="flex items-center gap-2 mb-1">
-                  <span class="font-semibold text-sm">{{ ag.clienteNome }}</span>
-                  <HtBadge variant="success">Concluido</HtBadge>
+            <div v-else class="flex flex-col gap-3">
+              <HtCard
+                v-for="ag in painel.itens"
+                :key="ag.id"
+                class="cursor-pointer hover:border-primary/50 transition-colors"
+                @click="abrirDetalhes(ag.id)"
+              >
+                <div class="flex items-start justify-between gap-3">
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1 flex-wrap">
+                      <span class="font-semibold text-sm">{{ ag.clienteNome }}</span>
+                      <HtBadge :variant="STATUS_VARIANT[ag.status]">{{ labelPrestador(ag) }}</HtBadge>
+                    </div>
+                    <p v-if="ag.servicos.length" class="text-xs text-base-content/60 mb-2">
+                      {{ ag.servicos.map((s) => s.titulo).join(", ") }}
+                    </p>
+                    <p class="text-sm text-base-content/80">
+                      {{ formatarDataCurta(ag.dataHoraAgendada) }} as {{ formatarHora(ag.dataHoraAgendada) }}
+                    </p>
+                  </div>
+                  <div class="text-right shrink-0">
+                    <p class="font-semibold">{{ formatarMoeda(ag.valorTotal) }}</p>
+                  </div>
                 </div>
-                <p class="text-sm text-base-content/80">
-                  {{ formatarDataCurta(ag.dataHoraAgendada) }} as {{ formatarHora(ag.dataHoraAgendada) }}
-                </p>
-              </div>
-              <div class="text-right shrink-0">
-                <p class="font-semibold">{{ formatarMoeda(ag.valorTotal) }}</p>
-              </div>
+              </HtCard>
             </div>
-          </HtCard>
-        </div>
+          </div>
+        </HtCard>
       </section>
     </div>
 
@@ -297,6 +234,14 @@ type DiaCalendario = {
   selecionado: boolean;
   eventos: AgendamentoResumo[];
 };
+type PainelId =
+  | "aguardando-sua-confirmacao"
+  | "aguardando-confirmacao-cliente"
+  | "agendados"
+  | "em-andamento"
+  | "concluidos"
+  | "cancelados-recusados";
+type PainelTom = "primary" | "secondary" | "accent" | "success" | "warning" | "error" | "neutro";
 
 const STATUS_NUMERO_PARA_TEXTO: Record<StatusAgendamentoNumero, StatusAgendamento> = {
   1: "Solicitado",
@@ -308,29 +253,146 @@ const STATUS_NUMERO_PARA_TEXTO: Record<StatusAgendamentoNumero, StatusAgendament
 };
 
 const diasSemana = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"] as const;
+const PAINEL_TOM_CLASSES: Record<
+  PainelTom,
+  { container: string; hover: string; count: string; icon: string }
+> = {
+  neutro: {
+    container: "",
+    hover: "hover:bg-base-200/50",
+    count: "",
+    icon: "text-base-content/60",
+  },
+  primary: {
+    container: "border-primary/20 bg-primary/5",
+    hover: "hover:bg-primary/5",
+    count: "text-primary/80",
+    icon: "text-primary/70",
+  },
+  secondary: {
+    container: "border-secondary/20 bg-secondary/5",
+    hover: "hover:bg-secondary/5",
+    count: "text-secondary/80",
+    icon: "text-secondary/70",
+  },
+  accent: {
+    container: "border-accent/20 bg-accent/5",
+    hover: "hover:bg-accent/5",
+    count: "text-accent/80",
+    icon: "text-accent/70",
+  },
+  success: {
+    container: "border-success/20 bg-success/5",
+    hover: "hover:bg-success/5",
+    count: "text-success/80",
+    icon: "text-success/70",
+  },
+  warning: {
+    container: "border-warning/20 bg-warning/5",
+    hover: "hover:bg-warning/5",
+    count: "text-warning/80",
+    icon: "text-warning/70",
+  },
+  error: {
+    container: "border-error/20 bg-error/5",
+    hover: "hover:bg-error/5",
+    count: "text-error/80",
+    icon: "text-error/70",
+  },
+};
 
 const carregando = ref(true);
 const agendamentos = ref<AgendamentoResumo[]>([]);
 const mesVisivel = ref(inicioDoMes(new Date()));
 const dataSelecionada = ref(chaveData(new Date()));
+const painelAtivo = ref<PainelId | null>(null);
 
 const route = useRoute();
 const router = useRouter();
 
 const abaAtual = computed<AbaOperacao>(() => (route.query.aba === "calendario" ? "calendario" : "painel"));
-const agendados = computed(() =>
-  agendamentos.value.filter(
-    (ag) => (ag.status === "Solicitado" && ag.aguardandoRespostaDe === "Prestador") || ag.status === "Aceito",
-  ),
+const STATUS_VARIANT: Record<StatusAgendamento, "default" | "primary" | "success" | "error" | "outline"> = {
+  Confirmado: "primary",
+  Solicitado: "outline",
+  Aceito: "primary",
+  EmAndamento: "default",
+  Concluido: "success",
+  Cancelado: "error",
+  Recusado: "error",
+};
+const aguardandoSuaConfirmacao = computed(() =>
+  agendamentos.value.filter((ag) => ag.status === "Solicitado" && ag.aguardandoRespostaDe === "Prestador"),
 );
+const aguardandoConfirmacaoCliente = computed(() =>
+  agendamentos.value.filter((ag) => ag.status === "Solicitado" && ag.aguardandoRespostaDe === "Cliente"),
+);
+const agendados = computed(() => agendamentos.value.filter((ag) => ag.status === "Aceito"));
 const emAndamento = computed(() => agendamentos.value.filter((ag) => ag.status === "EmAndamento"));
 const concluidos = computed(() => agendamentos.value.filter((ag) => ag.status === "Concluido"));
+const canceladosOuRecusados = computed(() =>
+  agendamentos.value.filter((ag) => ag.status === "Cancelado" || ag.status === "Recusado"),
+);
+const paineis = computed(() => [
+  {
+    id: "aguardando-sua-confirmacao" as const,
+    titulo: "Aguardando sua confirmacao",
+    descricao: "Solicitacoes pendentes da sua resposta.",
+    itens: aguardandoSuaConfirmacao.value,
+    vazio: "Nenhuma solicitacao aguardando sua confirmacao.",
+    tom: "warning" as const,
+    icone: "schedule",
+  },
+  {
+    id: "aguardando-confirmacao-cliente" as const,
+    titulo: "Aguardando confirmacao do cliente",
+    descricao: "Pedidos enviados que aguardam retorno do cliente.",
+    itens: aguardandoConfirmacaoCliente.value,
+    vazio: "Nenhuma solicitacao aguardando confirmacao do cliente.",
+    tom: "warning" as const,
+    icone: "schedule",
+  },
+  {
+    id: "agendados" as const,
+    titulo: "Agendados",
+    descricao: "Servicos confirmados e prontos para iniciar.",
+    itens: agendados.value,
+    vazio: "Nenhum servico agendado.",
+    tom: "primary" as const,
+    icone: "event_available",
+  },
+  {
+    id: "em-andamento" as const,
+    titulo: "Em andamento",
+    descricao: "Servicos em execucao no momento.",
+    itens: emAndamento.value,
+    vazio: "Nenhum servico em andamento.",
+    tom: "accent" as const,
+    icone: "play_circle",
+  },
+  {
+    id: "concluidos" as const,
+    titulo: "Concluidos",
+    descricao: "Historico de servicos finalizados.",
+    itens: concluidos.value,
+    vazio: "Nenhum servico concluido.",
+    tom: "success" as const,
+    icone: "task_alt",
+  },
+  {
+    id: "cancelados-recusados" as const,
+    titulo: "Cancelados ou recusados",
+    descricao: "Solicitacoes encerradas sem execucao.",
+    itens: canceladosOuRecusados.value,
+    vazio: "Nenhum servico cancelado ou recusado.",
+    tom: "error" as const,
+    icone: "cancel",
+  },
+]);
 const agendaConfirmada = computed(() =>
   agendamentos.value
     .filter((ag) => (ag.status === "Aceito" || ag.status === "EmAndamento") && new Date(ag.dataHoraAgendada) >= inicioDoDia(new Date()))
     .sort((a, b) => new Date(a.dataHoraAgendada).getTime() - new Date(b.dataHoraAgendada).getTime()),
 );
-const proximoServico = computed(() => agendaConfirmada.value[0] ?? null);
 const tituloMesVisivel = computed(() =>
   mesVisivel.value.toLocaleDateString("pt-BR", { month: "long", year: "numeric" }),
 );
@@ -400,6 +462,29 @@ function selecionarAba(aba: AbaOperacao) {
 
 function abrirDetalhes(id: string) {
   router.push({ path: `/agendamento/detalhes/${id}`, query: { origem: "operacao" } });
+}
+
+function alternarPainel(id: PainelId) {
+  painelAtivo.value = painelAtivo.value === id ? null : id;
+}
+
+function classesPainel(tom?: PainelTom) {
+  return PAINEL_TOM_CLASSES[tom ?? "neutro"];
+}
+
+function labelPrestador(ag: AgendamentoResumo): string {
+  if (ag.status === "Solicitado" && ag.aguardandoRespostaDe === "Prestador") {
+    return "Aguardando sua confirmacao";
+  }
+  if (ag.status === "Solicitado" && ag.aguardandoRespostaDe === "Cliente") {
+    return "Aguardando confirmacao do cliente";
+  }
+  if (ag.status === "Aceito") return "Agendado";
+  if (ag.status === "EmAndamento") return "Em andamento";
+  if (ag.status === "Concluido") return "Concluido";
+  if (ag.status === "Recusado") return "Recusado";
+  if (ag.status === "Cancelado") return "Cancelado";
+  return "Solicitado";
 }
 
 function selecionarDia(iso: string) {

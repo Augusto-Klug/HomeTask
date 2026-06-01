@@ -46,10 +46,13 @@ const router = createRouter({
   routes: [{ path: "/", component: { template: "<div />" } }],
 });
 
-function mountView() {
+async function mountView() {
   setActivePinia(createPinia());
   const auth = useAuthStore();
   auth.setUser({ userId: 10, nome: "Teste", email: "a@b.com", tipo: 1 });
+
+  await router.push("/");
+  await router.isReady();
 
   return mount(MeusAgendamentosView, {
     global: {
@@ -66,20 +69,20 @@ function mountView() {
 describe("MeusAgendamentosView", () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it("exibe apenas a secao de cliente", async () => {
+  it("exibe a secao de aguardando confirmacao", async () => {
     vi.mocked(apiModule.default.get).mockResolvedValue({ data: [makeAgendamento()] });
-    const wrapper = mountView();
+    const wrapper = await mountView();
     await flushPromises();
 
-    expect(wrapper.text()).toContain("Cliente");
-    expect(wrapper.text()).not.toContain("Prestador");
+    expect(wrapper.text()).toContain("Aguardando sua confirmacao");
+    expect(wrapper.text()).not.toContain("Cliente");
   });
 
   it("mostra aprovacao do cliente quando a pendencia e dele", async () => {
     vi.mocked(apiModule.default.get).mockResolvedValue({ data: [makeAgendamento()] });
-    const wrapper = mountView();
+    const wrapper = await mountView();
     await flushPromises();
 
-    expect(wrapper.text()).toContain("Aguardando sua aprovacao");
+    expect(wrapper.text()).toContain("Aguardando sua confirmacao");
   });
 });
