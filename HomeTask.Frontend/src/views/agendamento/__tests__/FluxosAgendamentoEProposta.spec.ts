@@ -23,7 +23,7 @@ describe("FluxosAgendamentoEProposta", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     setActivePinia(createPinia());
-    useAuthStore().setUser({ userId: 1, nome: "Demo", email: "d@d.com", tipo: 3 });
+    useAuthStore().setUser({ userId: "1", nome: "Demo", email: "d@d.com", tipo: 3 });
   });
 
   it("mostra CTA de agendamento quando o servico e de prestador", async () => {
@@ -38,7 +38,7 @@ describe("FluxosAgendamentoEProposta", () => {
           tipoAnuncio: 1,
           prestadorId: "10",
           prestadorNome: "Maria",
-          categoria: "Faxina",
+          categoria: 1,
           cidade: "Blumenau",
           estado: "SC",
           mediaAvaliacoes: 4,

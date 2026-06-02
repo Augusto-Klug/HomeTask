@@ -17,7 +17,7 @@ vi.mock('@/services/api', () => ({
 vi.mock('@/stores/auth', () => ({
   useAuthStore: vi.fn(() => ({
     isLoggedIn: true,
-    user: { userId: 1, nome: 'João', tipo: 1 },
+    user: { userId: '1', nome: 'João', tipo: 1 },
   })),
 }))
 

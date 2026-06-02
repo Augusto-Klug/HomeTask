@@ -21,7 +21,7 @@ namespace HomeTask.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
+        public async Task<ActionResult<LoginResponse>> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Senha))
                 return BadRequest("E-mail e senha são obrigatórios.");
@@ -43,16 +43,16 @@ namespace HomeTask.WebApi.Controllers
                 SameSite = SameSiteMode.Strict,
                 Expires = DateTime.UtcNow.AddHours(double.Parse(_configuration["Jwt:ExpirationHours"]!))
             });
-
-
-            return Ok(new LoginResponse
+            var response = new LoginResponse
             {
                 Token = token,
                 UserId = usuario.Id,
                 Nome = usuario.Nome,
                 Email = usuario.Email,
                 Tipo = (int)usuario.TipoUsuario
-            });
+            };
+
+            return response;
         }
 
         private string GerarToken(Guid userId, string email, string nome, int tipo)

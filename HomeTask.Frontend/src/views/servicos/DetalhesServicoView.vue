@@ -176,7 +176,7 @@ function formatarHora(dataStr: string): string {
   });
 }
 
-function obterNomeCategoria(categoria: number | string | { id: string; nome: string; icone: string }): string {
+function obterNomeCategoria(categoria: number | { id: string; nome: string; icone: string }): string {
   if (typeof categoria === "object" && categoria !== null) {
     return categoria.nome;
   }

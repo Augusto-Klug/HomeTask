@@ -323,7 +323,7 @@ function estrelas(media: number): string {
   return '★'.repeat(cheias) + '☆'.repeat(5 - cheias)
 }
 
-function obterNomeCategoria(categoria: number | string | { id: string; nome: string; icone: string }): string {
+function obterNomeCategoria(categoria: number | { id: string; nome: string; icone: string }): string {
   if (typeof categoria === 'object' && categoria !== null) {
     return categoria.nome
   }

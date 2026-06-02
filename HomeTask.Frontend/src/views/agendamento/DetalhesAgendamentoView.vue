@@ -98,7 +98,7 @@
         <div class="flex flex-wrap gap-3 mt-4">
           <template v-if="podeAceitar">
             <HtButton @click="acaoAgendamento('Aceitar')" :loading="carregandoAcao" class="flex-1">
-              {{ agendamento.aguardandoRespostaDe === 'Cliente' ? 'Aceitar Proposta' : 'Aceitar Agendamento' }}
+              {{ agendamento.aguardandoRespostaDe === TipoUsuario.Cliente ? 'Aceitar Proposta' : 'Aceitar Agendamento' }}
             </HtButton>
             <HtButton @click="mostrarModalRecusa = true" variant="outline" class="flex-1 border-error text-error hover:bg-error/10">
               Recusar
@@ -150,7 +150,7 @@ import { computed, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import api from "@/services/api";
-import type { AgendamentoResumo, StatusAgendamento } from "@/types";
+import { TipoUsuario, type AgendamentoResumo, type StatusAgendamento } from "@/types";
 import { formatarMoeda, formatarPrecoServico } from "@/shared/utils";
 import HtCard from "@/components/ui/HtCard.vue";
 import HtBadge from "@/components/ui/HtBadge.vue";
@@ -215,7 +215,7 @@ const souOCliente = computed(() => {
 
 const podeAceitar = computed(() => {
   if (!agendamento.value || agendamento.value.status !== "Solicitado") return false;
-  if (agendamento.value.aguardandoRespostaDe === "Cliente") return souOCliente.value;
+  if (agendamento.value.aguardandoRespostaDe === TipoUsuario.Cliente) return souOCliente.value;
   return souOPrestador.value;
 });
 
@@ -226,10 +226,10 @@ const podeCancelar = computed(() => {
 
 const statusLabel = computed(() => {
   if (!agendamento.value) return "";
-  if (agendamento.value.status === "Solicitado" && agendamento.value.aguardandoRespostaDe === "Cliente") {
+  if (agendamento.value.status === "Solicitado" && agendamento.value.aguardandoRespostaDe === TipoUsuario.Cliente) {
     return "Pendente de aprovacao do cliente";
   }
-  if (agendamento.value.status === "Solicitado" && agendamento.value.aguardandoRespostaDe === "Prestador") {
+  if (agendamento.value.status === "Solicitado" && agendamento.value.aguardandoRespostaDe === TipoUsuario.Prestador) {
     return "Pendente de resposta do prestador";
   }
   return STATUS_LABEL[agendamento.value.status];
@@ -258,11 +258,11 @@ async function carregarAtorAtual() {
   ]);
 
   if (cliente.status === "fulfilled") {
-    clienteAtualId.value = String((cliente.value.data as { id?: string | number }).id ?? "");
+    clienteAtualId.value = String((cliente.value.data as { id?: string }).id ?? "");
   }
 
   if (prestador.status === "fulfilled") {
-    prestadorAtualId.value = String((prestador.value.data as { id?: string | number }).id ?? "");
+    prestadorAtualId.value = String((prestador.value.data as { id?: string }).id ?? "");
   }
 }
 
@@ -334,6 +334,18 @@ function normalizarStatus(status: unknown): StatusAgendamento {
   return "Solicitado";
 }
 
+function normalizarAguardandoRespostaDe(valor: unknown): TipoUsuario | null {
+  if (typeof valor === "number" && (valor === TipoUsuario.Cliente || valor === TipoUsuario.Prestador || valor === TipoUsuario.Ambos)) {
+    return valor;
+  }
+
+  if (valor === "Cliente") return TipoUsuario.Cliente;
+  if (valor === "Prestador") return TipoUsuario.Prestador;
+  if (valor === "Ambos") return TipoUsuario.Ambos;
+
+  return null;
+}
+
 function normalizarAgendamento(data: AgendamentoResumo): AgendamentoResumo {
   const seguro = data as Partial<AgendamentoResumo> & { status?: unknown };
   return {
@@ -352,7 +364,7 @@ function normalizarAgendamento(data: AgendamentoResumo): AgendamentoResumo {
     dataResposta: seguro.dataResposta ?? null,
     dataConclusao: seguro.dataConclusao ?? null,
     motivoRecusa: seguro.motivoRecusa ?? null,
-    aguardandoRespostaDe: seguro.aguardandoRespostaDe ?? null,
+    aguardandoRespostaDe: normalizarAguardandoRespostaDe(seguro.aguardandoRespostaDe),
     servicos: seguro.servicos ?? [],
   };
 }

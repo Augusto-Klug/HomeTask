@@ -1,21 +1,32 @@
 export interface User {
-  userId: string | number
+  userId: string
   nome: string
   email: string
   tipo: number
 }
 
 export interface AuthResponse {
-  userId: string | number
+  userId: string
   nome: string
   email: string
   tipo: number
 }
 
 export interface Categoria {
-  id: number
+  id: string
   nome: string
   icone: string
+}
+
+export enum TipoUsuario {
+  Cliente = 1,
+  Prestador = 2,
+  Ambos = 3,
+}
+
+export enum TipoAnuncio {
+  Oferta = 1,
+  Pedido = 2,
 }
 
 export enum UnidadeCobranca {
@@ -25,18 +36,18 @@ export enum UnidadeCobranca {
 }
 
 export interface Servico {
-  id: string | number
+  id: string
   titulo: string
   descricao: string
   precoBase: number
   preco?: number
   unidadeCobranca: UnidadeCobranca
-  tipoAnuncio?: number | string
-  prestadorId?: string | number
+  tipoAnuncio?: TipoAnuncio
+  prestadorId?: string
   prestadorNome?: string
-  clienteId?: string | number
+  clienteId?: string
   clienteNome?: string
-  categoria: string | number | { id: string; nome: string; icone: string }
+  categoria: number | { id: string; nome: string; icone: string }
   cidade: string
   estado: string
   mediaAvaliacoes?: number | null
@@ -45,7 +56,7 @@ export interface Servico {
 }
 
 export interface Avaliacao {
-  id: number
+  id: string
   clienteNome: string
   nota: number
   comentario: string
@@ -116,17 +127,17 @@ export type StatusAgendamento =
   | 'Cancelado'
   | 'Recusado'
 
-export type TipoAnuncioCliente = 2
-export type TipoAnuncioPrestador = 1
+export type TipoAnuncioCliente = TipoAnuncio.Pedido
+export type TipoAnuncioPrestador = TipoAnuncio.Oferta
 
 export interface ServicoOferecido {
-  id: string | number
+  id: string
   titulo: string
   descricao: string
   precoBase: number
   duracaoEstimadaMinutos: number | null
   unidadeCobranca: UnidadeCobranca
-  tipoAnuncio: TipoAnuncioCliente | TipoAnuncioPrestador | string
+  tipoAnuncio: TipoAnuncioCliente | TipoAnuncioPrestador
   categoria: number | { id: string; nome: string; icone: string }
   dataDesejada?: string | null
   aceitaPagamentoAposFinalizacao?: boolean
@@ -141,9 +152,9 @@ export interface AgendamentoEndereco {
 
 export interface AgendamentoResumo {
   id: string
-  clienteId: string | number
+  clienteId: string
   clienteNome: string
-  prestadorId: string | number
+  prestadorId: string
   prestadorNome: string
   dataHoraAgendada: string
   duracaoMinutos: number
@@ -155,21 +166,21 @@ export interface AgendamentoResumo {
   dataResposta: string | null
   dataConclusao: string | null
   motivoRecusa: string | null
-  aguardandoRespostaDe?: 'Cliente' | 'Prestador' | null
+  aguardandoRespostaDe?: TipoUsuario | null
   servicos: Array<ServicoOferecido & { unidadeCobranca: UnidadeCobranca }>
 }
 
 export interface ServicoPrestadorDetalhe extends Servico {
-  prestadorId: string | number
+  prestadorId: string
   prestadorNome?: string
-  tipoAnuncio: TipoAnuncioPrestador | string
+  tipoAnuncio: TipoAnuncioPrestador
 }
 
 export interface ServicoClienteDetalhe extends Servico {
-  clienteId: string | number
+  clienteId: string
   clienteNome?: string
   dataDesejada?: string | null
-  tipoAnuncio: TipoAnuncioCliente | string
+  tipoAnuncio: TipoAnuncioCliente
 }
 
 export type ServicoDetalhe = ServicoPrestadorDetalhe | ServicoClienteDetalhe

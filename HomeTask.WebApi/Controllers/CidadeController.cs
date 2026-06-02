@@ -1,4 +1,5 @@
 using HomeTask.Application.Interfaces;
+using HomeTask.Application.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HomeTask.WebApi.Controllers
@@ -18,31 +19,33 @@ namespace HomeTask.WebApi.Controllers
         /// Lista todas as cidades para uso em dropdowns
         /// </summary>
         [HttpGet]
-        public async Task<IActionResult> Listar(CancellationToken cancellationToken)
+        public async Task<ActionResult<IEnumerable<CidadeDto>>> Listar(CancellationToken cancellationToken)
         {
-            return Ok(await _cidadeService.ListarAsync(cancellationToken));
+            var cidades = await _cidadeService.ListarAsync(cancellationToken);
+            return cidades.ToList();
         }
 
         /// <summary>
         /// Busca cidades por nome ou estado para autocomplete
         /// </summary>
         [HttpGet]
-        public async Task<IActionResult> Buscar([FromQuery] string termo, CancellationToken cancellationToken)
+        public async Task<ActionResult<IEnumerable<CidadeDto>>> Buscar([FromQuery] string termo, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(termo))
                 return BadRequest("Informe um termo para busca.");
 
-            return Ok(await _cidadeService.BuscarAsync(termo, cancellationToken));
+            var cidades = await _cidadeService.BuscarAsync(termo, cancellationToken);
+            return cidades.ToList();
         }
 
         [HttpGet]
-        public async Task<IActionResult> ObterPorId([FromQuery] Guid id, CancellationToken cancellationToken)
+        public async Task<ActionResult<CidadeDto>> ObterPorId([FromQuery] Guid id, CancellationToken cancellationToken)
         {
             var cidade = await _cidadeService.ObterPorIdAsync(id, cancellationToken);
             if (cidade == null)
                 return NotFound();
 
-            return Ok(cidade);
+            return cidade;
         }
     }
 }

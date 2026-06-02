@@ -5,7 +5,7 @@ import { createRouter, createMemoryHistory } from "vue-router";
 import MeusAgendamentosView from "../MeusAgendamentosView.vue";
 import { useAuthStore } from "@/stores/auth";
 import * as apiModule from "@/services/api";
-import { UnidadeCobranca, type AgendamentoResumo } from "@/types";
+import { TipoUsuario, UnidadeCobranca, type AgendamentoResumo } from "@/types";
 
 vi.mock("@/services/api", () => ({ default: { get: vi.fn() } }));
 
@@ -25,7 +25,7 @@ const makeAgendamento = (overrides: Partial<AgendamentoResumo> = {}): Agendament
   dataResposta: null,
   dataConclusao: null,
   motivoRecusa: null,
-  aguardandoRespostaDe: "Cliente",
+  aguardandoRespostaDe: TipoUsuario.Cliente,
   servicos: [
     {
       id: "srv-1",
@@ -49,7 +49,7 @@ const router = createRouter({
 async function mountView() {
   setActivePinia(createPinia());
   const auth = useAuthStore();
-  auth.setUser({ userId: 10, nome: "Teste", email: "a@b.com", tipo: 1 });
+  auth.setUser({ userId: "10", nome: "Teste", email: "a@b.com", tipo: 1 });
 
   await router.push("/");
   await router.isReady();

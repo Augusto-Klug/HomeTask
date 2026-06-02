@@ -16,39 +16,42 @@ namespace HomeTask.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ObterMensagemPorId([FromQuery] Guid id, CancellationToken cancellationToken)
+        public async Task<ActionResult<MensagemDto>> ObterMensagemPorId([FromQuery] Guid id, CancellationToken cancellationToken)
         {
             var mensagem = await _mensagemService.ObterPorIdAsync(id, cancellationToken);
             if (mensagem == null)
                 return NotFound();
 
-            return Ok(mensagem);
+            return mensagem;
         }
 
         [HttpGet]
-        public async Task<IActionResult> ObterConversa([FromQuery] Guid conversaId, CancellationToken cancellationToken)
+        public async Task<ActionResult<IEnumerable<MensagemDto>>> ObterConversa([FromQuery] Guid conversaId, CancellationToken cancellationToken)
         {
-            return Ok(await _mensagemService.ObterConversaAsync(conversaId, cancellationToken));
+            var conversa = await _mensagemService.ObterConversaAsync(conversaId, cancellationToken);
+            return conversa.ToList();
         }
 
         [HttpGet]
-        public async Task<IActionResult> ObterConversasPorUsuario([FromQuery] Guid usuarioId, CancellationToken cancellationToken)
+        public async Task<ActionResult<IEnumerable<MensagemDto>>> ObterConversasPorUsuario([FromQuery] Guid usuarioId, CancellationToken cancellationToken)
         {
-            return Ok(await _mensagemService.ObterConversasPorUsuarioAsync(usuarioId, cancellationToken));
+            var conversas = await _mensagemService.ObterConversasPorUsuarioAsync(usuarioId, cancellationToken);
+            return conversas.ToList();
         }
 
         [HttpGet]
-        public async Task<IActionResult> ObterNaoLidas([FromQuery] Guid usuarioId, CancellationToken cancellationToken)
+        public async Task<ActionResult<int>> ObterNaoLidas([FromQuery] Guid usuarioId, CancellationToken cancellationToken)
         {
             var total = await _mensagemService.ObterNaoLidasAsync(usuarioId, cancellationToken);
 
-            return Ok(total);
+            return total;
         }
 
         [HttpPost]
-        public async Task<IActionResult> EnviarMensagem(MensagemDto dto, CancellationToken cancellationToken)
+        public async Task<ActionResult<MensagemDto>> EnviarMensagem(MensagemDto dto, CancellationToken cancellationToken)
         {
-            return Ok(await _mensagemService.EnviarAsync(dto, cancellationToken));
+            var mensagem = await _mensagemService.EnviarAsync(dto, cancellationToken);
+            return mensagem;
         }
 
         [HttpPost]

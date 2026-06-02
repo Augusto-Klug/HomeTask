@@ -29,7 +29,7 @@ describe('useAuthStore', () => {
   it('should set user after login', async () => {
     const api = await import('@/services/api')
     vi.mocked(api.default.post).mockResolvedValueOnce({
-      data: { userId: 1, nome: 'João', email: 'joao@test.com', tipo: 1 },
+      data: { userId: '1', nome: 'João', email: 'joao@test.com', tipo: 1 },
     })
 
     const auth = useAuthStore()
@@ -42,7 +42,7 @@ describe('useAuthStore', () => {
   it('should clear user after logout', async () => {
     const api = await import('@/services/api')
     vi.mocked(api.default.post).mockResolvedValueOnce({
-      data: { userId: 1, nome: 'João', email: 'joao@test.com', tipo: 1 },
+      data: { userId: '1', nome: 'João', email: 'joao@test.com', tipo: 1 },
     })
     vi.mocked(api.default.post).mockResolvedValueOnce({}) // logout
 

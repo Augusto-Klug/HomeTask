@@ -218,7 +218,7 @@
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import api from "@/services/api";
-import type { AgendamentoResumo, StatusAgendamento } from "@/types";
+import { TipoUsuario, type AgendamentoResumo, type StatusAgendamento } from "@/types";
 import HtBadge from "@/components/ui/HtBadge.vue";
 import HtCard from "@/components/ui/HtCard.vue";
 import HtSpinner from "@/components/ui/HtSpinner.vue";
@@ -321,10 +321,10 @@ const STATUS_VARIANT: Record<StatusAgendamento, "default" | "primary" | "success
   Recusado: "error",
 };
 const aguardandoSuaConfirmacao = computed(() =>
-  agendamentos.value.filter((ag) => ag.status === "Solicitado" && ag.aguardandoRespostaDe === "Prestador"),
+  agendamentos.value.filter((ag) => ag.status === "Solicitado" && ag.aguardandoRespostaDe === TipoUsuario.Prestador),
 );
 const aguardandoConfirmacaoCliente = computed(() =>
-  agendamentos.value.filter((ag) => ag.status === "Solicitado" && ag.aguardandoRespostaDe === "Cliente"),
+  agendamentos.value.filter((ag) => ag.status === "Solicitado" && ag.aguardandoRespostaDe === TipoUsuario.Cliente),
 );
 const agendados = computed(() => agendamentos.value.filter((ag) => ag.status === "Aceito"));
 const emAndamento = computed(() => agendamentos.value.filter((ag) => ag.status === "EmAndamento"));
@@ -473,10 +473,10 @@ function classesPainel(tom?: PainelTom) {
 }
 
 function labelPrestador(ag: AgendamentoResumo): string {
-  if (ag.status === "Solicitado" && ag.aguardandoRespostaDe === "Prestador") {
+  if (ag.status === "Solicitado" && ag.aguardandoRespostaDe === TipoUsuario.Prestador) {
     return "Aguardando sua confirmacao";
   }
-  if (ag.status === "Solicitado" && ag.aguardandoRespostaDe === "Cliente") {
+  if (ag.status === "Solicitado" && ag.aguardandoRespostaDe === TipoUsuario.Cliente) {
     return "Aguardando confirmacao do cliente";
   }
   if (ag.status === "Aceito") return "Agendado";
@@ -535,6 +535,18 @@ function normalizarStatus(status: unknown): StatusAgendamento {
   return "Solicitado";
 }
 
+function normalizarAguardandoRespostaDe(valor: unknown): TipoUsuario | null {
+  if (typeof valor === "number" && (valor === TipoUsuario.Cliente || valor === TipoUsuario.Prestador || valor === TipoUsuario.Ambos)) {
+    return valor;
+  }
+
+  if (valor === "Cliente") return TipoUsuario.Cliente;
+  if (valor === "Prestador") return TipoUsuario.Prestador;
+  if (valor === "Ambos") return TipoUsuario.Ambos;
+
+  return null;
+}
+
 function normalizarAgendamento(data: AgendamentoResumo): AgendamentoResumo {
   const seguro = data as Partial<AgendamentoResumo> & { status?: unknown };
   return {
@@ -553,7 +565,7 @@ function normalizarAgendamento(data: AgendamentoResumo): AgendamentoResumo {
     dataResposta: seguro.dataResposta ?? null,
     dataConclusao: seguro.dataConclusao ?? null,
     motivoRecusa: seguro.motivoRecusa ?? null,
-    aguardandoRespostaDe: seguro.aguardandoRespostaDe ?? null,
+    aguardandoRespostaDe: normalizarAguardandoRespostaDe(seguro.aguardandoRespostaDe),
     servicos: seguro.servicos ?? [],
   };
 }

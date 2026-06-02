@@ -1,18 +1,18 @@
 import { delay, http, HttpResponse } from "msw";
 import type { AgendamentoResumo, AuthResponse, Avaliacao, PerfilForm, Servico } from "@/types";
-import { UnidadeCobranca } from "@/types";
+import { TipoUsuario, UnidadeCobranca } from "@/types";
 
 const MOCK_DELAY = 200;
 
 const MOCK_USER: AuthResponse = {
-  userId: 1,
+  userId: "1",
   nome: "Usuario Demo",
   email: "demo@hometask.com",
   tipo: 3,
 };
 
-const MOCK_CLIENTE = { id: 1, usuarioId: 1, nome: "Usuario Demo" };
-const MOCK_PRESTADOR = { id: 1, usuarioId: 1, nome: "Usuario Demo" };
+const MOCK_CLIENTE = { id: "1", usuarioId: "1", nome: "Usuario Demo" };
+const MOCK_PRESTADOR = { id: "1", usuarioId: "1", nome: "Usuario Demo" };
 
 const MOCK_SERVICOS: Servico[] = [
   {
@@ -24,7 +24,7 @@ const MOCK_SERVICOS: Servico[] = [
     tipoAnuncio: 1,
     prestadorId: "10",
     prestadorNome: "Maria Silva",
-    categoria: "Faxina",
+    categoria: 1,
     cidade: "Blumenau",
     estado: "SC",
     mediaAvaliacoes: 4.5,
@@ -38,7 +38,7 @@ const MOCK_SERVICOS: Servico[] = [
     tipoAnuncio: 1,
     prestadorId: "11",
     prestadorNome: "Joao Santos",
-    categoria: "Jardinagem",
+    categoria: 2,
     cidade: "Blumenau",
     estado: "SC",
     mediaAvaliacoes: 4,
@@ -52,19 +52,19 @@ const MOCK_SERVICOS: Servico[] = [
     tipoAnuncio: 2,
     clienteId: "2",
     clienteNome: "Pedro Martins",
-    categoria: "Faxina",
+    categoria: 1,
     cidade: "Blumenau",
     estado: "SC",
     dataDesejada: diasAPartirDeHoje(3, "10:00"),
   },
 ];
 
-const MOCK_AVALIACOES: Record<number, Avaliacao[]> = {
-  10: [
-    { id: 1, clienteNome: "Pedro Martins", nota: 5, comentario: "Excelente trabalho", data: "2025-03-10T14:00:00Z" },
+const MOCK_AVALIACOES: Record<string, Avaliacao[]> = {
+  "10": [
+    { id: "1", clienteNome: "Pedro Martins", nota: 5, comentario: "Excelente trabalho", data: "2025-03-10T14:00:00Z" },
   ],
-  11: [
-    { id: 2, clienteNome: "Luisa Ferreira", nota: 4, comentario: "Bom atendimento", data: "2025-03-05T16:00:00Z" },
+  "11": [
+    { id: "2", clienteNome: "Luisa Ferreira", nota: 4, comentario: "Bom atendimento", data: "2025-03-05T16:00:00Z" },
   ],
 };
 
@@ -123,7 +123,7 @@ const MOCK_AGENDAMENTOS_CLIENTE: AgendamentoResumo[] = [
     dataResposta: null,
     dataConclusao: null,
     motivoRecusa: null,
-    aguardandoRespostaDe: "Cliente",
+    aguardandoRespostaDe: TipoUsuario.Cliente,
     servicos: [
       {
         id: "11",
@@ -156,7 +156,7 @@ const MOCK_AGENDAMENTOS_PRESTADOR: AgendamentoResumo[] = [
     dataResposta: null,
     dataConclusao: null,
     motivoRecusa: null,
-    aguardandoRespostaDe: "Prestador",
+    aguardandoRespostaDe: TipoUsuario.Prestador,
     servicos: [
       {
         id: "srv-012",
@@ -239,8 +239,8 @@ export const handlers = [
 
     const categoria = url.searchParams.get("categoria");
     if (categoria) {
-      const label = CATEGORIA_LABELS[categoria] ?? "";
-      result = result.filter((s) => s.categoria === label);
+      const valorCategoria = Number(categoria);
+      result = result.filter((s) => s.categoria === valorCategoria);
     }
 
     const cidade = url.searchParams.get("cidade");
@@ -277,7 +277,7 @@ export const handlers = [
   http.get("*/api/Avaliacao/ObterAvaliacoesPorPrestador", async ({ request }) => {
     await delay(MOCK_DELAY);
     const url = new URL(request.url);
-    const prestadorId = Number(url.searchParams.get("prestadorId"));
+    const prestadorId = url.searchParams.get("prestadorId") ?? "";
     return HttpResponse.json(MOCK_AVALIACOES[prestadorId] ?? []);
   }),
 
@@ -296,7 +296,7 @@ export const handlers = [
 
   http.post("*/api/Agendamento/CriarAgendamento", async () => {
     await delay(MOCK_DELAY);
-    return HttpResponse.json({ id: Math.floor(Math.random() * 9000) + 1000 }, { status: 201 });
+    return HttpResponse.json({ id: crypto.randomUUID() }, { status: 201 });
   }),
 
   http.get("*/api/Agendamento/ObterMeusAgendamentosPrestador", async () => {
@@ -321,7 +321,7 @@ export const handlers = [
   http.get("*/api/Agendamento/ObterSolicitacoesPendentesPrestador", async () => {
     await delay(MOCK_DELAY);
     return HttpResponse.json(
-      MOCK_AGENDAMENTOS_PRESTADOR.filter((a) => a.status === "Solicitado" && a.aguardandoRespostaDe === "Prestador"),
+      MOCK_AGENDAMENTOS_PRESTADOR.filter((a) => a.status === "Solicitado" && a.aguardandoRespostaDe === TipoUsuario.Prestador),
     );
   }),
 
