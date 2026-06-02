@@ -57,8 +57,8 @@ public class ServicoPrestadorRepository : RepositoryBase<ServicoPrestador>, ISer
             query = query.Where(s => s.PrecoBase <= precoMaximo.Value);
 
         return await query
-            .OrderByDescending(s => s.Prestador.MediaAvaliacoes)
-            .ThenBy(s => s.PrecoBase)
+            .OrderByDescending(s => (double)s.Prestador.MediaAvaliacoes)
+            .ThenBy(s => (double)s.PrecoBase)
             .ToListAsync(cancellationToken);
     }
 

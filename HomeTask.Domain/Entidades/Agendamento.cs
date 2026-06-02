@@ -130,4 +130,15 @@ public class Agendamento
         Status = StatusAgendamento.Cancelado;
         MotivoRecusa = motivo;
     }
+
+    public static TipoUsuario? ObterResponsavelPelaResposta(Agendamento agendamento)
+    {
+        if (agendamento.Status != StatusAgendamento.Solicitado)
+            return null;
+
+        var possuiPedidoDeCliente = agendamento.AgendamentoServicos
+            .Any(s => s.ServicoBase?.TipoAnuncio == TipoAnuncio.Pedido);
+
+        return possuiPedidoDeCliente ? TipoUsuario.Cliente : TipoUsuario.Prestador;
+    }
 }

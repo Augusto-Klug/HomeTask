@@ -2,5 +2,6 @@
   <Project Path="HomeTask.Application/HomeTask.Application.csproj" />
   <Project Path="HomeTask.Domain/HomeTask.Domain.csproj" />
   <Project Path="HomeTask.Infrastructure/HomeTask.Infrastructure.csproj" />
+  <Project Path="HomeTask.Tests/HomeTask.Tests.csproj" />
   <Project Path="HomeTask.WebApi/HomeTask.WebApi.csproj" />
 </Solution>
