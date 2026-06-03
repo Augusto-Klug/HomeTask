@@ -80,7 +80,7 @@
                   <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-2 mb-1 flex-wrap">
                       <span class="font-semibold text-sm">{{ ag.clienteNome }}</span>
-                      <HtBadge :variant="STATUS_VARIANT[ag.status]">{{ labelPrestador(ag) }}</HtBadge>
+                      <HtBadge :variant="obterVariantStatus(ag.status)">{{ labelPrestador(ag) }}</HtBadge>
                     </div>
                     <p v-if="ag.servicos.length" class="text-xs text-base-content/60 mb-2">
                       {{ ag.servicos.map((s) => s.titulo).join(", ") }}
@@ -218,12 +218,11 @@
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import api from "@/services/api";
-import { TipoUsuario, type AgendamentoResumo, type StatusAgendamento } from "@/types";
-import HtBadge from "@/components/ui/HtBadge.vue";
+import { StatusAgendamento, TipoUsuario, type AgendamentoResumo } from "@/types";
+import HtBadge, { HtBadgeVariant } from "@/components/ui/HtBadge.vue";
 import HtCard from "@/components/ui/HtCard.vue";
 import HtSpinner from "@/components/ui/HtSpinner.vue";
 
-type StatusAgendamentoNumero = 1 | 2 | 3 | 4 | 5 | 6;
 type AbaOperacao = "painel" | "calendario";
 type DiaCalendario = {
   chave: string;
@@ -242,15 +241,6 @@ type PainelId =
   | "concluidos"
   | "cancelados-recusados";
 type PainelTom = "primary" | "secondary" | "accent" | "success" | "warning" | "error" | "neutro";
-
-const STATUS_NUMERO_PARA_TEXTO: Record<StatusAgendamentoNumero, StatusAgendamento> = {
-  1: "Solicitado",
-  2: "Aceito",
-  3: "Recusado",
-  4: "EmAndamento",
-  5: "Concluido",
-  6: "Cancelado",
-};
 
 const diasSemana = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"] as const;
 const PAINEL_TOM_CLASSES: Record<
@@ -311,26 +301,17 @@ const route = useRoute();
 const router = useRouter();
 
 const abaAtual = computed<AbaOperacao>(() => (route.query.aba === "calendario" ? "calendario" : "painel"));
-const STATUS_VARIANT: Record<StatusAgendamento, "default" | "primary" | "success" | "error" | "outline"> = {
-  Confirmado: "primary",
-  Solicitado: "outline",
-  Aceito: "primary",
-  EmAndamento: "default",
-  Concluido: "success",
-  Cancelado: "error",
-  Recusado: "error",
-};
 const aguardandoSuaConfirmacao = computed(() =>
-  agendamentos.value.filter((ag) => ag.status === "Solicitado" && ag.aguardandoRespostaDe === TipoUsuario.Prestador),
+  agendamentos.value.filter((ag) => ag.status === StatusAgendamento.Solicitado && ag.aguardandoRespostaDe === TipoUsuario.Prestador),
 );
 const aguardandoConfirmacaoCliente = computed(() =>
-  agendamentos.value.filter((ag) => ag.status === "Solicitado" && ag.aguardandoRespostaDe === TipoUsuario.Cliente),
+  agendamentos.value.filter((ag) => ag.status === StatusAgendamento.Solicitado && ag.aguardandoRespostaDe === TipoUsuario.Cliente),
 );
-const agendados = computed(() => agendamentos.value.filter((ag) => ag.status === "Aceito"));
-const emAndamento = computed(() => agendamentos.value.filter((ag) => ag.status === "EmAndamento"));
-const concluidos = computed(() => agendamentos.value.filter((ag) => ag.status === "Concluido"));
+const agendados = computed(() => agendamentos.value.filter((ag) => ag.status === StatusAgendamento.Aceito));
+const emAndamento = computed(() => agendamentos.value.filter((ag) => ag.status === StatusAgendamento.EmAndamento));
+const concluidos = computed(() => agendamentos.value.filter((ag) => ag.status === StatusAgendamento.Concluido));
 const canceladosOuRecusados = computed(() =>
-  agendamentos.value.filter((ag) => ag.status === "Cancelado" || ag.status === "Recusado"),
+  agendamentos.value.filter((ag) => ag.status === StatusAgendamento.Cancelado || ag.status === StatusAgendamento.Recusado),
 );
 const paineis = computed(() => [
   {
@@ -390,7 +371,7 @@ const paineis = computed(() => [
 ]);
 const agendaConfirmada = computed(() =>
   agendamentos.value
-    .filter((ag) => (ag.status === "Aceito" || ag.status === "EmAndamento") && new Date(ag.dataHoraAgendada) >= inicioDoDia(new Date()))
+    .filter((ag) => (ag.status === StatusAgendamento.Aceito || ag.status === StatusAgendamento.EmAndamento) && new Date(ag.dataHoraAgendada) >= inicioDoDia(new Date()))
     .sort((a, b) => new Date(a.dataHoraAgendada).getTime() - new Date(b.dataHoraAgendada).getTime()),
 );
 const tituloMesVisivel = computed(() =>
@@ -446,7 +427,7 @@ const tituloDiaSelecionado = computed(() => {
 onMounted(async () => {
   try {
     const { data } = await api.get<AgendamentoResumo[]>("/api/Agendamento/ObterMeusAgendamentosPrestador");
-    agendamentos.value = data.map(normalizarAgendamento);
+    agendamentos.value = data;
     alinharSelecaoCalendario();
   } finally {
     carregando.value = false;
@@ -473,17 +454,17 @@ function classesPainel(tom?: PainelTom) {
 }
 
 function labelPrestador(ag: AgendamentoResumo): string {
-  if (ag.status === "Solicitado" && ag.aguardandoRespostaDe === TipoUsuario.Prestador) {
+  if (ag.status === StatusAgendamento.Solicitado && ag.aguardandoRespostaDe === TipoUsuario.Prestador) {
     return "Aguardando sua confirmacao";
   }
-  if (ag.status === "Solicitado" && ag.aguardandoRespostaDe === TipoUsuario.Cliente) {
+  if (ag.status === StatusAgendamento.Solicitado && ag.aguardandoRespostaDe === TipoUsuario.Cliente) {
     return "Aguardando confirmacao do cliente";
   }
-  if (ag.status === "Aceito") return "Agendado";
-  if (ag.status === "EmAndamento") return "Em andamento";
-  if (ag.status === "Concluido") return "Concluido";
-  if (ag.status === "Recusado") return "Recusado";
-  if (ag.status === "Cancelado") return "Cancelado";
+  if (ag.status === StatusAgendamento.Aceito) return "Agendado";
+  if (ag.status === StatusAgendamento.EmAndamento) return "Em andamento";
+  if (ag.status === StatusAgendamento.Concluido) return "Concluido";
+  if (ag.status === StatusAgendamento.Recusado) return "Recusado";
+  if (ag.status === StatusAgendamento.Cancelado) return "Cancelado";
   return "Solicitado";
 }
 
@@ -522,52 +503,20 @@ function alinharSelecaoCalendario() {
   dataSelecionada.value = chaveData(mesVisivel.value);
 }
 
-function normalizarStatus(status: unknown): StatusAgendamento {
-  if (typeof status === "number" && status in STATUS_NUMERO_PARA_TEXTO) {
-    return STATUS_NUMERO_PARA_TEXTO[status as StatusAgendamentoNumero];
+function obterVariantStatus(status: StatusAgendamento): HtBadgeVariant {
+  switch (status) {
+    case StatusAgendamento.Aceito:
+      return HtBadgeVariant.Primary;
+    case StatusAgendamento.Concluido:
+      return HtBadgeVariant.Success;
+    case StatusAgendamento.Cancelado:
+    case StatusAgendamento.Recusado:
+      return HtBadgeVariant.Error;
+    case StatusAgendamento.Solicitado:
+      return HtBadgeVariant.Outline;
+    default:
+      return HtBadgeVariant.Default;
   }
-
-  if (typeof status === "string") {
-    if (status === "Confirmado") return "Aceito";
-    return status as StatusAgendamento;
-  }
-
-  return "Solicitado";
-}
-
-function normalizarAguardandoRespostaDe(valor: unknown): TipoUsuario | null {
-  if (typeof valor === "number" && (valor === TipoUsuario.Cliente || valor === TipoUsuario.Prestador || valor === TipoUsuario.Ambos)) {
-    return valor;
-  }
-
-  if (valor === "Cliente") return TipoUsuario.Cliente;
-  if (valor === "Prestador") return TipoUsuario.Prestador;
-  if (valor === "Ambos") return TipoUsuario.Ambos;
-
-  return null;
-}
-
-function normalizarAgendamento(data: AgendamentoResumo): AgendamentoResumo {
-  const seguro = data as Partial<AgendamentoResumo> & { status?: unknown };
-  return {
-    id: seguro.id ?? "",
-    clienteId: seguro.clienteId ?? "",
-    clienteNome: seguro.clienteNome ?? "",
-    prestadorId: seguro.prestadorId ?? "",
-    prestadorNome: seguro.prestadorNome ?? "",
-    dataHoraAgendada: seguro.dataHoraAgendada ?? new Date().toISOString(),
-    duracaoMinutos: seguro.duracaoMinutos ?? 0,
-    status: normalizarStatus(seguro.status),
-    endereco: seguro.endereco ?? { logradouro: "", bairro: "", cidade: "", estado: "" },
-    observacoes: seguro.observacoes ?? null,
-    valorTotal: seguro.valorTotal ?? 0,
-    dataSolicitacao: seguro.dataSolicitacao ?? new Date().toISOString(),
-    dataResposta: seguro.dataResposta ?? null,
-    dataConclusao: seguro.dataConclusao ?? null,
-    motivoRecusa: seguro.motivoRecusa ?? null,
-    aguardandoRespostaDe: normalizarAguardandoRespostaDe(seguro.aguardandoRespostaDe),
-    servicos: seguro.servicos ?? [],
-  };
 }
 
 function formatarDataCurta(iso: string) {

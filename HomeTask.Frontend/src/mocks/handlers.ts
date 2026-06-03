@@ -1,6 +1,6 @@
 import { delay, http, HttpResponse } from "msw";
 import type { AgendamentoResumo, AuthResponse, Avaliacao, PerfilForm, Servico } from "@/types";
-import { TipoUsuario, UnidadeCobranca } from "@/types";
+import { StatusAgendamento, TipoUsuario, UnidadeCobranca } from "@/types";
 
 const MOCK_DELAY = 200;
 
@@ -85,7 +85,7 @@ const MOCK_AGENDAMENTOS_CLIENTE: AgendamentoResumo[] = [
     prestadorNome: "Maria Silva",
     dataHoraAgendada: diasAPartirDeHoje(2, "09:00"),
     duracaoMinutos: 120,
-    status: "Aceito",
+    status: StatusAgendamento.Aceito,
     endereco: { logradouro: "Rua XV, 320", bairro: "Centro", cidade: "Blumenau", estado: "SC" },
     observacoes: "Dar atencao especial a cozinha.",
     valorTotal: 160,
@@ -115,7 +115,7 @@ const MOCK_AGENDAMENTOS_CLIENTE: AgendamentoResumo[] = [
     prestadorNome: "Usuario Demo",
     dataHoraAgendada: diasAPartirDeHoje(5, "14:30"),
     duracaoMinutos: 180,
-    status: "Solicitado",
+    status: StatusAgendamento.Solicitado,
     endereco: { logradouro: "Rua Alameda, 45", bairro: "Velha", cidade: "Blumenau", estado: "SC" },
     observacoes: null,
     valorTotal: 150,
@@ -148,7 +148,7 @@ const MOCK_AGENDAMENTOS_PRESTADOR: AgendamentoResumo[] = [
     prestadorNome: "Usuario Demo",
     dataHoraAgendada: diasAPartirDeHoje(1, "10:00"),
     duracaoMinutos: 120,
-    status: "Solicitado",
+    status: StatusAgendamento.Solicitado,
     endereco: { logradouro: "Av. Brasil, 1001", bairro: "Ponta Aguda", cidade: "Blumenau", estado: "SC" },
     observacoes: null,
     valorTotal: 80,
@@ -178,7 +178,7 @@ const MOCK_AGENDAMENTOS_PRESTADOR: AgendamentoResumo[] = [
     prestadorNome: "Usuario Demo",
     dataHoraAgendada: diasAPartirDeHoje(3, "15:00"),
     duracaoMinutos: 180,
-    status: "Aceito",
+    status: StatusAgendamento.Aceito,
     endereco: { logradouro: "Rua Hermann Hering, 1800", bairro: "Itoupava Norte", cidade: "Blumenau", estado: "SC" },
     observacoes: "Pronto para iniciar",
     valorTotal: 160,
@@ -321,7 +321,7 @@ export const handlers = [
   http.get("*/api/Agendamento/ObterSolicitacoesPendentesPrestador", async () => {
     await delay(MOCK_DELAY);
     return HttpResponse.json(
-      MOCK_AGENDAMENTOS_PRESTADOR.filter((a) => a.status === "Solicitado" && a.aguardandoRespostaDe === TipoUsuario.Prestador),
+      MOCK_AGENDAMENTOS_PRESTADOR.filter((a) => a.status === StatusAgendamento.Solicitado && a.aguardandoRespostaDe === TipoUsuario.Prestador),
     );
   }),
 
@@ -331,7 +331,7 @@ export const handlers = [
     const todos = [...MOCK_AGENDAMENTOS_PRESTADOR, ...MOCK_AGENDAMENTOS_CLIENTE];
     const alvo = todos.find((a) => a.id === body.id);
     if (alvo) {
-      alvo.status = "Aceito";
+      alvo.status = StatusAgendamento.Aceito;
       alvo.aguardandoRespostaDe = null;
       alvo.dataResposta = new Date().toISOString();
     }
@@ -344,7 +344,7 @@ export const handlers = [
     const todos = [...MOCK_AGENDAMENTOS_PRESTADOR, ...MOCK_AGENDAMENTOS_CLIENTE];
     const alvo = todos.find((a) => a.id === body.id);
     if (alvo) {
-      alvo.status = "Recusado";
+      alvo.status = StatusAgendamento.Recusado;
       alvo.dataResposta = new Date().toISOString();
       alvo.motivoRecusa = body.motivoRecusa ?? "Sem motivo informado";
     }
@@ -355,7 +355,7 @@ export const handlers = [
     await delay(MOCK_DELAY);
     const body = (await request.json()) as { id?: string };
     const alvo = MOCK_AGENDAMENTOS_PRESTADOR.find((a) => a.id === body.id);
-    if (alvo) alvo.status = "EmAndamento";
+    if (alvo) alvo.status = StatusAgendamento.EmAndamento;
     return HttpResponse.json(alvo ?? { ok: true });
   }),
 
@@ -364,7 +364,7 @@ export const handlers = [
     const body = (await request.json()) as { id?: string };
     const alvo = MOCK_AGENDAMENTOS_PRESTADOR.find((a) => a.id === body.id);
     if (alvo) {
-      alvo.status = "Concluido";
+      alvo.status = StatusAgendamento.Concluido;
       alvo.dataConclusao = new Date().toISOString();
     }
     return HttpResponse.json(alvo ?? { ok: true });
@@ -376,7 +376,7 @@ export const handlers = [
     const todos = [...MOCK_AGENDAMENTOS_PRESTADOR, ...MOCK_AGENDAMENTOS_CLIENTE];
     const alvo = todos.find((a) => a.id === body.id);
     if (alvo) {
-      alvo.status = "Cancelado";
+      alvo.status = StatusAgendamento.Cancelado;
       alvo.motivoRecusa = body.motivoRecusa ?? "Cancelado";
     }
     return HttpResponse.json(alvo ?? { ok: true });

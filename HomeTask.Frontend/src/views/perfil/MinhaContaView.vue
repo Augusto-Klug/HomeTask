@@ -1,71 +1,3 @@
-<script setup lang="ts">
-import { ref, reactive, onMounted, computed } from 'vue'
-import { useAuthStore } from '@/stores/auth'
-import api from '@/services/api'
-import type { PerfilForm } from '@/types'
-import HtInput from '@/components/ui/HtInput.vue'
-import HtSearchSelect from '@/components/ui/HtSearchSelect.vue'
-import HtButton from '@/components/ui/HtButton.vue'
-import HtAlert from '@/components/ui/HtAlert.vue'
-import HtSpinner from '@/components/ui/HtSpinner.vue'
-import { UF_OPTIONS } from '@/statics/selects'
-
-const auth = useAuthStore()
-
-const carregando = ref(true)
-const editando = ref(false)
-const salvando = ref(false)
-const erro = ref('')
-const sucesso = ref(false)
-
-const form = reactive<PerfilForm>({
-  nome: '',
-  email: '',
-  telefone: '',
-  documento: '',
-  cep: '',
-  logradouro: '',
-  bairro: '',
-  cidade: '',
-  estado: '',
-  descricao: '',
-  raioAtendimentoKm: null,
-})
-
-const isPrestador = computed(() => auth.user?.tipo === 2 || auth.user?.tipo === 3)
-
-onMounted(async () => {
-  try {
-    const { data } = await api.get<PerfilForm>('/api/Usuario/ObterPerfilUsuario')
-    Object.assign(form, data)
-  } catch {
-    erro.value = 'Não foi possível carregar seus dados.'
-  } finally {
-    carregando.value = false
-  }
-})
-
-function iniciarEdicao() {
-  editando.value = true
-  sucesso.value = false
-  erro.value = ''
-}
-
-async function salvar() {
-  salvando.value = true
-  erro.value = ''
-  try {
-      await api.put('/api/Usuario/AtualizarPrefilUsuario', { ...form }) 
-      sucesso.value = true
-      editando.value = false
-  } catch (e: any) {
-    erro.value = e.response?.data?.message ?? 'Erro ao salvar. Tente novamente.'
-  } finally {
-    salvando.value = false
-  }
-}
-</script>
-
 <template>
   <div class="container mx-auto px-4 py-8 max-w-2xl">
     <!-- Cabeçalho -->
@@ -89,11 +21,18 @@ async function salvar() {
 
     <template v-else>
       <HtAlert v-if="erro" variant="error" :message="erro" class="mb-4" />
-      <HtAlert v-if="sucesso" variant="success" message="Dados salvos com sucesso!" class="mb-4" />
+      <HtAlert
+        v-if="sucesso"
+        variant="success"
+        message="Dados salvos com sucesso!"
+        class="mb-4"
+      />
 
       <form @submit.prevent="salvar" class="flex flex-col gap-4">
         <section>
-          <h2 class="text-xs font-semibold text-base-content/50 uppercase tracking-wide mb-3">
+          <h2
+            class="text-xs font-semibold text-base-content/50 uppercase tracking-wide mb-3"
+          >
             Dados pessoais
           </h2>
           <div class="flex flex-col gap-3">
@@ -126,7 +65,9 @@ async function salvar() {
         </section>
 
         <section>
-          <h2 class="text-xs font-semibold text-base-content/50 uppercase tracking-wide mb-3">
+          <h2
+            class="text-xs font-semibold text-base-content/50 uppercase tracking-wide mb-3"
+          >
             Endereço
           </h2>
           <div class="flex flex-col gap-3">
@@ -172,7 +113,9 @@ async function salvar() {
         </section>
 
         <section v-if="isPrestador">
-          <h2 class="text-xs font-semibold text-base-content/50 uppercase tracking-wide mb-3">
+          <h2
+            class="text-xs font-semibold text-base-content/50 uppercase tracking-wide mb-3"
+          >
             Perfil profissional
           </h2>
           <div class="flex flex-col gap-3">
@@ -191,11 +134,7 @@ async function salvar() {
         </section>
 
         <div v-if="editando" class="flex gap-3 justify-end pt-2">
-          <HtButton
-            variant="ghost"
-            type="button"
-            @click="editando = false"
-          >
+          <HtButton variant="ghost" type="button" @click="editando = false">
             Cancelar
           </HtButton>
           <HtButton
@@ -211,3 +150,76 @@ async function salvar() {
     </template>
   </div>
 </template>
+
+<script setup lang="ts">
+import { ref, reactive, onMounted, computed } from "vue";
+import { useAuthStore } from "@/stores/auth";
+import api from "@/services/api";
+import type { PerfilForm } from "@/types";
+import HtInput from "@/components/ui/HtInput.vue";
+import HtSearchSelect from "@/components/ui/HtSearchSelect.vue";
+import HtButton from "@/components/ui/HtButton.vue";
+import HtAlert from "@/components/ui/HtAlert.vue";
+import HtSpinner from "@/components/ui/HtSpinner.vue";
+import { UF_OPTIONS } from "@/statics/selects";
+
+const auth = useAuthStore();
+
+const carregando = ref(true);
+const editando = ref(false);
+const salvando = ref(false);
+const erro = ref("");
+const sucesso = ref(false);
+
+const form = reactive<PerfilForm>({
+  nome: "",
+  email: "",
+  telefone: "",
+  documento: "",
+  cep: "",
+  logradouro: "",
+  bairro: "",
+  cidade: "",
+  estado: "",
+  descricao: "",
+  raioAtendimentoKm: null,
+});
+
+const isPrestador = computed(
+  () => auth.user?.tipo === 2 || auth.user?.tipo === 3,
+);
+
+onMounted(async () => {
+  try {
+    const { data } = await api.get<PerfilForm>(
+      "/api/Usuario/ObterPerfilUsuario",
+    );
+    Object.assign(form, data);
+  } catch {
+    erro.value = "Não foi possível carregar seus dados.";
+  } finally {
+    carregando.value = false;
+  }
+});
+
+function iniciarEdicao() {
+  editando.value = true;
+  sucesso.value = false;
+  erro.value = "";
+}
+
+async function salvar() {
+  salvando.value = true;
+  erro.value = "";
+  try {
+    await api.put("/api/Usuario/AtualizarPrefilUsuario", { ...form });
+    sucesso.value = true;
+    editando.value = false;
+  } catch (e: any) {
+    erro.value =
+      e.response?.data?.message ?? "Erro ao salvar. Tente novamente.";
+  } finally {
+    salvando.value = false;
+  }
+}
+</script>

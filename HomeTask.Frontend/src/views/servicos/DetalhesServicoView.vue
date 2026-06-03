@@ -30,7 +30,7 @@
               {{ nomeResponsavel }}
             </p>
           </div>
-          <HtBadge variant="primary">{{ obterNomeCategoria(servico.categoria) }}</HtBadge>
+          <HtBadge :variant="HtBadgeVariant.Primary">{{ obterNomeCategoria(servico.categoria) }}</HtBadge>
         </div>
 
         <HtDivider />
@@ -100,7 +100,7 @@ import type { Avaliacao, ServicoDetalhe } from "@/types";
 import { CATEGORIAS_SERVICO } from "@/types";
 import HtButton from "@/components/ui/HtButton.vue";
 import HtCard from "@/components/ui/HtCard.vue";
-import HtBadge from "@/components/ui/HtBadge.vue";
+import HtBadge, { HtBadgeVariant } from "@/components/ui/HtBadge.vue";
 import HtSpinner from "@/components/ui/HtSpinner.vue";
 import HtDivider from "@/components/ui/HtDivider.vue";
 

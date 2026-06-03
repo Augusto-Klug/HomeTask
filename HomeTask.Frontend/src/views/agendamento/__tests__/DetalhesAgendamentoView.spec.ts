@@ -5,7 +5,7 @@ import { createRouter, createMemoryHistory } from "vue-router";
 import DetalhesAgendamentoView from "../DetalhesAgendamentoView.vue";
 import { useAuthStore } from "@/stores/auth";
 import * as apiModule from "@/services/api";
-import { TipoUsuario, UnidadeCobranca, type AgendamentoResumo } from "@/types";
+import { StatusAgendamento, TipoUsuario, UnidadeCobranca, type AgendamentoResumo } from "@/types";
 
 vi.mock("@/services/api", () => ({ default: { get: vi.fn(), post: vi.fn() } }));
 
@@ -17,7 +17,7 @@ const makeAgendamento = (overrides: Partial<AgendamentoResumo> = {}): Agendament
   prestadorNome: "Prestador Demo",
   dataHoraAgendada: new Date(Date.now() + 86400000).toISOString(),
   duracaoMinutos: 90,
-  status: "Solicitado",
+  status: StatusAgendamento.Solicitado,
   endereco: { logradouro: "Rua 1", bairro: "Centro", cidade: "Blumenau", estado: "SC" },
   observacoes: null,
   valorTotal: 120,

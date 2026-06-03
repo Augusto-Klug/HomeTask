@@ -3,7 +3,7 @@ import { mount, flushPromises } from "@vue/test-utils";
 import { createRouter, createMemoryHistory } from "vue-router";
 import OperacaoPrestadorView from "../OperacaoPrestadorView.vue";
 import * as apiModule from "@/services/api";
-import { TipoUsuario, UnidadeCobranca, type AgendamentoResumo } from "@/types";
+import { StatusAgendamento, TipoUsuario, UnidadeCobranca, type AgendamentoResumo } from "@/types";
 
 vi.mock("@/services/api", () => ({ default: { get: vi.fn() } }));
 
@@ -24,7 +24,7 @@ const makeAgendamento = (overrides: Partial<AgendamentoResumo> = {}): Agendament
   prestadorNome: "Prestador Demo",
   dataHoraAgendada: new Date(Date.now() + 86400000).toISOString(),
   duracaoMinutos: 90,
-  status: "Solicitado",
+  status: StatusAgendamento.Solicitado,
   endereco: { logradouro: "Rua 1", bairro: "Centro", cidade: "Blumenau", estado: "SC" },
   observacoes: null,
   valorTotal: 120,
@@ -80,13 +80,13 @@ describe("OperacaoPrestadorView", () => {
       data: [
         makeAgendamento({
           id: "ag-aceito",
-          status: "Aceito",
+          status: StatusAgendamento.Aceito,
           aguardandoRespostaDe: null,
           clienteNome: "Cliente Confirmado",
         }),
         makeAgendamento({
           id: "ag-solicitado",
-          status: "Solicitado",
+          status: StatusAgendamento.Solicitado,
           aguardandoRespostaDe: TipoUsuario.Prestador,
           clienteNome: "Cliente Pendente",
         }),

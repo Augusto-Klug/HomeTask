@@ -69,7 +69,7 @@
                 {{ s.prestadorNome || s.clienteNome || 'N/A' }}
               </p>
             </div>
-              <HtBadge variant="primary">{{ obterNomeCategoria(s.categoria) }}</HtBadge>
+              <HtBadge :variant="HtBadgeVariant.Primary">{{ obterNomeCategoria(s.categoria) }}</HtBadge>
           </div>
 
           <p class="mb-3 flex items-center gap-1 text-xs text-muted">
@@ -146,7 +146,7 @@ import HtInput from '@/components/ui/HtInput.vue'
 import HtSelect from '@/components/ui/HtSelect.vue'
 import HtButton from '@/components/ui/HtButton.vue'
 import HtCard from '@/components/ui/HtCard.vue'
-import HtBadge from '@/components/ui/HtBadge.vue'
+import HtBadge, { HtBadgeVariant } from '@/components/ui/HtBadge.vue'
 import HtSpinner from '@/components/ui/HtSpinner.vue'
 
 const route = useRoute()
@@ -175,7 +175,7 @@ const paginaDigitada = ref('1')
 const carregando = ref(false)
 let ultimaBuscaId = 0
 
-const resultado = ref<ResultadoPaginado<ServicoBuscaResumo>>({
+const resultado = reactive<ResultadoPaginado<ServicoBuscaResumo>>({
   itens: [],
   paginaAtual: 1,
   tamanhoPagina: 30,
@@ -184,11 +184,11 @@ const resultado = ref<ResultadoPaginado<ServicoBuscaResumo>>({
 })
 
 const totalLabel = computed(() => {
-  if (resultado.value.totalRegistros === 0) {
+  if (resultado.totalRegistros === 0) {
     return 'Nenhum resultado para esta consulta.'
   }
 
-  return `${resultado.value.totalRegistros} serviço(s) encontrados nesta consulta.`
+  return `${resultado.totalRegistros} serviço(s) encontrados nesta consulta.`
 })
 
 watch(
@@ -226,18 +226,18 @@ async function buscar(pagina: number) {
     if (buscaAtualId !== ultimaBuscaId) return
 
     const normalizado = normalizarResultadoBusca(data, pagina, Number(tamanhoPaginaSelecionado.value))
-    resultado.value = normalizado
+    Object.assign(resultado, normalizado)
     paginaDigitada.value = String(normalizado.paginaAtual)
   } catch {
     if (buscaAtualId !== ultimaBuscaId) return
 
-    resultado.value = {
+    Object.assign(resultado, {
       itens: [],
       paginaAtual: pagina,
       tamanhoPagina: Number(tamanhoPaginaSelecionado.value),
       totalRegistros: 0,
       totalPaginas: 0,
-    }
+    })
   } finally {
     if (buscaAtualId === ultimaBuscaId) {
       carregando.value = false
@@ -259,7 +259,7 @@ async function limparFiltros() {
 }
 
 async function irParaPagina(pagina: number) {
-  if (pagina < 1 || (resultado.value.totalPaginas > 0 && pagina > resultado.value.totalPaginas)) {
+  if (pagina < 1 || (resultado.totalPaginas > 0 && pagina > resultado.totalPaginas)) {
     return
   }
 
@@ -268,7 +268,7 @@ async function irParaPagina(pagina: number) {
 
 async function irParaPaginaDigitada() {
   const pagina = normalizarPagina(paginaDigitada.value)
-  await irParaPagina(resultado.value.totalPaginas > 0 ? Math.min(pagina, resultado.value.totalPaginas) : pagina)
+  await irParaPagina(resultado.totalPaginas > 0 ? Math.min(pagina, resultado.totalPaginas) : pagina)
 }
 
 function montarQuery(pagina: number): Record<string, string> {
