@@ -1,20 +1,25 @@
 <template>
-  <header class="sticky top-0 z-30 h-14 border-b border-base-300 bg-base-100/95 backdrop-blur-sm">
+  <header
+    class="sticky top-0 z-30 h-14 border-b border-base-300 bg-base-100/95 backdrop-blur-sm"
+  >
     <div class="flex items-center h-full px-3 gap-2">
-      <button v-if="!auth.isLoggedIn" type="button" class="btn btn-ghost btn-sm btn-square" @click="sidebarOpen = true">
-        <span class="material-symbols-rounded text-xl">menu</span>
-      </button>
+      <router-link to="/" class="text-title font-bold text-primary"
+        >HomeTask</router-link
+      >
 
-      <router-link to="/" class="text-title font-bold text-primary">HomeTask</router-link>
-
-      <nav v-if="auth.isLoggedIn" class="flex flex-1 justify-center overflow-x-auto px-4">
-        <div class="flex min-w-max items-center gap-1 rounded-full border border-base-300 bg-base-200/45 p-1">
+      <nav
+        v-if="auth.isLoggedIn"
+        class="flex flex-1 justify-center overflow-x-auto px-4"
+      >
+        <div
+          class="flex min-w-max items-center gap-1 rounded-full border border-base-300 bg-base-200/70 p-1"
+        >
           <router-link
             v-for="item in navItems"
             :key="item.to"
             :to="item.to"
-            active-class="bg-base-100 text-primary"
-            class="rounded-full px-4 py-1.5 text-sm font-medium text-base-content/75 transition-colors hover:bg-base-100 hover:text-primary"
+            active-class="border-primary/20 bg-base-100 text-primary shadow-sm"
+            class="rounded-full border border-transparent px-4 py-1.5 text-sm font-medium text-base-content/75 transition-colors hover:border-base-300 hover:bg-base-100 hover:text-primary"
           >
             {{ item.label }}
           </router-link>
@@ -36,17 +41,24 @@
             {{ inicialUsuario }}
           </button>
 
-          <div v-if="userMenuOpen" class="absolute right-0 top-12 w-52 rounded-box border border-base-300 bg-base-100 shadow-lg z-50 py-1">
+          <div
+            v-if="userMenuOpen"
+            class="absolute right-0 top-12 w-52 rounded-box border border-base-300 bg-base-100 shadow-lg z-50 py-1"
+          >
             <div class="px-4 py-2.5 border-b border-base-300">
               <p class="text-xs text-base-content/50">Logado como</p>
-              <p class="text-sm font-medium text-base-content truncate">{{ auth.user?.nome }}</p>
+              <p class="text-sm font-medium text-base-content truncate">
+                {{ auth.user?.nome }}
+              </p>
             </div>
             <router-link
               to="/perfil/minha-conta"
               class="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-base-content hover:bg-base-200 transition-colors"
               @click="userMenuOpen = false"
             >
-              <span class="material-symbols-rounded text-base">manage_accounts</span>
+              <span class="material-symbols-rounded text-base"
+                >manage_accounts</span
+              >
               Minha conta
             </router-link>
             <router-link
@@ -55,7 +67,9 @@
               class="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-base-content hover:bg-base-200 transition-colors"
               @click="userMenuOpen = false"
             >
-              <span class="material-symbols-rounded text-base">work_history</span>
+              <span class="material-symbols-rounded text-base"
+                >work_history</span
+              >
               Minha operacao
             </router-link>
             <div class="border-t border-base-300 my-1" />
@@ -72,13 +86,15 @@
       </template>
 
       <template v-else>
-        <router-link to="/login" class="btn btn-ghost btn-sm btn-square" title="Entrar">
+        <router-link
+          to="/login"
+          class="btn btn-ghost btn-sm btn-square"
+          title="Entrar"
+        >
           <span class="material-symbols-rounded text-xl">person</span>
         </router-link>
       </template>
     </div>
-
-    <SidebarTelaInicial v-if="!auth.isLoggedIn" v-model:open="sidebarOpen" />
   </header>
 </template>
 
@@ -87,13 +103,11 @@ import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import TemaPagina from "@/shared/components/TemaPagina.vue";
-import SidebarTelaInicial from "./telaInicial/SidebarTelaInicial.vue";
 import { obterInicialNome } from "@/shared/utils";
 
 const auth = useAuthStore();
 const router = useRouter();
 
-const sidebarOpen = ref(false);
 const userMenuOpen = ref(false);
 const userMenuContainer = ref<HTMLElement | null>(null);
 const inicialUsuario = computed(() => obterInicialNome(auth.user?.nome));
@@ -115,7 +129,10 @@ const navItems = computed(() => {
 });
 
 function handleClickOutside(e: MouseEvent) {
-  if (userMenuContainer.value && !userMenuContainer.value.contains(e.target as Node)) {
+  if (
+    userMenuContainer.value &&
+    !userMenuContainer.value.contains(e.target as Node)
+  ) {
     userMenuOpen.value = false;
   }
 }

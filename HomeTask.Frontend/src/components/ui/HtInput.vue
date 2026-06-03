@@ -15,6 +15,7 @@
         'input-error': hasError,
         'bg-base-200/60 border-base-300/70 cursor-not-allowed pointer-events-none': disabled,
       }"
+      @click="handlePickerInteraction"
     >
       <span
         v-if="$slots.prefix"
@@ -36,6 +37,7 @@
         class="grow bg-transparent border-none outline-none text-sm disabled:text-base-content disabled:opacity-100 disabled:[-webkit-text-fill-color:var(--color-base-content)]"
         @input="handleInput"
         @focus="handleFocus"
+        @click="handlePickerInteraction"
         @blur="handleBlur"
       />
 
@@ -167,6 +169,14 @@ function handleBlur() {
 }
 
 function handleFocus() {
+  abrirPickerNativo()
+}
+
+function handlePickerInteraction() {
+  abrirPickerNativo()
+}
+
+function abrirPickerNativo() {
   if (!props.openPickerOnFocus) return
   if (!['date', 'time', 'datetime-local', 'month', 'week'].includes(props.type)) return
 

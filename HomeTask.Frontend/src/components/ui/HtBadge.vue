@@ -7,14 +7,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-export enum HtBadgeVariant {
-  Default = "default",
-  Primary = "primary",
-  Success = "success",
-  Error = "error",
-  Outline = "outline",
-}
-
 const props = withDefaults(defineProps<{ variant?: HtBadgeVariant }>(), {
   variant: HtBadgeVariant.Default,
 });
@@ -33,4 +25,14 @@ const variantClass = computed(() => {
       return "badge-neutral badge-soft";
   }
 });
+</script>
+
+<script lang="ts">
+export enum HtBadgeVariant {
+  Default = "default",
+  Primary = "primary",
+  Success = "success",
+  Error = "error",
+  Outline = "outline",
+}
 </script>

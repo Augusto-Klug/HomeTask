@@ -46,15 +46,15 @@ function mountView() {
 }
 
 function preencherFormPrestador(vm: ExposedVm, overrides: Partial<ServicoPrestadorForm> = {}) {
-  Object.assign(vm.form, {
-    titulo: 'Corte de árvore',
-    descricao: 'Serviço de poda e corte',
-    categoria: '2',
-    unidadeCobranca: String(UnidadeCobranca.PorHora),
-    precoBase: '80',
-    aceitaPagamentoAposFinalizacao: false,
-    ...overrides,
-  })
+    Object.assign(vm.form, {
+      titulo: 'Corte de árvore',
+      descricao: 'Serviço de poda e corte',
+      categoria: '2',
+      unidadeCobranca: String(UnidadeCobranca.PorHora),
+      precoBase: '80',
+      aceitaPagamentoAposFinalizacao: false,
+      ...overrides,
+    })
 }
 
 describe('CadastrarServicoPrestadorView', () => {
@@ -135,4 +135,5 @@ describe('CadastrarServicoPrestadorView', () => {
 
     expect(wrapper.findAllComponents(HtAlert).length).toBeGreaterThanOrEqual(1)
   })
+
 })

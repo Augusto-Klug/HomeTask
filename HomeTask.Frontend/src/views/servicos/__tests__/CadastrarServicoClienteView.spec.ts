@@ -6,6 +6,7 @@ import CadastrarServicoClienteView from '../CadastrarServicoClienteView.vue'
 import HtTextarea from '@/components/ui/HtTextarea.vue'
 import HtSelect from '@/components/ui/HtSelect.vue'
 import HtInput from '@/components/ui/HtInput.vue'
+import HtDateTimeInput from '@/components/ui/HtDateTimeInput.vue'
 import HtAlert from '@/components/ui/HtAlert.vue'
 import HtCard from '@/components/ui/HtCard.vue'
 import { UnidadeCobranca, type ServicoClienteForm } from '@/types'
@@ -112,11 +113,10 @@ describe('CadastrarServicoClienteView', () => {
 
   it('exibe a data desejada com seletor nativo de data e hora', () => {
     const wrapper = mountView()
-    const dateInput = wrapper.findAllComponents(HtInput)
-      .find(input => input.props('label') === 'Data desejada')
+    const dateTimeInput = wrapper.findComponent(HtDateTimeInput)
 
-    expect(dateInput?.props('type')).toBe('datetime-local')
-    expect(dateInput?.props('openPickerOnFocus')).toBe(true)
+    expect(dateTimeInput.exists()).toBe(true)
+    expect(dateTimeInput.props('label')).toBe('Data desejada')
   })
 
   it('chama a API ao submeter o formulário com dados válidos', async () => {
