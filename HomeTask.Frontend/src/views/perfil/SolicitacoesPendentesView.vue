@@ -5,7 +5,7 @@
         <h1 class="text-2xl font-bold">Solicitacoes pendentes</h1>
         <p class="text-sm text-base-content/60">Pedidos aguardando sua resposta como prestador.</p>
       </div>
-      <router-link to="/perfil/operacao">
+      <router-link to="/perfil/agendamentos-prestador">
         <HtButton variant="outline">Ver minha operacao</HtButton>
       </router-link>
     </div>

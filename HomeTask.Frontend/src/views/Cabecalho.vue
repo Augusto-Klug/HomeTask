@@ -63,7 +63,7 @@
             </router-link>
             <router-link
               v-if="auth.user?.tipo === 2 || auth.user?.tipo === 3"
-              to="/perfil/operacao"
+              to="/perfil/agendamentos-prestador"
               class="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-base-content hover:bg-base-200 transition-colors"
               @click="userMenuOpen = false"
             >
@@ -115,13 +115,13 @@ const navItems = computed(() => {
   const items = [{ label: "Buscar serviços", to: "/servicos/buscar" }];
 
   if (auth.user?.tipo === 1 || auth.user?.tipo === 3) {
-    items.push({ label: "Agendamentos", to: "/perfil/agendamentos" });
+    items.push({ label: "Agendamentos", to: "/perfil/agendamentos-cliente" });
     items.push({ label: "Solicitar serviço", to: "/servicos/novo-cliente" });
     return items;
   }
 
   if (auth.user?.tipo === 2) {
-    items.push({ label: "Agendamentos", to: "/perfil/operacao" });
+    items.push({ label: "Agendamentos", to: "/perfil/agendamentos-prestador" });
     items.push({ label: "Anunciar serviço", to: "/servicos/novo-prestador" });
   }
 

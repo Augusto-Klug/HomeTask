@@ -288,9 +288,9 @@ const clienteAtualId = ref<string | null>(null);
 const prestadorAtualId = ref<string | null>(null);
 
 const rotaVolta = computed(() => {
-  if (route.query.origem === "operacao") return "/perfil/operacao";
-  if (route.query.origem === "pendentes") return "/perfil/operacao";
-  return "/perfil/agendamentos";
+  if (route.query.origem === "operacao") return "/perfil/agendamentos-prestador";
+  if (route.query.origem === "pendentes") return "/perfil/agendamentos-prestador";
+  return "/perfil/agendamentos-cliente";
 });
 
 const textoVolta = computed(() => {

@@ -56,15 +56,13 @@ const router = createRouter({
     {
       path: "/servicos/novo-cliente",
       name: "servicos-novo-cliente",
-      component: () =>
-        import("@/views/servicos/CadastrarServicoClienteView.vue"),
+      component: () => import("@/views/servicos/CadastrarServicoClienteView.vue"),
       meta: { requiresAuth: true },
     },
     {
       path: "/servicos/novo-prestador",
       name: "servicos-novo-prestador",
-      component: () =>
-        import("@/views/servicos/CadastrarServicoPrestadorView.vue"),
+      component: () => import("@/views/servicos/CadastrarServicoPrestadorView.vue"),
       meta: { requiresAuth: true },
     },
     {
@@ -94,21 +92,21 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
-      path: "/perfil/agendamentos",
-      name: "perfil-agendamentos",
-      component: () => import("@/views/perfil/OperacaoClienteView.vue"),
+      path: "/perfil/agendamentos-cliente",
+      name: "perfil-agendamentos-cliente",
+      component: () => import("@/views/perfil/HistoricoAgendamentosClienteView.vue"),
       meta: { requiresAuth: true },
     },
     {
-      path: "/perfil/operacao",
-      name: "perfil-operacao",
-      component: () => import("@/views/perfil/OperacaoPrestadorView.vue"),
+      path: "/perfil/agendamentos-prestador",
+      name: "perfil-agendamentos-prestador",
+      component: () => import("@/views/perfil/HistoricoAgendamentosPrestadorView.vue"),
       meta: { requiresAuth: true },
     },
     {
       path: "/perfil/solicitacoes-pendentes",
       name: "perfil-solicitacoes-pendentes",
-      redirect: "/perfil/operacao",
+      redirect: "/perfil/agendamentos-prestador",
       meta: { requiresAuth: true },
     },
     {

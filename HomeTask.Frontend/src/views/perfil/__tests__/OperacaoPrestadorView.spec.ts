@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
 import { createRouter, createMemoryHistory } from "vue-router";
-import OperacaoPrestadorView from "../OperacaoPrestadorView.vue";
+import OperacaoPrestadorView from "../HistoricoAgendamentosPrestadorView.vue";
 import * as apiModule from "@/services/api";
 import { StatusAgendamento, TipoUsuario, UnidadeCobranca, type AgendamentoResumo } from "@/types";
 

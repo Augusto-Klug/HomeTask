@@ -19,14 +19,14 @@
 
       <template v-if="auth.isLoggedIn">
         <li v-if="auth.user?.tipo === 1 || auth.user?.tipo === 3">
-          <router-link to="/perfil/agendamentos" class="ht-sidenav-link" @click="open = false">
+          <router-link to="/perfil/agendamentos-cliente" class="ht-sidenav-link" @click="open = false">
             <span class="material-symbols-rounded text-xl">calendar_month</span>
             Agendamentos
           </router-link>
         </li>
 
         <li v-if="auth.user?.tipo === 2 || auth.user?.tipo === 3">
-          <router-link to="/perfil/operacao" class="ht-sidenav-link" @click="open = false">
+          <router-link to="/perfil/agendamentos-prestador" class="ht-sidenav-link" @click="open = false">
             <span class="material-symbols-rounded text-xl">work_history</span>
             Minha Operação
           </router-link>
