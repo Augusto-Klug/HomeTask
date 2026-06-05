@@ -16,41 +16,44 @@ namespace HomeTask.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ObterAvaliacaoPorId([FromQuery] Guid id, CancellationToken cancellationToken)
+        public async Task<ActionResult<AvaliacaoDto>> ObterAvaliacaoPorId([FromQuery] Guid id, CancellationToken cancellationToken)
         {
             var avaliacao = await _avaliacaoService.ObterPorIdAsync(id, cancellationToken);
             if (avaliacao == null)
                 return NotFound();
 
-            return Ok(avaliacao);
+            return avaliacao;
         }
 
         [HttpGet]
-        public async Task<IActionResult> ObterAvaliacaoPorAgendamento([FromQuery] Guid agendamentoId, CancellationToken cancellationToken)
+        public async Task<ActionResult<AvaliacaoDto>> ObterAvaliacaoPorAgendamento([FromQuery] Guid agendamentoId, CancellationToken cancellationToken)
         {
             var avaliacao = await _avaliacaoService.ObterPorAgendamentoAsync(agendamentoId, cancellationToken);
             if (avaliacao == null)
                 return NotFound();
 
-            return Ok(avaliacao);
+            return avaliacao;
         }
 
         [HttpGet]
-        public async Task<IActionResult> ObterAvaliacoesPorPrestador([FromQuery] Guid prestadorId, CancellationToken cancellationToken)
+        public async Task<ActionResult<IEnumerable<AvaliacaoDto>>> ObterAvaliacoesPorPrestador([FromQuery] Guid prestadorId, CancellationToken cancellationToken)
         {
-            return Ok(await _avaliacaoService.ObterPorPrestadorAsync(prestadorId, cancellationToken));
+            var avaliacoes = await _avaliacaoService.ObterPorPrestadorAsync(prestadorId, cancellationToken);
+            return avaliacoes.ToList();
         }
 
         [HttpGet]
-        public async Task<IActionResult> ObterAvaliacoesPorCliente([FromQuery] Guid clienteId, CancellationToken cancellationToken)
+        public async Task<ActionResult<IEnumerable<AvaliacaoDto>>> ObterAvaliacoesPorCliente([FromQuery] Guid clienteId, CancellationToken cancellationToken)
         {
-            return Ok(await _avaliacaoService.ObterPorClienteAsync(clienteId, cancellationToken));
+            var avaliacoes = await _avaliacaoService.ObterPorClienteAsync(clienteId, cancellationToken);
+            return avaliacoes.ToList();
         }
 
         [HttpPost]
-        public async Task<IActionResult> CriarAvaliacao(AvaliacaoDto dto, CancellationToken cancellationToken)
+        public async Task<ActionResult<AvaliacaoDto>> CriarAvaliacao(AvaliacaoDto dto, CancellationToken cancellationToken)
         {
-            return Ok(await _avaliacaoService.CriarAsync(dto, cancellationToken));
+            var avaliacao = await _avaliacaoService.CriarAsync(dto, cancellationToken);
+            return avaliacao;
         }
     }
 }

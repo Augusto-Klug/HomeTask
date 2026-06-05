@@ -5,20 +5,34 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed } from "vue";
 
-const props = withDefaults(
-  defineProps<{ variant?: 'default' | 'primary' | 'success' | 'error' | 'outline' }>(),
-  { variant: 'default' },
-)
+const props = withDefaults(defineProps<{ variant?: HtBadgeVariant }>(), {
+  variant: HtBadgeVariant.Default,
+});
 
 const variantClass = computed(() => {
   switch (props.variant) {
-    case 'primary': return 'badge-primary badge-soft'
-    case 'success': return 'badge-success badge-soft'
-    case 'error':   return 'badge-error badge-soft'
-    case 'outline': return 'badge-outline'
-    default:        return 'badge-neutral badge-soft'
+    case HtBadgeVariant.Primary:
+      return "badge-primary badge-soft";
+    case HtBadgeVariant.Success:
+      return "badge-success badge-soft";
+    case HtBadgeVariant.Error:
+      return "badge-error badge-soft";
+    case HtBadgeVariant.Outline:
+      return "badge-outline";
+    default:
+      return "badge-neutral badge-soft";
   }
-})
+});
+</script>
+
+<script lang="ts">
+export enum HtBadgeVariant {
+  Default = "default",
+  Primary = "primary",
+  Success = "success",
+  Error = "error",
+  Outline = "outline",
+}
 </script>

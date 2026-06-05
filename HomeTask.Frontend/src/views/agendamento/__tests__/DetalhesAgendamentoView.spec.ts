@@ -5,7 +5,7 @@ import { createRouter, createMemoryHistory } from "vue-router";
 import DetalhesAgendamentoView from "../DetalhesAgendamentoView.vue";
 import { useAuthStore } from "@/stores/auth";
 import * as apiModule from "@/services/api";
-import { UnidadeCobranca, type AgendamentoResumo } from "@/types";
+import { StatusAgendamento, TipoUsuario, UnidadeCobranca, type AgendamentoResumo } from "@/types";
 
 vi.mock("@/services/api", () => ({ default: { get: vi.fn(), post: vi.fn() } }));
 
@@ -17,7 +17,7 @@ const makeAgendamento = (overrides: Partial<AgendamentoResumo> = {}): Agendament
   prestadorNome: "Prestador Demo",
   dataHoraAgendada: new Date(Date.now() + 86400000).toISOString(),
   duracaoMinutos: 90,
-  status: "Solicitado",
+  status: StatusAgendamento.Solicitado,
   endereco: { logradouro: "Rua 1", bairro: "Centro", cidade: "Blumenau", estado: "SC" },
   observacoes: null,
   valorTotal: 120,
@@ -25,7 +25,7 @@ const makeAgendamento = (overrides: Partial<AgendamentoResumo> = {}): Agendament
   dataResposta: null,
   dataConclusao: null,
   motivoRecusa: null,
-  aguardandoRespostaDe: "Cliente",
+  aguardandoRespostaDe: TipoUsuario.Cliente,
   servicos: [{ id: "srv-1", titulo: "Faxina", descricao: "", precoBase: 120, duracaoEstimadaMinutos: 90, unidadeCobranca: UnidadeCobranca.Total, tipoAnuncio: 2, categoria: 1 }],
   ...overrides,
 });
@@ -40,7 +40,7 @@ describe("DetalhesAgendamentoView", () => {
     vi.clearAllMocks();
     setActivePinia(createPinia());
     const auth = useAuthStore();
-    auth.setUser({ userId: 1, nome: "Cliente", email: "c@c.com", tipo: 1 });
+    auth.setUser({ userId: "1", nome: "Cliente", email: "c@c.com", tipo: 1 });
   });
 
   it("mostra aceitar proposta para o cliente quando aguardando resposta dele", async () => {

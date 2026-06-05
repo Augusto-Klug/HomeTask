@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using HomeTask.Application.Dtos;
 using HomeTask.Application.Interfaces;
+using HomeTask.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,29 +27,31 @@ namespace HomeTask.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ObterAgendamentoPorId([FromQuery] Guid id, CancellationToken cancellationToken)
+        public async Task<ActionResult<AgendamentoResumoDto>> ObterAgendamentoPorId([FromQuery] Guid id, CancellationToken cancellationToken)
         {
             var agendamento = await _agendamentoService.ObterPorIdAsync(id, cancellationToken);
             if (agendamento == null)
                 return NotFound();
 
-            return Ok(agendamento);
+            return agendamento;
         }
 
         [HttpGet]
-        public async Task<IActionResult> ObterAgendamentosPorCliente([FromQuery] Guid clienteId, CancellationToken cancellationToken)
+        public async Task<ActionResult<IEnumerable<AgendamentoResumoDto>>> ObterAgendamentosPorCliente([FromQuery] Guid clienteId, CancellationToken cancellationToken)
         {
-            return Ok(await _agendamentoService.ObterPorClienteAsync(clienteId, cancellationToken));
+            var agendamentos = await _agendamentoService.ObterPorClienteAsync(clienteId, cancellationToken);
+            return agendamentos.ToList();
         }
 
         [HttpGet]
-        public async Task<IActionResult> ObterAgendamentosPorPrestador([FromQuery] Guid prestadorId, CancellationToken cancellationToken)
+        public async Task<ActionResult<IEnumerable<AgendamentoResumoDto>>> ObterAgendamentosPorPrestador([FromQuery] Guid prestadorId, CancellationToken cancellationToken)
         {
-            return Ok(await _agendamentoService.ObterPorPrestadorAsync(prestadorId, cancellationToken));
+            var agendamentos = await _agendamentoService.ObterPorPrestadorAsync(prestadorId, cancellationToken);
+            return agendamentos.ToList();
         }
 
         [HttpGet]
-        public async Task<IActionResult> ObterSolicitacoesPendentesPrestador(CancellationToken cancellationToken)
+        public async Task<ActionResult<IEnumerable<AgendamentoResumoDto>>> ObterSolicitacoesPendentesPrestador(CancellationToken cancellationToken)
         {
             var usuarioIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -57,14 +60,15 @@ namespace HomeTask.WebApi.Controllers
 
             var prestador = await _prestadorService.ObterPorUsuarioIdAsync(usuarioId, cancellationToken);
             if (prestador == null)
-                return Forbid("Usuário não possui perfil de prestador.");
+                return StatusCode(StatusCodes.Status403Forbidden, "Usuário não possui perfil de prestador.");
 
             var solicitacoes = await _agendamentoService.ObterSolicitacoesPendentesPorPrestadorAsync(prestador.Id, cancellationToken);
-            return Ok(solicitacoes.Where(a => a.AguardandoRespostaDe == "Prestador"));
+            var solicitacoesPrestador = solicitacoes.Where(a => a.AguardandoRespostaDe == TipoUsuario.Prestador).ToList();
+            return solicitacoesPrestador;
         }
 
         [HttpGet]
-        public async Task<IActionResult> ObterMeusAgendamentosPrestador(CancellationToken cancellationToken)
+        public async Task<ActionResult<IEnumerable<AgendamentoResumoDto>>> ObterMeusAgendamentosPrestador(CancellationToken cancellationToken)
         {
             var usuarioIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!Guid.TryParse(usuarioIdClaim, out var usuarioId))
@@ -72,13 +76,14 @@ namespace HomeTask.WebApi.Controllers
 
             var prestador = await _prestadorService.ObterPorUsuarioIdAsync(usuarioId, cancellationToken);
             if (prestador == null)
-                return Forbid("Usuário não possui perfil de prestador.");
+                return StatusCode(StatusCodes.Status403Forbidden, "Usuário não possui perfil de prestador.");
 
-            return Ok(await _agendamentoService.ObterPorPrestadorAsync(prestador.Id, cancellationToken));
+            var agendamentos = await _agendamentoService.ObterPorPrestadorAsync(prestador.Id, cancellationToken);
+            return agendamentos.ToList();
         }
 
         [HttpGet]
-        public async Task<IActionResult> ObterMeusAgendamentosCliente(CancellationToken cancellationToken)
+        public async Task<ActionResult<IEnumerable<AgendamentoResumoDto>>> ObterMeusAgendamentosCliente(CancellationToken cancellationToken)
         {
             var usuarioIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (!Guid.TryParse(usuarioIdClaim, out var usuarioId))
@@ -86,45 +91,52 @@ namespace HomeTask.WebApi.Controllers
 
             var cliente = await _clienteService.ObterPorUsuarioIdAsync(usuarioId, cancellationToken);
             if (cliente == null)
-                return Forbid("Usuário não possui perfil de cliente.");
+                return StatusCode(StatusCodes.Status403Forbidden, "Usuário não possui perfil de cliente.");
 
-            return Ok(await _agendamentoService.ObterPorClienteAsync(cliente.Id, cancellationToken));
+            var agendamentos = await _agendamentoService.ObterPorClienteAsync(cliente.Id, cancellationToken);
+            return agendamentos.ToList();
         }
 
         [HttpPost]
-        public async Task<IActionResult> CriarAgendamento(AgendamentoDto dto, CancellationToken cancellationToken)
+        public async Task<ActionResult<AgendamentoDto>> CriarAgendamento(AgendamentoDto dto, CancellationToken cancellationToken)
         {
-            return Ok(await _agendamentoService.CriarAsync(dto, cancellationToken));
+            var agendamento = await _agendamentoService.CriarAsync(dto, cancellationToken);
+            return agendamento;
         }
 
         [HttpPost]
-        public async Task<IActionResult> AceitarAgendamento(AgendamentoDto dto, CancellationToken cancellationToken)
+        public async Task<ActionResult<AgendamentoDto>> AceitarAgendamento(AgendamentoDto dto, CancellationToken cancellationToken)
         {
-            return Ok(await _agendamentoService.AceitarAsync(dto.Id, cancellationToken));
+            var agendamento = await _agendamentoService.AceitarAsync(dto.Id, cancellationToken);
+            return agendamento;
         }
 
         [HttpPost]
-        public async Task<IActionResult> RecusarAgendamento(AgendamentoDto dto, CancellationToken cancellationToken)
+        public async Task<ActionResult<AgendamentoDto>> RecusarAgendamento(AgendamentoDto dto, CancellationToken cancellationToken)
         {
-            return Ok(await _agendamentoService.RecusarAsync(dto.Id, dto.MotivoRecusa ?? string.Empty, cancellationToken));
+            var agendamento = await _agendamentoService.RecusarAsync(dto.Id, dto.MotivoRecusa ?? string.Empty, cancellationToken);
+            return agendamento;
         }
 
         [HttpPost]
-        public async Task<IActionResult> IniciarAgendamento(AgendamentoDto dto, CancellationToken cancellationToken)
+        public async Task<ActionResult<AgendamentoDto>> IniciarAgendamento(AgendamentoDto dto, CancellationToken cancellationToken)
         {
-            return Ok(await _agendamentoService.IniciarAsync(dto.Id, cancellationToken));
+            var agendamento = await _agendamentoService.IniciarAsync(dto.Id, cancellationToken);
+            return agendamento;
         }
 
         [HttpPost]
-        public async Task<IActionResult> ConcluirAgendamento(AgendamentoDto dto, CancellationToken cancellationToken)
+        public async Task<ActionResult<AgendamentoDto>> ConcluirAgendamento(AgendamentoDto dto, CancellationToken cancellationToken)
         {
-            return Ok(await _agendamentoService.ConcluirAsync(dto.Id, cancellationToken));
+            var agendamento = await _agendamentoService.ConcluirAsync(dto.Id, cancellationToken);
+            return agendamento;
         }
 
         [HttpPost]
-        public async Task<IActionResult> CancelarAgendamento(AgendamentoDto dto, CancellationToken cancellationToken)
+        public async Task<ActionResult<AgendamentoDto>> CancelarAgendamento(AgendamentoDto dto, CancellationToken cancellationToken)
         {
-            return Ok(await _agendamentoService.CancelarAsync(dto.Id, dto.MotivoRecusa ?? string.Empty, cancellationToken));
+            var agendamento = await _agendamentoService.CancelarAsync(dto.Id, dto.MotivoRecusa ?? string.Empty, cancellationToken);
+            return agendamento;
         }
     }
 }

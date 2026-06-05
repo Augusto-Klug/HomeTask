@@ -25,7 +25,7 @@ describe("BuscarServicosConsumo", () => {
             unidadeCobranca: UnidadeCobranca.Total,
             prestadorId: "10",
             prestadorNome: "Maria",
-            categoria: "Faxina",
+            categoria: 1,
             cidade: "Blumenau",
             estado: "SC",
           },

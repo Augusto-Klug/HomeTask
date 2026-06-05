@@ -18,27 +18,27 @@ namespace HomeTask.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ObterUsuarioPorId([FromQuery] Guid id, CancellationToken cancellationToken)
+        public async Task<ActionResult<UsuarioDto>> ObterUsuarioPorId([FromQuery] Guid id, CancellationToken cancellationToken)
         {
             var usuario = await _usuarioService.ObterPorIdAsync(id, cancellationToken);
             if (usuario == null)
                 return NotFound();
 
-            return Ok(usuario);
+            return usuario;
         }
 
         [HttpGet]
-        public async Task<IActionResult> ObterUsuarioPorEmail([FromQuery] string email, CancellationToken cancellationToken)
+        public async Task<ActionResult<UsuarioDto>> ObterUsuarioPorEmail([FromQuery] string email, CancellationToken cancellationToken)
         {
             var usuario = await _usuarioService.ObterPorEmailAsync(email, cancellationToken);
             if (usuario == null)
                 return NotFound();
 
-            return Ok(usuario);
+            return usuario;
         }
 
         [HttpPost]
-        public async Task<IActionResult> CriarUsuario(UsuarioDto dto, CancellationToken cancellationToken)
+        public async Task<ActionResult<UsuarioDto>> CriarUsuario(UsuarioDto dto, CancellationToken cancellationToken)
         {
             var senha = dto.Senha;
             if (string.IsNullOrEmpty(senha))
@@ -50,18 +50,20 @@ namespace HomeTask.WebApi.Controllers
             if (await _usuarioService.ExisteCpfAsync(dto.Documento, cancellationToken))
                 return Conflict("Este CPF já está cadastrado.");
 
-            return Ok(await _usuarioService.CriarAsync(dto, senha, cancellationToken));
+            var usuario = await _usuarioService.CriarAsync(dto, senha, cancellationToken);
+            return usuario;
         }
 
         [HttpPut]
-        public async Task<IActionResult> AtualizarUsuario(UsuarioDto dto, CancellationToken cancellationToken)
+        public async Task<ActionResult<UsuarioDto>> AtualizarUsuario(UsuarioDto dto, CancellationToken cancellationToken)
         {
-            return Ok(await _usuarioService.AtualizarAsync(dto, cancellationToken));
+            var usuario = await _usuarioService.AtualizarAsync(dto, cancellationToken);
+            return usuario;
         }
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> ObterPerfilUsuario(CancellationToken cancellationToken) {
+        public async Task<ActionResult<PerfilDto>> ObterPerfilUsuario(CancellationToken cancellationToken) {
 
             var IdUsuarioClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -71,7 +73,7 @@ namespace HomeTask.WebApi.Controllers
             }
 
             var perfil = await _usuarioService.ObterPerfilAsync(idUsuario, cancellationToken);
-            return perfil == null ? NotFound() : Ok(perfil);
+            return perfil == null ? NotFound() : perfil;
         }
 
         [HttpPut]

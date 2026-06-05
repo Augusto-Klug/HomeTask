@@ -11,10 +11,15 @@
 
     <!-- Sucesso -->
     <HtCard v-if="sucesso" class="text-center py-8">
-      <span class="material-symbols-rounded text-5xl text-success mb-4 block">check_circle</span>
-      <h2 class="text-title font-semibold text-foreground mb-2">Anúncio publicado!</h2>
+      <span class="material-symbols-rounded text-5xl text-success mb-4 block"
+        >check_circle</span
+      >
+      <h2 class="text-title font-semibold text-foreground mb-2">
+        Anúncio publicado!
+      </h2>
       <p class="text-sm text-muted mb-6">
-        Seu pedido de serviço foi publicado. Prestadores poderão visualizá-lo e entrar em contato.
+        Seu pedido de serviço foi publicado. Prestadores poderão visualizá-lo e
+        entrar em contato.
       </p>
       <div class="flex flex-wrap justify-center gap-3">
         <router-link to="/servicos/buscar">
@@ -25,10 +30,12 @@
     </HtCard>
 
     <template v-else>
-      <h1 class="text-title font-semibold text-foreground mb-1">Anunciar Serviço Desejado</h1>
+      <h1 class="text-title font-semibold text-foreground mb-1">
+        Solicitar serviço
+      </h1>
       <p class="text-sm text-muted mb-6">
-        Descreva o serviço que você precisa. Prestadores cadastrados poderão visualizar seu anúncio
-        e entrar em contato com uma proposta.
+        Descreva o serviço que você precisa. Prestadores cadastrados poderão
+        visualizar seu anúncio e entrar em contato com uma proposta.
       </p>
 
       <HtCard>
@@ -77,14 +84,25 @@
 
           <!-- Valor (condicional) -->
           <HtInput
-            v-if="form.unidadeCobranca && form.unidadeCobranca !== String(UnidadeCobranca.ACombinar)"
+            v-if="
+              form.unidadeCobranca &&
+              form.unidadeCobranca !== String(UnidadeCobranca.ACombinar)
+            "
             ref="refValor"
             v-model="form.precoBase"
             label="Valor (R$)"
             type="number"
             :allowNegative="false"
-            :placeholder="form.unidadeCobranca === String(UnidadeCobranca.PorHora) ? 'Ex: 80,00 por hora' : 'Ex: 250,00 total'"
-            :hint="form.unidadeCobranca === String(UnidadeCobranca.PorHora) ? 'Valor por hora de trabalho' : 'Valor total do serviço'"
+            :placeholder="
+              form.unidadeCobranca === String(UnidadeCobranca.PorHora)
+                ? 'Ex: 80,00 por hora'
+                : 'Ex: 250,00 total'
+            "
+            :hint="
+              form.unidadeCobranca === String(UnidadeCobranca.PorHora)
+                ? 'Valor por hora de trabalho'
+                : 'Valor total do serviço'
+            "
             required
             regra="required"
           />
@@ -96,12 +114,10 @@
           />
 
           <!-- Data desejada -->
-          <HtInput
+          <HtDateTimeInput
             v-model="form.data"
             label="Data desejada"
-            type="datetime-local"
             hint="Opcional — deixe em branco para combinar com o prestador"
-            :openPickerOnFocus="true"
           />
 
           <!-- Informação sobre data em branco -->
@@ -124,95 +140,116 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
-import api from '@/services/api'
-import { validarCampos, type CampoValidavel } from '@/shared/validacao'
-import { CATEGORIAS_SERVICO, UnidadeCobranca, type ServicoClienteForm } from '@/types'
-import HtInput from '@/components/ui/HtInput.vue'
-import HtTextarea from '@/components/ui/HtTextarea.vue'
-import HtSelect from '@/components/ui/HtSelect.vue'
-import HtButton from '@/components/ui/HtButton.vue'
-import HtCard from '@/components/ui/HtCard.vue'
-import HtAlert from '@/components/ui/HtAlert.vue'
-import HtDivider from '@/components/ui/HtDivider.vue'
+import { ref, reactive } from "vue";
+import api from "@/services/api";
+import { validarCampos, type CampoValidavel } from "@/shared/validacao";
+import {
+  CATEGORIAS_SERVICO,
+  UnidadeCobranca,
+  type ServicoClienteForm,
+} from "@/types";
+import HtInput from "@/components/ui/HtInput.vue";
+import HtTextarea from "@/components/ui/HtTextarea.vue";
+import HtSelect from "@/components/ui/HtSelect.vue";
+import HtButton from "@/components/ui/HtButton.vue";
+import HtCard from "@/components/ui/HtCard.vue";
+import HtAlert from "@/components/ui/HtAlert.vue";
+import HtDateTimeInput from "@/components/ui/HtDateTimeInput.vue";
+import HtDivider from "@/components/ui/HtDivider.vue";
 
-const categoriasOpcoes = CATEGORIAS_SERVICO.map(c => ({ value: c.value, label: c.label }))
+const categoriasOpcoes = CATEGORIAS_SERVICO.map((c) => ({
+  value: c.value,
+  label: c.label,
+}));
 
 const tiposValorOpcoes = [
-  { value: UnidadeCobranca.PorHora,   label: 'Valor por hora' },
-  { value: UnidadeCobranca.Total,     label: 'Valor total fixo' },
-  { value: UnidadeCobranca.ACombinar, label: 'A combinar com o prestador' },
-]
+  { value: UnidadeCobranca.PorHora, label: "Valor por hora" },
+  { value: UnidadeCobranca.Total, label: "Valor total fixo" },
+  { value: UnidadeCobranca.ACombinar, label: "A combinar com o prestador" },
+];
 
 const form = reactive<ServicoClienteForm>({
-  titulo: '',
-  descricao: '',
-  categoria: '',
-  unidadeCobranca: '',
-  precoBase: '',
-  data: '',
+  titulo: "",
+  descricao: "",
+  categoria: "",
+  unidadeCobranca: "",
+  precoBase: "",
+  data: "",
   tipo: 2,
-})
+});
 
-const refTitulo     = ref<InstanceType<typeof HtInput>   | null>(null)
-const refDescricao  = ref<InstanceType<typeof HtTextarea>| null>(null)
-const refCategoria  = ref<InstanceType<typeof HtSelect>  | null>(null)
-const refTipoValor  = ref<InstanceType<typeof HtSelect>  | null>(null)
-const refValor      = ref<InstanceType<typeof HtInput>   | null>(null)
+const refTitulo = ref<InstanceType<typeof HtInput> | null>(null);
+const refDescricao = ref<InstanceType<typeof HtTextarea> | null>(null);
+const refCategoria = ref<InstanceType<typeof HtSelect> | null>(null);
+const refTipoValor = ref<InstanceType<typeof HtSelect> | null>(null);
+const refValor = ref<InstanceType<typeof HtInput> | null>(null);
 
-const carregando = ref(false)
-const erro       = ref<string | null>(null)
-const sucesso    = ref(false)
+const carregando = ref(false);
+const erro = ref<string | null>(null);
+const sucesso = ref(false);
 
 async function handleSubmit() {
-  const campos: Array<CampoValidavel | null> = [refTitulo.value, refDescricao.value, refCategoria.value, refTipoValor.value]
-  if (form.unidadeCobranca && form.unidadeCobranca !== String(UnidadeCobranca.ACombinar)) campos.push(refValor.value)
-  if (!validarCampos(campos)) return
+  const campos: Array<CampoValidavel | null> = [
+    refTitulo.value,
+    refDescricao.value,
+    refCategoria.value,
+    refTipoValor.value,
+  ];
+  if (
+    form.unidadeCobranca &&
+    form.unidadeCobranca !== String(UnidadeCobranca.ACombinar)
+  )
+    campos.push(refValor.value);
+  if (!validarCampos(campos)) return;
 
-  erro.value = null
-  carregando.value = true
+  erro.value = null;
+  carregando.value = true;
   try {
-    const categoriaSelecionada = Number(form.categoria)
+    const categoriaSelecionada = Number(form.categoria);
     if (!categoriaSelecionada) {
-      throw new Error('Selecione uma categoria válida.')
+      throw new Error("Selecione uma categoria válida.");
     }
 
     const payload: Record<string, unknown> = {
-      titulo:      form.titulo,
-      descricao:   form.descricao,
-      categoria:   categoriaSelecionada,
-      unidadeCobranca:   Number(form.unidadeCobranca),
-    }
-    if (form.unidadeCobranca !== String(UnidadeCobranca.ACombinar) && form.precoBase) {
-      payload.precoBase = Number(form.precoBase.toString().replace(',', '.'))
+      titulo: form.titulo,
+      descricao: form.descricao,
+      categoria: categoriaSelecionada,
+      unidadeCobranca: Number(form.unidadeCobranca),
+    };
+    if (
+      form.unidadeCobranca !== String(UnidadeCobranca.ACombinar) &&
+      form.precoBase
+    ) {
+      payload.precoBase = Number(form.precoBase.toString().replace(",", "."));
     }
     if (form.data) {
-      payload.dataDesejada = new Date(form.data).toISOString()
+      payload.dataDesejada = new Date(form.data).toISOString();
     }
 
-    await api.post('/api/ServicoOferecido/CriarServicoCliente', payload)
-    sucesso.value = true
+    await api.post("/api/ServicoOferecido/CriarServicoCliente", payload);
+    sucesso.value = true;
   } catch (err: unknown) {
-    const e = err as { response?: { data?: unknown } }
-    const msg = e.response?.data
-    erro.value = typeof msg === 'string' && msg
-      ? msg
-      : 'Erro ao publicar o anúncio. Verifique os dados e tente novamente.'
+    const e = err as { response?: { data?: unknown } };
+    const msg = e.response?.data;
+    erro.value =
+      typeof msg === "string" && msg
+        ? msg
+        : "Erro ao publicar o anúncio. Verifique os dados e tente novamente.";
   } finally {
-    carregando.value = false
+    carregando.value = false;
   }
 }
 
 function reiniciar() {
-  form.titulo = ''
-  form.descricao = ''
-  form.categoria = ''
-  form.unidadeCobranca = ''
-  form.precoBase = ''
-  form.data = ''
-  erro.value = null
-  sucesso.value = false
+  form.titulo = "";
+  form.descricao = "";
+  form.categoria = "";
+  form.unidadeCobranca = "";
+  form.precoBase = "";
+  form.data = "";
+  erro.value = null;
+  sucesso.value = false;
 }
 
-defineExpose({ form, handleSubmit, sucesso, erro })
+defineExpose({ form, handleSubmit, sucesso, erro });
 </script>

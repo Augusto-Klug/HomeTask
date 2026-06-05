@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
 import { createRouter, createMemoryHistory } from "vue-router";
-import OperacaoPrestadorView from "../OperacaoPrestadorView.vue";
+import OperacaoPrestadorView from "../HistoricoAgendamentosPrestadorView.vue";
 import * as apiModule from "@/services/api";
-import { UnidadeCobranca, type AgendamentoResumo } from "@/types";
+import { StatusAgendamento, TipoUsuario, UnidadeCobranca, type AgendamentoResumo } from "@/types";
 
 vi.mock("@/services/api", () => ({ default: { get: vi.fn() } }));
 
@@ -24,7 +24,7 @@ const makeAgendamento = (overrides: Partial<AgendamentoResumo> = {}): Agendament
   prestadorNome: "Prestador Demo",
   dataHoraAgendada: new Date(Date.now() + 86400000).toISOString(),
   duracaoMinutos: 90,
-  status: "Solicitado",
+  status: StatusAgendamento.Solicitado,
   endereco: { logradouro: "Rua 1", bairro: "Centro", cidade: "Blumenau", estado: "SC" },
   observacoes: null,
   valorTotal: 120,
@@ -32,7 +32,7 @@ const makeAgendamento = (overrides: Partial<AgendamentoResumo> = {}): Agendament
   dataResposta: null,
   dataConclusao: null,
   motivoRecusa: null,
-  aguardandoRespostaDe: "Prestador",
+  aguardandoRespostaDe: TipoUsuario.Prestador,
   servicos: [
     {
       id: "srv-1",
@@ -72,7 +72,7 @@ describe("OperacaoPrestadorView", () => {
     });
 
     await flushPromises();
-    expect(wrapper.text()).toContain("Aguardando sua confirmacao");
+    expect(wrapper.text()).toContain("Aguardando sua confirmação");
   });
 
   it("mostra no calendario apenas servicos confirmados", async () => {
@@ -80,14 +80,14 @@ describe("OperacaoPrestadorView", () => {
       data: [
         makeAgendamento({
           id: "ag-aceito",
-          status: "Aceito",
+          status: StatusAgendamento.Aceito,
           aguardandoRespostaDe: null,
           clienteNome: "Cliente Confirmado",
         }),
         makeAgendamento({
           id: "ag-solicitado",
-          status: "Solicitado",
-          aguardandoRespostaDe: "Prestador",
+          status: StatusAgendamento.Solicitado,
+          aguardandoRespostaDe: TipoUsuario.Prestador,
           clienteNome: "Cliente Pendente",
         }),
       ],
@@ -110,7 +110,7 @@ describe("OperacaoPrestadorView", () => {
 
     await flushPromises();
 
-    expect(wrapper.text()).toContain("Calendario operacional");
+    expect(wrapper.text()).toContain("Calendário operacional");
     expect(wrapper.text()).toContain("Cliente Confirmado");
     expect(wrapper.text()).not.toContain("Cliente Pendente");
   });

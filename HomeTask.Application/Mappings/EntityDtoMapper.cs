@@ -196,7 +196,7 @@ internal static class EntityDtoMapper
             DataResposta = agendamento.DataResposta,
             DataConclusao = agendamento.DataConclusao,
             MotivoRecusa = agendamento.MotivoRecusa,
-            AguardandoRespostaDe = DeterminarResponsavelPelaResposta(agendamento),
+            AguardandoRespostaDe = Agendamento.ObterResponsavelPelaResposta(agendamento),
             Endereco = new EnderecoResumoDto
             {
                 Logradouro = agendamento.Endereco?.Logradouro ?? string.Empty,
@@ -210,19 +210,10 @@ internal static class EntityDtoMapper
                 Titulo = s.ServicoBase?.Titulo ?? string.Empty,
                 PrecoBase = s.ValorUnitario,
                 UnidadeCobranca = s.ServicoBase?.UnidadeCobranca ?? FormatoCobranca.Total
-              }).ToList()
-          };
+            }).ToList()
+        };
 
-    private static string? DeterminarResponsavelPelaResposta(Agendamento agendamento)
-    {
-        if (agendamento.Status != StatusAgendamento.Solicitado)
-            return null;
 
-        var possuiPedidoDeCliente = agendamento.AgendamentoServicos
-            .Any(s => s.ServicoBase?.TipoAnuncio == TipoAnuncio.Pedido);
-
-        return possuiPedidoDeCliente ? "Cliente" : "Prestador";
-    }
 
     public static AvaliacaoDto ParaDto(this Avaliacao avaliacao) =>
         new()

@@ -172,7 +172,6 @@ const router = useRouter()
 const tipos = [
   { value: 1, label: '🏠 Cliente' },
   { value: 2, label: '🔧 Prestador' },
-  { value: 3, label: '⭐ Ambos' },
 ]
 
 const form = reactive<CadastroForm>({
@@ -210,10 +209,10 @@ const inputEstado    = ref<InstanceType<typeof HtSearchSelect> | null>(null)
 const inputDescricao = ref<InstanceType<typeof HtInput> | null>(null)
 
 type CidadeApi = {
-  id?: string | number
-  Id?: string | number
-  cidadeId?: string | number
-  CidadeId?: string | number
+  id?: string
+  Id?: string
+  cidadeId?: string
+  CidadeId?: string
   nome?: string
   Nome?: string
   descricao?: string

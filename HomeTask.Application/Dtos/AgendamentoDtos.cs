@@ -43,7 +43,7 @@ public class AgendamentoResumoDto
     public DateTime? DataResposta { get; set; }
     public DateTime? DataConclusao { get; set; }
     public string? MotivoRecusa { get; set; }
-    public string? AguardandoRespostaDe { get; set; }
+    public TipoUsuario? AguardandoRespostaDe { get; set; }
     public EnderecoResumoDto Endereco { get; set; } = new();
     public List<ServicoResumoDto> Servicos { get; set; } = [];
 }

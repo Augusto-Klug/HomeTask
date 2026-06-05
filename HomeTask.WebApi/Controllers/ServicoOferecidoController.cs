@@ -29,7 +29,7 @@ namespace HomeTask.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ObterServicoPorId([FromQuery] Guid id, CancellationToken cancellationToken)
+        public async Task<ActionResult<object>> ObterServicoPorId([FromQuery] Guid id, CancellationToken cancellationToken)
         {
             var (prestadorAtualId, clienteAtualId, _) = await ObterContextoUsuarioAtualAsync(cancellationToken);
             var servicoPrestador = await _servicoPrestadorService.ObterPorIdAsync(id, cancellationToken);
@@ -37,7 +37,7 @@ namespace HomeTask.WebApi.Controllers
             {
                 if (!PodeVisualizar(servicoPrestador.PrestadorId, prestadorAtualId, clienteAtualId, true))
                     return NotFound();
-                return Ok(servicoPrestador);
+                return servicoPrestador;
             }
 
             var servicoCliente = await _servicoClienteService.ObterPorIdAsync(id, cancellationToken);
@@ -45,20 +45,21 @@ namespace HomeTask.WebApi.Controllers
             {
                 if (!PodeVisualizar(servicoCliente.ClienteId, prestadorAtualId, clienteAtualId, false))
                     return NotFound();
-                return Ok(servicoCliente);
+                return servicoCliente;
             }
 
             return NotFound();
         }
 
         [HttpGet]
-        public async Task<IActionResult> ObterServicosPorPrestador([FromQuery] Guid prestadorId, CancellationToken cancellationToken)
+        public async Task<ActionResult<IEnumerable<ServicoPrestadorDto>>> ObterServicosPorPrestador([FromQuery] Guid prestadorId, CancellationToken cancellationToken)
         {
-            return Ok(await _servicoPrestadorService.ObterPorPrestadorAsync(prestadorId, cancellationToken));
+            var servicos = await _servicoPrestadorService.ObterPorPrestadorAsync(prestadorId, cancellationToken);
+            return servicos.ToList();
         }
 
         [HttpGet]
-        public async Task<IActionResult> BuscarServicos(
+        public async Task<ActionResult<ServicoBuscaPaginadaDto>> BuscarServicos(
             CategoriaServico? categoria,
             string? cidade,
             decimal? precoMaximo,
@@ -67,55 +68,60 @@ namespace HomeTask.WebApi.Controllers
             CancellationToken cancellationToken = default)
         {
             var (_, _, usuarioId) = await ObterContextoUsuarioAtualAsync(cancellationToken);
-            return Ok(await _servicoPrestadorService.BuscarTodosPaginadoAsync(
+            var resultado = await _servicoPrestadorService.BuscarTodosPaginadoAsync(
                 categoria,
                 cidade,
                 precoMaximo,
                 usuarioId,
                 pagina,
                 tamanhoPagina,
-                cancellationToken));
+                cancellationToken);
+            return resultado;
         }
 
         [HttpGet]
-        public async Task<IActionResult> BuscarPedidos(CategoriaServico? categoria, string? cidade, decimal? precoMaximo, CancellationToken cancellationToken)
+        public async Task<ActionResult<IEnumerable<ServicoClienteDto>>> BuscarPedidos(CategoriaServico? categoria, string? cidade, decimal? precoMaximo, CancellationToken cancellationToken)
         {
-            return Ok(await _servicoClienteService.BuscarPedidosAsync(categoria, cidade, precoMaximo, cancellationToken));
+            var servicos = await _servicoClienteService.BuscarPedidosAsync(categoria, cidade, precoMaximo, cancellationToken);
+            return servicos.ToList();
         }
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> CriarServicoPrestador(ServicoPrestadorDto dto, CancellationToken cancellationToken)
+        public async Task<ActionResult<ServicoPrestadorDto>> CriarServicoPrestador(ServicoPrestadorDto dto, CancellationToken cancellationToken)
         {
             var idUsuario = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
             var prestador = await _prestadorService.ObterPorUsuarioIdAsync(idUsuario, cancellationToken);
             
             if (prestador == null)
-                return Forbid("Usuário não possui um perfil de prestador.");
+                return StatusCode(StatusCodes.Status403Forbidden, "Usuário não possui um perfil de prestador.");
 
             dto.PrestadorId = prestador.Id;
-            return Ok(await _servicoPrestadorService.CriarAsync(dto, cancellationToken));
+            var servico = await _servicoPrestadorService.CriarAsync(dto, cancellationToken);
+            return servico;
         }
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> CriarServicoCliente(ServicoClienteDto dto, CancellationToken cancellationToken)
+        public async Task<ActionResult<ServicoClienteDto>> CriarServicoCliente(ServicoClienteDto dto, CancellationToken cancellationToken)
         {
             var idUsuario = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
             var cliente = await _clienteService.ObterPorUsuarioIdAsync(idUsuario, cancellationToken);
 
             if (cliente == null)
-                return Forbid("Usuário não possui um perfil de cliente.");
+                return StatusCode(StatusCodes.Status403Forbidden, "Usuário não possui um perfil de cliente.");
 
             dto.ClienteId = cliente.Id;
-            return Ok(await _servicoClienteService.CriarAsync(dto, cancellationToken));
+            var servico = await _servicoClienteService.CriarAsync(dto, cancellationToken);
+            return servico;
         }
 
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> AtualizarServicoPrestador(ServicoPrestadorDto dto, CancellationToken cancellationToken)
+        public async Task<ActionResult<ServicoPrestadorDto>> AtualizarServicoPrestador(ServicoPrestadorDto dto, CancellationToken cancellationToken)
         {
-            return Ok(await _servicoPrestadorService.AtualizarAsync(dto, cancellationToken));
+            var servico = await _servicoPrestadorService.AtualizarAsync(dto, cancellationToken);
+            return servico;
         }
 
         [HttpDelete]

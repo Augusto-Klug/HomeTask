@@ -16,53 +16,58 @@ namespace HomeTask.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ObterPagamentoPorId([FromQuery] Guid id, CancellationToken cancellationToken)
+        public async Task<ActionResult<PagamentoDto>> ObterPagamentoPorId([FromQuery] Guid id, CancellationToken cancellationToken)
         {
             var pagamento = await _pagamentoService.ObterPorIdAsync(id, cancellationToken);
             if (pagamento == null)
                 return NotFound();
 
-            return Ok(pagamento);
+            return pagamento;
         }
 
         [HttpGet]
-        public async Task<IActionResult> ObterPagamentoPorAgendamento([FromQuery] Guid agendamentoId, CancellationToken cancellationToken)
+        public async Task<ActionResult<PagamentoDto>> ObterPagamentoPorAgendamento([FromQuery] Guid agendamentoId, CancellationToken cancellationToken)
         {
             var pagamento = await _pagamentoService.ObterPorAgendamentoAsync(agendamentoId, cancellationToken);
             if (pagamento == null)
                 return NotFound();
 
-            return Ok(pagamento);
+            return pagamento;
         }
 
         [HttpPost]
-        public async Task<IActionResult> CriarPagamento(PagamentoDto dto, CancellationToken cancellationToken)
+        public async Task<ActionResult<PagamentoDto>> CriarPagamento(PagamentoDto dto, CancellationToken cancellationToken)
         {
-            return Ok(await _pagamentoService.CriarAsync(dto, cancellationToken));
+            var pagamento = await _pagamentoService.CriarAsync(dto, cancellationToken);
+            return pagamento;
         }
 
         [HttpPost]
-        public async Task<IActionResult> ProcessarPagamento(PagamentoDto dto, CancellationToken cancellationToken)
+        public async Task<ActionResult<PagamentoDto>> ProcessarPagamento(PagamentoDto dto, CancellationToken cancellationToken)
         {
-            return Ok(await _pagamentoService.ProcessarAsync(dto.Id, cancellationToken));
+            var pagamento = await _pagamentoService.ProcessarAsync(dto.Id, cancellationToken);
+            return pagamento;
         }
 
         [HttpPost]
-        public async Task<IActionResult> ConfirmarPagamento(PagamentoDto dto, CancellationToken cancellationToken)
+        public async Task<ActionResult<PagamentoDto>> ConfirmarPagamento(PagamentoDto dto, CancellationToken cancellationToken)
         {
-            return Ok(await _pagamentoService.ConfirmarAsync(dto.Id, dto.TransacaoId ?? string.Empty, cancellationToken));
+            var pagamento = await _pagamentoService.ConfirmarAsync(dto.Id, dto.TransacaoId ?? string.Empty, cancellationToken);
+            return pagamento;
         }
 
         [HttpPost]
-        public async Task<IActionResult> RecusarPagamento(PagamentoDto dto, CancellationToken cancellationToken)
+        public async Task<ActionResult<PagamentoDto>> RecusarPagamento(PagamentoDto dto, CancellationToken cancellationToken)
         {
-            return Ok(await _pagamentoService.RecusarAsync(dto.Id, dto.MotivoRecusa ?? string.Empty, cancellationToken));
+            var pagamento = await _pagamentoService.RecusarAsync(dto.Id, dto.MotivoRecusa ?? string.Empty, cancellationToken);
+            return pagamento;
         }
 
         [HttpPost]
-        public async Task<IActionResult> EstornarPagamento(PagamentoDto dto, CancellationToken cancellationToken)
+        public async Task<ActionResult<PagamentoDto>> EstornarPagamento(PagamentoDto dto, CancellationToken cancellationToken)
         {
-            return Ok(await _pagamentoService.EstornarAsync(dto.Id, cancellationToken));
+            var pagamento = await _pagamentoService.EstornarAsync(dto.Id, cancellationToken);
+            return pagamento;
         }
     }
 }

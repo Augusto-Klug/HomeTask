@@ -1,18 +1,18 @@
 import { delay, http, HttpResponse } from "msw";
 import type { AgendamentoResumo, AuthResponse, Avaliacao, PerfilForm, Servico } from "@/types";
-import { UnidadeCobranca } from "@/types";
+import { StatusAgendamento, TipoUsuario, UnidadeCobranca } from "@/types";
 
 const MOCK_DELAY = 200;
 
 const MOCK_USER: AuthResponse = {
-  userId: 1,
+  userId: "1",
   nome: "Usuario Demo",
   email: "demo@hometask.com",
-  tipo: 3,
+  tipo: 2,
 };
 
-const MOCK_CLIENTE = { id: 1, usuarioId: 1, nome: "Usuario Demo" };
-const MOCK_PRESTADOR = { id: 1, usuarioId: 1, nome: "Usuario Demo" };
+const MOCK_CLIENTE = { id: "1", usuarioId: "1", nome: "Usuario Demo" };
+const MOCK_PRESTADOR = { id: "1", usuarioId: "1", nome: "Usuario Demo" };
 
 const MOCK_SERVICOS: Servico[] = [
   {
@@ -24,7 +24,7 @@ const MOCK_SERVICOS: Servico[] = [
     tipoAnuncio: 1,
     prestadorId: "10",
     prestadorNome: "Maria Silva",
-    categoria: "Faxina",
+    categoria: 1,
     cidade: "Blumenau",
     estado: "SC",
     mediaAvaliacoes: 4.5,
@@ -32,13 +32,13 @@ const MOCK_SERVICOS: Servico[] = [
   {
     id: "2",
     titulo: "Jardinagem e Poda",
-    descricao: "Servicos de jardinagem, poda e manutencao.",
+    descricao: "Serviços de jardinagem, poda e manutenção.",
     precoBase: 60,
     unidadeCobranca: UnidadeCobranca.PorHora,
     tipoAnuncio: 1,
     prestadorId: "11",
     prestadorNome: "Joao Santos",
-    categoria: "Jardinagem",
+    categoria: 2,
     cidade: "Blumenau",
     estado: "SC",
     mediaAvaliacoes: 4,
@@ -52,19 +52,19 @@ const MOCK_SERVICOS: Servico[] = [
     tipoAnuncio: 2,
     clienteId: "2",
     clienteNome: "Pedro Martins",
-    categoria: "Faxina",
+    categoria: 1,
     cidade: "Blumenau",
     estado: "SC",
     dataDesejada: diasAPartirDeHoje(3, "10:00"),
   },
 ];
 
-const MOCK_AVALIACOES: Record<number, Avaliacao[]> = {
-  10: [
-    { id: 1, clienteNome: "Pedro Martins", nota: 5, comentario: "Excelente trabalho", data: "2025-03-10T14:00:00Z" },
+const MOCK_AVALIACOES: Record<string, Avaliacao[]> = {
+  "10": [
+    { id: "1", clienteNome: "Pedro Martins", nota: 5, comentario: "Excelente trabalho", data: "2025-03-10T14:00:00Z" },
   ],
-  11: [
-    { id: 2, clienteNome: "Luisa Ferreira", nota: 4, comentario: "Bom atendimento", data: "2025-03-05T16:00:00Z" },
+  "11": [
+    { id: "2", clienteNome: "Luisa Ferreira", nota: 4, comentario: "Bom atendimento", data: "2025-03-05T16:00:00Z" },
   ],
 };
 
@@ -85,7 +85,7 @@ const MOCK_AGENDAMENTOS_CLIENTE: AgendamentoResumo[] = [
     prestadorNome: "Maria Silva",
     dataHoraAgendada: diasAPartirDeHoje(2, "09:00"),
     duracaoMinutos: 120,
-    status: "Aceito",
+    status: StatusAgendamento.Aceito,
     endereco: { logradouro: "Rua XV, 320", bairro: "Centro", cidade: "Blumenau", estado: "SC" },
     observacoes: "Dar atencao especial a cozinha.",
     valorTotal: 160,
@@ -115,7 +115,7 @@ const MOCK_AGENDAMENTOS_CLIENTE: AgendamentoResumo[] = [
     prestadorNome: "Usuario Demo",
     dataHoraAgendada: diasAPartirDeHoje(5, "14:30"),
     duracaoMinutos: 180,
-    status: "Solicitado",
+    status: StatusAgendamento.Solicitado,
     endereco: { logradouro: "Rua Alameda, 45", bairro: "Velha", cidade: "Blumenau", estado: "SC" },
     observacoes: null,
     valorTotal: 150,
@@ -123,7 +123,7 @@ const MOCK_AGENDAMENTOS_CLIENTE: AgendamentoResumo[] = [
     dataResposta: null,
     dataConclusao: null,
     motivoRecusa: null,
-    aguardandoRespostaDe: "Cliente",
+    aguardandoRespostaDe: TipoUsuario.Cliente,
     servicos: [
       {
         id: "11",
@@ -148,7 +148,7 @@ const MOCK_AGENDAMENTOS_PRESTADOR: AgendamentoResumo[] = [
     prestadorNome: "Usuario Demo",
     dataHoraAgendada: diasAPartirDeHoje(1, "10:00"),
     duracaoMinutos: 120,
-    status: "Solicitado",
+    status: StatusAgendamento.Solicitado,
     endereco: { logradouro: "Av. Brasil, 1001", bairro: "Ponta Aguda", cidade: "Blumenau", estado: "SC" },
     observacoes: null,
     valorTotal: 80,
@@ -156,12 +156,12 @@ const MOCK_AGENDAMENTOS_PRESTADOR: AgendamentoResumo[] = [
     dataResposta: null,
     dataConclusao: null,
     motivoRecusa: null,
-    aguardandoRespostaDe: "Prestador",
+    aguardandoRespostaDe: TipoUsuario.Prestador,
     servicos: [
       {
         id: "srv-012",
         titulo: "Faxina Rapida",
-        descricao: "Servico de prestador",
+        descricao: "Serviço de prestador",
         precoBase: 80,
         duracaoEstimadaMinutos: 60,
         unidadeCobranca: UnidadeCobranca.Total,
@@ -178,7 +178,7 @@ const MOCK_AGENDAMENTOS_PRESTADOR: AgendamentoResumo[] = [
     prestadorNome: "Usuario Demo",
     dataHoraAgendada: diasAPartirDeHoje(3, "15:00"),
     duracaoMinutos: 180,
-    status: "Aceito",
+    status: StatusAgendamento.Aceito,
     endereco: { logradouro: "Rua Hermann Hering, 1800", bairro: "Itoupava Norte", cidade: "Blumenau", estado: "SC" },
     observacoes: "Pronto para iniciar",
     valorTotal: 160,
@@ -226,7 +226,7 @@ const CATEGORIA_LABELS: Record<string, string> = {
   "7": "Cuidador de Idosos",
   "8": "Pet Sitter",
   "9": "Cozinheiro",
-  "10": "Servicos Gerais",
+  "10": "Serviços Gerais",
 };
 
 export const handlers = [
@@ -239,8 +239,8 @@ export const handlers = [
 
     const categoria = url.searchParams.get("categoria");
     if (categoria) {
-      const label = CATEGORIA_LABELS[categoria] ?? "";
-      result = result.filter((s) => s.categoria === label);
+      const valorCategoria = Number(categoria);
+      result = result.filter((s) => s.categoria === valorCategoria);
     }
 
     const cidade = url.searchParams.get("cidade");
@@ -277,7 +277,7 @@ export const handlers = [
   http.get("*/api/Avaliacao/ObterAvaliacoesPorPrestador", async ({ request }) => {
     await delay(MOCK_DELAY);
     const url = new URL(request.url);
-    const prestadorId = Number(url.searchParams.get("prestadorId"));
+    const prestadorId = url.searchParams.get("prestadorId") ?? "";
     return HttpResponse.json(MOCK_AVALIACOES[prestadorId] ?? []);
   }),
 
@@ -296,7 +296,7 @@ export const handlers = [
 
   http.post("*/api/Agendamento/CriarAgendamento", async () => {
     await delay(MOCK_DELAY);
-    return HttpResponse.json({ id: Math.floor(Math.random() * 9000) + 1000 }, { status: 201 });
+    return HttpResponse.json({ id: crypto.randomUUID() }, { status: 201 });
   }),
 
   http.get("*/api/Agendamento/ObterMeusAgendamentosPrestador", async () => {
@@ -321,7 +321,9 @@ export const handlers = [
   http.get("*/api/Agendamento/ObterSolicitacoesPendentesPrestador", async () => {
     await delay(MOCK_DELAY);
     return HttpResponse.json(
-      MOCK_AGENDAMENTOS_PRESTADOR.filter((a) => a.status === "Solicitado" && a.aguardandoRespostaDe === "Prestador"),
+      MOCK_AGENDAMENTOS_PRESTADOR.filter(
+        (a) => a.status === StatusAgendamento.Solicitado && a.aguardandoRespostaDe === TipoUsuario.Prestador,
+      ),
     );
   }),
 
@@ -331,7 +333,7 @@ export const handlers = [
     const todos = [...MOCK_AGENDAMENTOS_PRESTADOR, ...MOCK_AGENDAMENTOS_CLIENTE];
     const alvo = todos.find((a) => a.id === body.id);
     if (alvo) {
-      alvo.status = "Aceito";
+      alvo.status = StatusAgendamento.Aceito;
       alvo.aguardandoRespostaDe = null;
       alvo.dataResposta = new Date().toISOString();
     }
@@ -344,7 +346,7 @@ export const handlers = [
     const todos = [...MOCK_AGENDAMENTOS_PRESTADOR, ...MOCK_AGENDAMENTOS_CLIENTE];
     const alvo = todos.find((a) => a.id === body.id);
     if (alvo) {
-      alvo.status = "Recusado";
+      alvo.status = StatusAgendamento.Recusado;
       alvo.dataResposta = new Date().toISOString();
       alvo.motivoRecusa = body.motivoRecusa ?? "Sem motivo informado";
     }
@@ -355,7 +357,7 @@ export const handlers = [
     await delay(MOCK_DELAY);
     const body = (await request.json()) as { id?: string };
     const alvo = MOCK_AGENDAMENTOS_PRESTADOR.find((a) => a.id === body.id);
-    if (alvo) alvo.status = "EmAndamento";
+    if (alvo) alvo.status = StatusAgendamento.EmAndamento;
     return HttpResponse.json(alvo ?? { ok: true });
   }),
 
@@ -364,7 +366,7 @@ export const handlers = [
     const body = (await request.json()) as { id?: string };
     const alvo = MOCK_AGENDAMENTOS_PRESTADOR.find((a) => a.id === body.id);
     if (alvo) {
-      alvo.status = "Concluido";
+      alvo.status = StatusAgendamento.Concluido;
       alvo.dataConclusao = new Date().toISOString();
     }
     return HttpResponse.json(alvo ?? { ok: true });
@@ -376,7 +378,7 @@ export const handlers = [
     const todos = [...MOCK_AGENDAMENTOS_PRESTADOR, ...MOCK_AGENDAMENTOS_CLIENTE];
     const alvo = todos.find((a) => a.id === body.id);
     if (alvo) {
-      alvo.status = "Cancelado";
+      alvo.status = StatusAgendamento.Cancelado;
       alvo.motivoRecusa = body.motivoRecusa ?? "Cancelado";
     }
     return HttpResponse.json(alvo ?? { ok: true });

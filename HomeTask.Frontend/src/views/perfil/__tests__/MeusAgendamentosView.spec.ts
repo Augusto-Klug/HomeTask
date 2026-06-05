@@ -5,7 +5,7 @@ import { createRouter, createMemoryHistory } from "vue-router";
 import MeusAgendamentosView from "../MeusAgendamentosView.vue";
 import { useAuthStore } from "@/stores/auth";
 import * as apiModule from "@/services/api";
-import { UnidadeCobranca, type AgendamentoResumo } from "@/types";
+import { StatusAgendamento, TipoUsuario, UnidadeCobranca, type AgendamentoResumo } from "@/types";
 
 vi.mock("@/services/api", () => ({ default: { get: vi.fn() } }));
 
@@ -17,7 +17,7 @@ const makeAgendamento = (overrides: Partial<AgendamentoResumo> = {}): Agendament
   prestadorNome: "Maria Costa",
   dataHoraAgendada: new Date(Date.now() + 86400000).toISOString(),
   duracaoMinutos: 60,
-  status: "Solicitado",
+  status: StatusAgendamento.Solicitado,
   endereco: { logradouro: "Rua A, 100", bairro: "Centro", cidade: "Florianopolis", estado: "SC" },
   observacoes: null,
   valorTotal: 150,
@@ -25,7 +25,7 @@ const makeAgendamento = (overrides: Partial<AgendamentoResumo> = {}): Agendament
   dataResposta: null,
   dataConclusao: null,
   motivoRecusa: null,
-  aguardandoRespostaDe: "Cliente",
+  aguardandoRespostaDe: TipoUsuario.Cliente,
   servicos: [
     {
       id: "srv-1",
@@ -49,7 +49,7 @@ const router = createRouter({
 async function mountView() {
   setActivePinia(createPinia());
   const auth = useAuthStore();
-  auth.setUser({ userId: 10, nome: "Teste", email: "a@b.com", tipo: 1 });
+  auth.setUser({ userId: "10", nome: "Teste", email: "a@b.com", tipo: 1 });
 
   await router.push("/");
   await router.isReady();
@@ -74,7 +74,7 @@ describe("MeusAgendamentosView", () => {
     const wrapper = await mountView();
     await flushPromises();
 
-    expect(wrapper.text()).toContain("Aguardando sua confirmacao");
+    expect(wrapper.text()).toContain("Aguardando sua confirmação");
     expect(wrapper.text()).not.toContain("Cliente");
   });
 
@@ -83,6 +83,6 @@ describe("MeusAgendamentosView", () => {
     const wrapper = await mountView();
     await flushPromises();
 
-    expect(wrapper.text()).toContain("Aguardando sua confirmacao");
+    expect(wrapper.text()).toContain("Aguardando sua confirmação");
   });
 });

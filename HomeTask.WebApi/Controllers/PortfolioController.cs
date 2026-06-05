@@ -1,4 +1,5 @@
 using HomeTask.Application.Interfaces;
+using HomeTask.Application.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HomeTask.WebApi.Controllers;
@@ -18,14 +19,15 @@ public class PortfolioController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> Listar(Guid prestadorId, CancellationToken cancellationToken)
+    public async Task<ActionResult<IEnumerable<PortfolioDto>>> Listar(Guid prestadorId, CancellationToken cancellationToken)
     {
-        return Ok(await _portfolioService.ObterPorPrestadorAsync(prestadorId, cancellationToken));
+        var portfolio = await _portfolioService.ObterPorPrestadorAsync(prestadorId, cancellationToken);
+        return portfolio.ToList();
     }
 
     [HttpPost]
     [RequestSizeLimit(_tamanhoMaximo)]
-    public async Task<IActionResult> Adicionar(
+    public async Task<ActionResult<PortfolioDto>> Adicionar(
         Guid prestadorId,
         IFormFile imagem,
         [FromForm] string? titulo,
