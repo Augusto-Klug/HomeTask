@@ -1,11 +1,11 @@
 <template>
-  <AgendamentosOperacaoBase
-    titulo="Meus agendamentos"
-    descricao="Acompanhe suas solicitações, confirme propostas dos prestadores e visualize seus serviços <strong>agendados</strong>."
+  <HistoricoAgendamentosBase
+    titulo="Minha operação"
+    descricao="Responda solicitações, acompanhe a execução e visualize seu calendário de serviços <strong>confirmados</strong>."
     :carregando="carregando"
     :aba-atual="abaAtual"
     :paineis="paineis"
-    calendario-etiqueta="Calendário de serviços"
+    calendario-etiqueta="Calendário operacional"
     :eventos-calendario="agendaConfirmada"
     resumo-mes-texto="Serviços <strong>confirmados</strong> neste mês."
     vazio-dia-texto="Nenhum serviço confirmado neste dia."
@@ -25,7 +25,7 @@
           <div class="flex items-start justify-between gap-3">
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2 mb-1 flex-wrap">
-                <span class="font-semibold text-sm">{{ ag.prestadorNome }}</span>
+                <span class="font-semibold text-sm">{{ ag.clienteNome }}</span>
                 <HtBadge :variant="obterVariantStatus(ag.status)">{{ labelStatus(ag) }}</HtBadge>
               </div>
               <p v-if="ag.servicos.length" class="text-xs text-base-content/60 mb-2">
@@ -45,7 +45,7 @@
 
     <template #calendario-evento="{ evento }">
       <p class="text-[11px] font-semibold leading-none">{{ formatarHora(evento.dataHoraAgendada) }}</p>
-      <p class="mt-1 truncate text-[11px] text-base-content/70">{{ evento.prestadorNome }}</p>
+      <p class="mt-1 truncate text-[11px] text-base-content/70">{{ evento.clienteNome }}</p>
     </template>
 
     <template #dia-selecionado="{ eventos }">
@@ -58,7 +58,7 @@
       >
         <div class="flex items-start justify-between gap-3">
           <div>
-            <p class="font-semibold">{{ ag.prestadorNome }}</p>
+            <p class="font-semibold">{{ ag.clienteNome }}</p>
             <p class="mt-1 text-sm text-base-content/70">
               {{ formatarHora(ag.dataHoraAgendada) }} · {{ ag.duracaoMinutos }} min
             </p>
@@ -70,7 +70,7 @@
         </div>
       </button>
     </template>
-  </AgendamentosOperacaoBase>
+  </HistoricoAgendamentosBase>
 </template>
 
 <script setup lang="ts">
@@ -81,7 +81,7 @@ import HtCard from "@/components/ui/HtCard.vue";
 import api from "@/services/api";
 import { formatarDataCurta, formatarHora, formatarMoeda } from "@/shared/utils";
 import { StatusAgendamento, TipoUsuario, type AgendamentoResumo } from "@/types";
-import AgendamentosOperacaoBase from "./components/AgendamentosOperacaoBase.vue";
+import HistoricoAgendamentosBase from "./components/HistoricoAgendamentosBase.vue";
 
 type AbaAgendamentosOperacao = "painel" | "calendario";
 type PainelAgendamentosOperacaoTom = "primary" | "secondary" | "accent" | "success" | "warning" | "error" | "neutro";
@@ -96,14 +96,14 @@ const abaAtual = computed<AbaAgendamentosOperacao>(() => (route.query.aba === "c
 const aguardandoSuaConfirmacao = computed(() =>
   ordenarPorData(
     agendamentos.value.filter(
-      (ag) => ag.status === StatusAgendamento.Solicitado && ag.aguardandoRespostaDe === TipoUsuario.Cliente,
+      (ag) => ag.status === StatusAgendamento.Solicitado && ag.aguardandoRespostaDe === TipoUsuario.Prestador,
     ),
   ),
 );
 const aguardandoOutraParte = computed(() =>
   ordenarPorData(
     agendamentos.value.filter(
-      (ag) => ag.status === StatusAgendamento.Solicitado && ag.aguardandoRespostaDe === TipoUsuario.Prestador,
+      (ag) => ag.status === StatusAgendamento.Solicitado && ag.aguardandoRespostaDe === TipoUsuario.Cliente,
     ),
   ),
 );
@@ -127,25 +127,25 @@ const paineis = computed(() => [
   painel(
     "aguardando-sua-confirmacao",
     "Aguardando sua confirmação",
-    "Propostas de prestadores pendentes da sua resposta.",
+    "Solicitações pendentes da sua resposta.",
     aguardandoSuaConfirmacao.value,
-    "Nenhuma proposta aguardando sua confirmação.",
+    "Nenhuma solicitação aguardando sua confirmação.",
     "warning",
     "schedule",
   ),
   painel(
     "aguardando-outra-parte",
-    "Aguardando confirmação do prestador",
-    "Solicitações enviadas que aguardam retorno do prestador.",
+    "Aguardando confirmação do cliente",
+    "Pedidos enviados que aguardam retorno do cliente.",
     aguardandoOutraParte.value,
-    "Nenhuma solicitação aguardando confirmação do prestador.",
+    "Nenhuma solicitação aguardando confirmação do cliente.",
     "warning",
     "schedule",
   ),
   painel(
     "agendados",
     "Agendados",
-    "Serviços confirmados e prontos para acontecer.",
+    "Serviços confirmados e prontos para iniciar.",
     agendados.value,
     "Nenhum serviço agendado.",
     "primary",
@@ -190,7 +190,7 @@ const agendaConfirmada = computed(() =>
 );
 onMounted(async () => {
   try {
-    const { data } = await api.get<AgendamentoResumo[]>("/api/Agendamento/ObterMeusAgendamentosCliente");
+    const { data } = await api.get<AgendamentoResumo[]>("/api/Agendamento/ObterMeusAgendamentosPrestador");
     agendamentos.value = data;
   } finally {
     carregando.value = false;
@@ -205,7 +205,7 @@ function selecionarAba(aba: AbaAgendamentosOperacao) {
 }
 
 function abrirDetalhes(id: string) {
-  router.push({ path: `/agendamento/detalhes/${id}`, query: { origem: "agendamentos" } });
+  router.push({ path: `/agendamento/detalhes/${id}`, query: { origem: "operacao" } });
 }
 
 function ordenarPorData(lista: AgendamentoResumo[]) {
@@ -233,10 +233,10 @@ function inicioDoDia(data: Date) {
 }
 
 function labelStatus(ag: AgendamentoResumo): string {
-  if (ag.status === StatusAgendamento.Solicitado && ag.aguardandoRespostaDe === TipoUsuario.Cliente)
-    return "Aguardando sua confirmação";
   if (ag.status === StatusAgendamento.Solicitado && ag.aguardandoRespostaDe === TipoUsuario.Prestador)
-    return "Aguardando confirmação do prestador";
+    return "Aguardando sua confirmação";
+  if (ag.status === StatusAgendamento.Solicitado && ag.aguardandoRespostaDe === TipoUsuario.Cliente)
+    return "Aguardando confirmação do cliente";
   if (ag.status === StatusAgendamento.Aceito) return "Agendado";
   if (ag.status === StatusAgendamento.EmAndamento) return "Em andamento";
   if (ag.status === StatusAgendamento.Concluido) return "Concluído";
