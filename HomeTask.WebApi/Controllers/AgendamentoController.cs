@@ -60,7 +60,7 @@ namespace HomeTask.WebApi.Controllers
 
             var prestador = await _prestadorService.ObterPorUsuarioIdAsync(usuarioId, cancellationToken);
             if (prestador == null)
-                return Forbid("Usuário não possui perfil de prestador.");
+                return StatusCode(StatusCodes.Status403Forbidden, "Usuário não possui perfil de prestador.");
 
             var solicitacoes = await _agendamentoService.ObterSolicitacoesPendentesPorPrestadorAsync(prestador.Id, cancellationToken);
             var solicitacoesPrestador = solicitacoes.Where(a => a.AguardandoRespostaDe == TipoUsuario.Prestador).ToList();
@@ -76,7 +76,7 @@ namespace HomeTask.WebApi.Controllers
 
             var prestador = await _prestadorService.ObterPorUsuarioIdAsync(usuarioId, cancellationToken);
             if (prestador == null)
-                return Forbid("Usuário não possui perfil de prestador.");
+                return StatusCode(StatusCodes.Status403Forbidden, "Usuário não possui perfil de prestador.");
 
             var agendamentos = await _agendamentoService.ObterPorPrestadorAsync(prestador.Id, cancellationToken);
             return agendamentos.ToList();
@@ -91,7 +91,7 @@ namespace HomeTask.WebApi.Controllers
 
             var cliente = await _clienteService.ObterPorUsuarioIdAsync(usuarioId, cancellationToken);
             if (cliente == null)
-                return Forbid("Usuário não possui perfil de cliente.");
+                return StatusCode(StatusCodes.Status403Forbidden, "Usuário não possui perfil de cliente.");
 
             var agendamentos = await _agendamentoService.ObterPorClienteAsync(cliente.Id, cancellationToken);
             return agendamentos.ToList();
