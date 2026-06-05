@@ -188,6 +188,7 @@ const agendaConfirmada = computed(() =>
     )
     .sort((a, b) => new Date(a.dataHoraAgendada).getTime() - new Date(b.dataHoraAgendada).getTime()),
 );
+
 onMounted(async () => {
   try {
     const { data } = await api.get<AgendamentoResumo[]>("/api/Agendamento/ObterMeusAgendamentosCliente");
