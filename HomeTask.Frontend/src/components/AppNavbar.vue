@@ -41,12 +41,12 @@
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
 import HtButton from '@/components/ui/HtButton.vue'
+import { logoutHandler } from '@/shared/utils'
 
 const auth = useAuthStore()
 const router = useRouter()
 
 async function handleLogout() {
-  await auth.logout()
-  router.push('/login')
+  await logoutHandler(auth.logout, () => router.replace('/'))
 }
 </script>

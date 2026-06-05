@@ -74,7 +74,7 @@ describe("MeusAgendamentosView", () => {
     const wrapper = await mountView();
     await flushPromises();
 
-    expect(wrapper.text()).toContain("Aguardando sua confirmacao");
+    expect(wrapper.text()).toContain("Aguardando sua confirmação");
     expect(wrapper.text()).not.toContain("Cliente");
   });
 
@@ -83,6 +83,6 @@ describe("MeusAgendamentosView", () => {
     const wrapper = await mountView();
     await flushPromises();
 
-    expect(wrapper.text()).toContain("Aguardando sua confirmacao");
+    expect(wrapper.text()).toContain("Aguardando sua confirmação");
   });
 });

@@ -6,9 +6,9 @@
 
     <div v-else-if="!servico" class="text-center py-16 flex flex-col items-center gap-4">
       <span class="material-symbols-rounded text-5xl text-error">error</span>
-      <p class="text-sm text-muted">Servico nao encontrado.</p>
+      <p class="text-sm text-muted">Serviço não encontrado.</p>
       <router-link to="/servicos/buscar">
-        <HtButton variant="outline">Voltar a busca</HtButton>
+        <HtButton variant="outline">Voltar à busca</HtButton>
       </router-link>
     </div>
 
@@ -18,7 +18,7 @@
         class="inline-flex items-center gap-1.5 text-sm text-muted hover:text-primary mb-6 transition-colors"
       >
         <span class="material-symbols-rounded text-base">arrow_back</span>
-        Voltar a busca
+        Voltar à busca
       </router-link>
 
       <HtCard class="mb-6">
@@ -50,10 +50,10 @@
         </div>
 
         <div v-if="!ehServicoPrestador && servico.dataDesejada" class="mb-4 p-3 bg-primary/5 rounded-lg border border-primary/10">
-          <p class="text-xs text-primary font-semibold uppercase mb-1">Data desejada para execucao</p>
+          <p class="text-xs text-primary font-semibold uppercase mb-1">Data desejada para execução</p>
           <p class="text-sm text-foreground flex items-center gap-2">
             <span class="material-symbols-rounded text-base">event</span>
-            {{ formatarData(servico.dataDesejada) }} as {{ formatarHora(servico.dataDesejada) }}
+            {{ formatarData(servico.dataDesejada) }} às {{ formatarHora(servico.dataDesejada) }}
           </p>
         </div>
 
@@ -94,7 +94,7 @@
 import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import api from "@/services/api";
-import { formatarPrecoServico } from "@/shared/utils";
+import { formatarData, formatarHora, formatarPrecoServico } from "@/shared/utils";
 import { useAuthStore } from "@/stores/auth";
 import type { Avaliacao, ServicoDetalhe } from "@/types";
 import { CATEGORIAS_SERVICO } from "@/types";
@@ -163,17 +163,6 @@ function irParaFluxo() {
 function estrelas(media: number): string {
   const cheias = Math.floor(media ?? 0);
   return "*".repeat(cheias) + "o".repeat(5 - cheias);
-}
-
-function formatarData(dataStr: string): string {
-  return new Date(dataStr).toLocaleDateString("pt-BR");
-}
-
-function formatarHora(dataStr: string): string {
-  return new Date(dataStr).toLocaleTimeString("pt-BR", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
 }
 
 function obterNomeCategoria(categoria: number | { id: string; nome: string; icone: string }): string {

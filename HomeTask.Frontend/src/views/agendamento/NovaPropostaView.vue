@@ -1,9 +1,9 @@
 <template>
   <div class="max-w-2xl mx-auto px-4 py-8">
     <div v-if="!servico?.id && !carregandoServico" class="text-center py-16 flex flex-col items-center gap-4">
-      <p class="text-sm text-muted">Parametros invalidos.</p>
+      <p class="text-sm text-muted">Parâmetros inválidos.</p>
       <router-link to="/servicos/buscar">
-        <HtButton variant="outline">Voltar a busca</HtButton>
+        <HtButton variant="outline">Voltar à busca</HtButton>
       </router-link>
     </div>
 
@@ -16,7 +16,7 @@
         Voltar
       </router-link>
 
-      <h1 class="text-title font-semibold text-foreground mb-6">Enviar Proposta</h1>
+      <h1 class="text-title font-semibold text-foreground mb-6">Enviar proposta</h1>
 
       <div v-if="carregandoServico" class="flex justify-center py-16">
         <HtSpinner size="lg" class="text-primary" />
@@ -32,7 +32,7 @@
         </div>
 
         <div v-if="servico.dataDesejada" class="mb-4 rounded-lg border border-primary/10 bg-primary/5 p-3 text-sm">
-          Data desejada: {{ formatarData(servico.dataDesejada) }} as {{ formatarHora(servico.dataDesejada) }}
+          Data desejada: {{ formatarData(servico.dataDesejada) }} às {{ formatarHora(servico.dataDesejada) }}
         </div>
 
         <HtDivider />
@@ -52,9 +52,9 @@
             <HtInput
               ref="inputHora"
               v-model="form.hora"
-              label="Horario"
+              label="Horário"
               type="time"
-              :mensagemErro="'Selecione um horario'"
+              :mensagemErro="'Selecione um horário'"
               required
               regra="required"
             />
@@ -62,8 +62,8 @@
 
           <HtTextarea
             v-model="form.observacoes"
-            label="Observacoes"
-            placeholder="Alguma informacao adicional..."
+            label="Observações"
+            placeholder="Alguma informação adicional..."
             :rows="3"
           />
 
@@ -81,7 +81,7 @@ import { onMounted, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import api from "@/services/api";
 import { validarCampos } from "@/shared/validacao";
-import { formatarPrecoServico } from "@/shared/utils";
+import { formatarData, formatarHora, formatarPrecoServico } from "@/shared/utils";
 import { useAuthStore } from "@/stores/auth";
 import type { AgendamentoForm, ServicoClienteDetalhe } from "@/types";
 import HtAlert from "@/components/ui/HtAlert.vue";
@@ -167,14 +167,4 @@ async function handleEnviarProposta() {
   }
 }
 
-function formatarData(dataStr: string): string {
-  return new Date(dataStr).toLocaleDateString("pt-BR");
-}
-
-function formatarHora(dataStr: string): string {
-  return new Date(dataStr).toLocaleTimeString("pt-BR", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
 </script>

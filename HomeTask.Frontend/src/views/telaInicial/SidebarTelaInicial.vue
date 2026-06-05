@@ -13,7 +13,7 @@
       <li>
         <router-link to="/servicos/buscar" class="ht-sidenav-link" @click="open = false">
           <span class="material-symbols-rounded text-xl">search</span>
-          Buscar Servicos
+          Buscar Serviços
         </router-link>
       </li>
 
@@ -28,21 +28,21 @@
         <li v-if="auth.user?.tipo === 2 || auth.user?.tipo === 3">
           <router-link to="/perfil/operacao" class="ht-sidenav-link" @click="open = false">
             <span class="material-symbols-rounded text-xl">work_history</span>
-            Minha Operacao
+            Minha Operação
           </router-link>
         </li>
 
         <li v-if="auth.user?.tipo === 1 || auth.user?.tipo === 3">
           <router-link to="/servicos/novo-cliente" class="ht-sidenav-link" @click="open = false">
             <span class="material-symbols-rounded text-xl">campaign</span>
-            Anunciar Servico
+            Solicitar serviço
           </router-link>
         </li>
 
         <li v-if="auth.user?.tipo === 2 || auth.user?.tipo === 3">
           <router-link to="/servicos/novo-prestador" class="ht-sidenav-link" @click="open = false">
             <span class="material-symbols-rounded text-xl">work</span>
-            Oferecer Servico
+            Anunciar serviço
           </router-link>
         </li>
       </template>
@@ -84,6 +84,7 @@
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import HtSidenav from "@/components/ui/HtSidenav.vue";
+import { logoutHandler } from "@/shared/utils";
 
 const open = defineModel<boolean>("open", { default: false });
 
@@ -91,8 +92,8 @@ const auth = useAuthStore();
 const router = useRouter();
 
 async function handleLogout() {
-  open.value = false;
-  await auth.logout();
-  router.push("/login");
+  await logoutHandler(auth.logout, () => router.replace("/"), () => {
+    open.value = false;
+  });
 }
 </script>

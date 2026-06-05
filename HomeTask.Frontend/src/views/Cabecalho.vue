@@ -103,7 +103,7 @@ import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import TemaPagina from "@/shared/components/TemaPagina.vue";
-import { obterInicialNome } from "@/shared/utils";
+import { logoutHandler, obterInicialNome } from "@/shared/utils";
 
 const auth = useAuthStore();
 const router = useRouter();
@@ -112,17 +112,17 @@ const userMenuOpen = ref(false);
 const userMenuContainer = ref<HTMLElement | null>(null);
 const inicialUsuario = computed(() => obterInicialNome(auth.user?.nome));
 const navItems = computed(() => {
-  const items = [{ label: "Buscar servicos", to: "/servicos/buscar" }];
+  const items = [{ label: "Buscar serviços", to: "/servicos/buscar" }];
 
   if (auth.user?.tipo === 1 || auth.user?.tipo === 3) {
     items.push({ label: "Agendamentos", to: "/perfil/agendamentos" });
-    items.push({ label: "Anunciar servico", to: "/servicos/novo-cliente" });
+    items.push({ label: "Solicitar serviço", to: "/servicos/novo-cliente" });
     return items;
   }
 
   if (auth.user?.tipo === 2) {
     items.push({ label: "Agendamentos", to: "/perfil/operacao" });
-    items.push({ label: "Anunciar servico", to: "/servicos/novo-prestador" });
+    items.push({ label: "Anunciar serviço", to: "/servicos/novo-prestador" });
   }
 
   return items;
@@ -141,8 +141,8 @@ onMounted(() => document.addEventListener("click", handleClickOutside));
 onUnmounted(() => document.removeEventListener("click", handleClickOutside));
 
 async function handleLogout() {
-  userMenuOpen.value = false;
-  await auth.logout();
-  router.push("/login");
+  await logoutHandler(auth.logout, () => router.replace("/"), () => {
+    userMenuOpen.value = false;
+  });
 }
 </script>

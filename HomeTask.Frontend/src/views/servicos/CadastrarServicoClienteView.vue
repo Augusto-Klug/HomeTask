@@ -31,7 +31,7 @@
 
     <template v-else>
       <h1 class="text-title font-semibold text-foreground mb-1">
-        Anunciar Serviço Desejado
+        Solicitar serviço
       </h1>
       <p class="text-sm text-muted mb-6">
         Descreva o serviço que você precisa. Prestadores cadastrados poderão

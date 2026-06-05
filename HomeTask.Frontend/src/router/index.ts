@@ -96,7 +96,7 @@ const router = createRouter({
     {
       path: "/perfil/agendamentos",
       name: "perfil-agendamentos",
-      component: () => import("@/views/perfil/MeusAgendamentosView.vue"),
+      component: () => import("@/views/perfil/OperacaoClienteView.vue"),
       meta: { requiresAuth: true },
     },
     {

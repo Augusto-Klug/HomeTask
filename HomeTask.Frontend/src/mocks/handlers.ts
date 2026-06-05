@@ -8,7 +8,7 @@ const MOCK_USER: AuthResponse = {
   userId: "1",
   nome: "Usuario Demo",
   email: "demo@hometask.com",
-  tipo: 3,
+  tipo: 2,
 };
 
 const MOCK_CLIENTE = { id: "1", usuarioId: "1", nome: "Usuario Demo" };
@@ -32,7 +32,7 @@ const MOCK_SERVICOS: Servico[] = [
   {
     id: "2",
     titulo: "Jardinagem e Poda",
-    descricao: "Servicos de jardinagem, poda e manutencao.",
+    descricao: "Serviços de jardinagem, poda e manutenção.",
     precoBase: 60,
     unidadeCobranca: UnidadeCobranca.PorHora,
     tipoAnuncio: 1,
@@ -161,7 +161,7 @@ const MOCK_AGENDAMENTOS_PRESTADOR: AgendamentoResumo[] = [
       {
         id: "srv-012",
         titulo: "Faxina Rapida",
-        descricao: "Servico de prestador",
+        descricao: "Serviço de prestador",
         precoBase: 80,
         duracaoEstimadaMinutos: 60,
         unidadeCobranca: UnidadeCobranca.Total,
@@ -226,7 +226,7 @@ const CATEGORIA_LABELS: Record<string, string> = {
   "7": "Cuidador de Idosos",
   "8": "Pet Sitter",
   "9": "Cozinheiro",
-  "10": "Servicos Gerais",
+  "10": "Serviços Gerais",
 };
 
 export const handlers = [
@@ -321,7 +321,9 @@ export const handlers = [
   http.get("*/api/Agendamento/ObterSolicitacoesPendentesPrestador", async () => {
     await delay(MOCK_DELAY);
     return HttpResponse.json(
-      MOCK_AGENDAMENTOS_PRESTADOR.filter((a) => a.status === StatusAgendamento.Solicitado && a.aguardandoRespostaDe === TipoUsuario.Prestador),
+      MOCK_AGENDAMENTOS_PRESTADOR.filter(
+        (a) => a.status === StatusAgendamento.Solicitado && a.aguardandoRespostaDe === TipoUsuario.Prestador,
+      ),
     );
   }),
 

@@ -1,9 +1,9 @@
 <template>
   <div class="max-w-2xl mx-auto px-4 py-8">
     <div v-if="!servico?.id && !carregandoServico" class="text-center py-16 flex flex-col items-center gap-4">
-      <p class="text-sm text-muted">Parametros invalidos.</p>
+      <p class="text-sm text-muted">Parâmetros inválidos.</p>
       <router-link to="/servicos/buscar">
-        <HtButton variant="outline">Voltar a busca</HtButton>
+        <HtButton variant="outline">Voltar à busca</HtButton>
       </router-link>
     </div>
 
@@ -16,7 +16,7 @@
         Voltar
       </router-link>
 
-      <h1 class="text-title font-semibold text-foreground mb-6">Novo Agendamento</h1>
+      <h1 class="text-title font-semibold text-foreground mb-6">Novo agendamento</h1>
 
       <div v-if="carregandoServico" class="flex justify-center py-16">
         <HtSpinner size="lg" class="text-primary" />
@@ -48,9 +48,9 @@
             <HtInput
               ref="inputHora"
               v-model="form.hora"
-              label="Horario"
+              label="Horário"
               type="time"
-              :mensagemErro="'Selecione um horario'"
+              :mensagemErro="'Selecione um horário'"
               required
               regra="required"
             />
@@ -59,21 +59,21 @@
           <HtInput
             ref="inputEndereco"
             v-model="form.logradouro"
-            label="Endereco do servico"
-            placeholder="Rua, numero, bairro..."
+            label="Endereço do serviço"
+            placeholder="Rua, número, bairro..."
             regra="required"
             required
           />
 
           <HtTextarea
             v-model="form.observacoes"
-            label="Observacoes"
-            placeholder="Alguma informacao adicional..."
+            label="Observações"
+            placeholder="Alguma informação adicional..."
             :rows="3"
           />
 
           <HtButton type="submit" :loading="carregando" class="w-full mt-2">
-            Confirmar Agendamento
+            Confirmar agendamento
           </HtButton>
         </form>
       </HtCard>

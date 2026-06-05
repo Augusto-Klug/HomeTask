@@ -50,14 +50,14 @@ const props = withDefaults(
     mensagemErroHora?: string;
   }>(),
   {
-    label: "Data e horario",
+    label: "Data e horário",
     labelData: "Data",
-    labelHora: "Horario",
+    labelHora: "Horário",
     hint: undefined,
     required: false,
     openPickerOnFocus: true,
     mensagemErroData: "Selecione uma data",
-    mensagemErroHora: "Selecione um horario",
+    mensagemErroHora: "Selecione um horário",
   },
 );
 

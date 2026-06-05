@@ -68,7 +68,7 @@ describe('CadastrarServicoClienteView', () => {
 
   it('exibe o título da tela', () => {
     const wrapper = mountView()
-    expect(wrapper.text()).toContain('Anunciar Serviço')
+    expect(wrapper.text()).toContain('Solicitar serviço')
   })
 
   it('exibe campo de descrição (HtTextarea)', () => {

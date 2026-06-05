@@ -72,7 +72,7 @@ describe("OperacaoPrestadorView", () => {
     });
 
     await flushPromises();
-    expect(wrapper.text()).toContain("Aguardando sua confirmacao");
+    expect(wrapper.text()).toContain("Aguardando sua confirmação");
   });
 
   it("mostra no calendario apenas servicos confirmados", async () => {
@@ -110,7 +110,7 @@ describe("OperacaoPrestadorView", () => {
 
     await flushPromises();
 
-    expect(wrapper.text()).toContain("Calendario operacional");
+    expect(wrapper.text()).toContain("Calendário operacional");
     expect(wrapper.text()).toContain("Cliente Confirmado");
     expect(wrapper.text()).not.toContain("Cliente Pendente");
   });

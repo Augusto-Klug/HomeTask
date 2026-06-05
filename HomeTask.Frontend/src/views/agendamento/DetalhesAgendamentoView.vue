@@ -52,7 +52,7 @@
         </HtCard>
 
         <HtCard>
-          <h2 class="text-lg font-bold mb-4">Servicos agendados</h2>
+          <h2 class="text-lg font-bold mb-4">Serviços agendados</h2>
           <div
             v-for="s in agendamento.servicos"
             :key="s.id"
@@ -75,13 +75,13 @@
                 >calendar_today</span
               >
               <div>
-                <p class="text-sm font-semibold">Data e horario</p>
+                <p class="text-sm font-semibold">Data e horário</p>
                 <p class="text-sm text-muted">
-                  {{ formatarData(agendamento.dataHoraAgendada) }} as
+                  {{ formatarDataLonga(agendamento.dataHoraAgendada) }} às
                   {{ formatarHora(agendamento.dataHoraAgendada) }}
                 </p>
                 <p class="text-xs text-muted mt-1">
-                  Duracao estimada: {{ agendamento.duracaoMinutos }} min
+                  Duração estimada: {{ agendamento.duracaoMinutos }} min
                 </p>
               </div>
             </div>
@@ -90,7 +90,7 @@
                 >location_on</span
               >
               <div>
-                <p class="text-sm font-semibold">Local de realizacao</p>
+                <p class="text-sm font-semibold">Local de realização</p>
                 <p class="text-sm text-muted">
                   {{ formatarEndereco(agendamento.endereco) }}
                 </p>
@@ -101,7 +101,7 @@
             v-if="agendamento.observacoes"
             class="mt-4 p-3 bg-muted/20 rounded-lg"
           >
-            <p class="text-sm font-semibold mb-1">Observacoes:</p>
+            <p class="text-sm font-semibold mb-1">Observações:</p>
             <p class="text-sm text-muted">{{ agendamento.observacoes }}</p>
           </div>
         </HtCard>
@@ -164,7 +164,7 @@
               :loading="carregandoAcao"
               class="flex-1"
             >
-              Iniciar Servico
+              Iniciar serviço
             </HtButton>
             <HtButton
               v-if="agendamento.status === StatusAgendamento.EmAndamento"
@@ -173,7 +173,7 @@
               class="flex-1"
               variant="success"
             >
-              Concluir Servico
+              Concluir serviço
             </HtButton>
           </template>
 
@@ -261,7 +261,12 @@ import {
   TipoUsuario,
   type AgendamentoResumo,
 } from "@/types";
-import { formatarMoeda, formatarPrecoServico } from "@/shared/utils";
+import {
+  formatarDataLonga,
+  formatarHora,
+  formatarMoeda,
+  formatarPrecoServico,
+} from "@/shared/utils";
 import HtCard from "@/components/ui/HtCard.vue";
 import HtBadge, { HtBadgeVariant } from "@/components/ui/HtBadge.vue";
 import HtSpinner from "@/components/ui/HtSpinner.vue";
@@ -412,22 +417,6 @@ async function acaoAgendamento(acao: string) {
   }
 }
 
-function formatarData(iso: string) {
-  return new Date(iso).toLocaleDateString("pt-BR", {
-    weekday: "long",
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  });
-}
-
-function formatarHora(iso: string) {
-  return new Date(iso).toLocaleTimeString("pt-BR", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-
 function formatarEndereco(e: AgendamentoResumo["endereco"]) {
   return `${e.logradouro}, ${e.bairro} - ${e.cidade}/${e.estado}`;
 }
@@ -436,7 +425,7 @@ const STATUS_LABEL: Record<StatusAgendamento, string> = {
   [StatusAgendamento.Aceito]: "Aceito",
   [StatusAgendamento.Solicitado]: "Solicitado",
   [StatusAgendamento.EmAndamento]: "Em andamento",
-  [StatusAgendamento.Concluido]: "Concluido",
+  [StatusAgendamento.Concluido]: "Concluído",
   [StatusAgendamento.Cancelado]: "Cancelado",
   [StatusAgendamento.Recusado]: "Recusado",
 };

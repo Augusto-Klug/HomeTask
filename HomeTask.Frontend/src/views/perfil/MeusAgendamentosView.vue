@@ -1,19 +1,14 @@
 <template>
   <div class="container mx-auto px-4 py-8 max-w-6xl">
-    <div
-      class="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between"
-    >
+    <div class="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
       <div>
         <h1 class="text-2xl font-bold">Meus agendamentos</h1>
         <p class="text-sm text-base-content/60">
-          Acompanhe suas solicitacoes, confirme pendencias e visualize sua
-          agenda.
+          Acompanhe suas solicitações, confirme pendências e visualize sua agenda.
         </p>
       </div>
 
-      <div
-        class="inline-flex rounded-2xl border border-base-300 bg-base-200/60 p-1 self-start"
-      >
+      <div class="inline-flex rounded-2xl border border-base-300 bg-base-200/60 p-1 self-start">
         <button
           type="button"
           class="rounded-xl px-4 py-2 text-sm font-medium transition-colors"
@@ -36,7 +31,7 @@
           "
           @click="selecionarAba('calendario')"
         >
-          Calendario
+          Calendário
         </button>
       </div>
     </div>
@@ -47,10 +42,7 @@
 
     <div v-else-if="abaAtual === 'painel'" class="space-y-4">
       <section v-for="painel in paineis" :key="painel.id">
-        <HtCard
-          class="p-0 overflow-hidden"
-          :class="classesPainel(painel.tom).container"
-        >
+        <HtCard class="p-0 overflow-hidden" :class="classesPainel(painel.tom).container">
           <button
             type="button"
             class="w-full px-5 py-4 text-left transition-colors"
@@ -68,9 +60,7 @@
                   {{ painel.icone }}
                 </span>
                 <div>
-                  <p
-                    class="text-xs font-semibold uppercase tracking-[0.18em] text-base-content/60"
-                  >
+                  <p class="text-xs font-semibold uppercase tracking-[0.18em] text-base-content/60">
                     {{ painel.titulo }}
                   </p>
                   <p class="mt-2 text-sm text-base-content/65">
@@ -79,30 +69,18 @@
                 </div>
               </div>
               <div class="flex items-center gap-3">
-                <span
-                  class="text-3xl font-bold"
-                  :class="classesPainel(painel.tom).count"
-                  >{{ painel.itens.length }}</span
-                >
-                <span
-                  class="material-symbols-rounded text-xl text-base-content/60"
-                >
-                  {{
-                    painelAtivo === painel.id ? "expand_less" : "expand_more"
-                  }}
+                <span class="text-3xl font-bold" :class="classesPainel(painel.tom).count">{{
+                  painel.itens.length
+                }}</span>
+                <span class="material-symbols-rounded text-xl text-base-content/60">
+                  {{ painelAtivo === painel.id ? "expand_less" : "expand_more" }}
                 </span>
               </div>
             </div>
           </button>
 
-          <div
-            v-if="painelAtivo === painel.id"
-            class="border-t border-base-300 px-5 py-4"
-          >
-            <div
-              v-if="painel.itens.length === 0"
-              class="text-sm text-base-content/50 py-4 text-center"
-            >
+          <div v-if="painelAtivo === painel.id" class="border-t border-base-300 px-5 py-4">
+            <div v-if="painel.itens.length === 0" class="text-sm text-base-content/50 py-4 text-center">
               {{ painel.vazio }}
             </div>
             <div v-else class="flex flex-col gap-3">
@@ -115,17 +93,10 @@
                 <div class="flex items-start justify-between gap-3">
                   <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-2 mb-1 flex-wrap">
-                      <span class="font-semibold text-sm">{{
-                        ag.prestadorNome
-                      }}</span>
-                      <HtBadge :variant="obterVariantStatus(ag.status)">{{
-                        labelCliente(ag)
-                      }}</HtBadge>
+                      <span class="font-semibold text-sm">{{ ag.prestadorNome }}</span>
+                      <HtBadge :variant="obterVariantStatus(ag.status)">{{ labelCliente(ag) }}</HtBadge>
                     </div>
-                    <p
-                      v-if="ag.servicos.length"
-                      class="text-xs text-base-content/60 mb-2"
-                    >
+                    <p v-if="ag.servicos.length" class="text-xs text-base-content/60 mb-2">
                       {{ ag.servicos.map((s) => s.titulo).join(", ") }}
                     </p>
                     <p class="text-sm text-base-content/80">
@@ -148,14 +119,10 @@
 
     <div v-else class="grid gap-6 xl:grid-cols-[minmax(0,1.8fr)_22rem]">
       <HtCard class="overflow-hidden">
-        <div
-          class="flex flex-col gap-4 border-b border-base-300 pb-4 md:flex-row md:items-center md:justify-between"
-        >
+        <div class="flex flex-col gap-4 border-b border-base-300 pb-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <p
-              class="text-xs font-semibold uppercase tracking-[0.18em] text-base-content/50"
-            >
-              Calendario de agendamentos
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-base-content/50">
+              Calendário de agendamentos
             </p>
             <h2 class="text-xl font-semibold mt-1">{{ tituloMesVisivel }}</h2>
           </div>
@@ -169,22 +136,14 @@
             >
               <span class="material-symbols-rounded text-lg">chevron_left</span>
             </button>
-            <button
-              type="button"
-              class="btn btn-outline btn-sm"
-              @click="irParaMesAtual"
-            >
-              Hoje
-            </button>
+            <button type="button" class="btn btn-outline btn-sm" @click="irParaMesAtual">Hoje</button>
             <button
               type="button"
               class="btn btn-ghost btn-sm btn-square"
-              aria-label="Proximo mes"
+              aria-label="Próximo mês"
               @click="alterarMes(1)"
             >
-              <span class="material-symbols-rounded text-lg"
-                >chevron_right</span
-              >
+              <span class="material-symbols-rounded text-lg">chevron_right</span>
             </button>
           </div>
         </div>
@@ -227,11 +186,8 @@
                   {{ evento.prestadorNome }}
                 </p>
               </div>
-              <p
-                v-if="dia.eventos.length > 2"
-                class="text-[11px] font-medium text-base-content/55"
-              >
-                +{{ dia.eventos.length - 2 }} servicos
+              <p v-if="dia.eventos.length > 2" class="text-[11px] font-medium text-base-content/55">
+                +{{ dia.eventos.length - 2 }} serviços
               </p>
             </div>
           </button>
@@ -240,25 +196,15 @@
 
       <div class="space-y-4">
         <HtCard class="border-primary/15 bg-primary/5">
-          <p
-            class="text-xs font-semibold uppercase tracking-[0.18em] text-primary/80"
-          >
-            Resumo do mes
-          </p>
+          <p class="text-xs font-semibold uppercase tracking-[0.18em] text-primary/80">Resumo do mês</p>
           <p class="mt-3 text-3xl font-bold">{{ eventosMesAtual.length }}</p>
-          <p class="mt-2 text-sm text-base-content/65">
-            Servicos confirmados neste mes.
-          </p>
+          <p class="mt-2 text-sm text-base-content/65">Serviços confirmados neste mês.</p>
         </HtCard>
 
         <HtCard>
           <div class="flex items-center justify-between gap-3">
             <div>
-              <p
-                class="text-xs font-semibold uppercase tracking-[0.18em] text-base-content/50"
-              >
-                Dia selecionado
-              </p>
+              <p class="text-xs font-semibold uppercase tracking-[0.18em] text-base-content/50">Dia selecionado</p>
               <h3 class="mt-1 text-lg font-semibold">
                 {{ tituloDiaSelecionado }}
               </h3>
@@ -277,7 +223,7 @@
             v-if="eventosDiaSelecionado.length === 0"
             class="mt-5 rounded-2xl border border-dashed border-base-300 px-4 py-6 text-sm text-base-content/55"
           >
-            Nenhum servico confirmado neste dia.
+            Nenhum serviço confirmado neste dia.
           </div>
 
           <div v-else class="mt-5 flex flex-col gap-3">
@@ -292,13 +238,9 @@
                 <div>
                   <p class="font-semibold">{{ ag.prestadorNome }}</p>
                   <p class="mt-1 text-sm text-base-content/70">
-                    {{ formatarHora(ag.dataHoraAgendada) }} ·
-                    {{ ag.duracaoMinutos }} min
+                    {{ formatarHora(ag.dataHoraAgendada) }} · {{ ag.duracaoMinutos }} min
                   </p>
-                  <p
-                    v-if="ag.servicos.length"
-                    class="mt-2 text-sm text-base-content/60"
-                  >
+                  <p v-if="ag.servicos.length" class="mt-2 text-sm text-base-content/60">
                     {{ ag.servicos.map((s) => s.titulo).join(", ") }}
                   </p>
                 </div>
@@ -318,11 +260,8 @@
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import api from "@/services/api";
-import {
-  StatusAgendamento,
-  TipoUsuario,
-  type AgendamentoResumo,
-} from "@/types";
+import { formatarDataCurta, formatarHora, formatarMoeda } from "@/shared/utils";
+import { StatusAgendamento, TipoUsuario, type AgendamentoResumo } from "@/types";
 import HtCard from "@/components/ui/HtCard.vue";
 import HtBadge, { HtBadgeVariant } from "@/components/ui/HtBadge.vue";
 import HtSpinner from "@/components/ui/HtSpinner.vue";
@@ -344,20 +283,10 @@ type PainelId =
   | "em-andamento"
   | "concluidos"
   | "cancelados-recusados";
-type PainelTom =
-  | "primary"
-  | "secondary"
-  | "accent"
-  | "success"
-  | "warning"
-  | "error"
-  | "neutro";
+type PainelTom = "primary" | "secondary" | "accent" | "success" | "warning" | "error" | "neutro";
 
 const diasSemana = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"] as const;
-const PAINEL_TOM_CLASSES: Record<
-  PainelTom,
-  { container: string; hover: string; count: string; icon: string }
-> = {
+const PAINEL_TOM_CLASSES: Record<PainelTom, { container: string; hover: string; count: string; icon: string }> = {
   neutro: {
     container: "",
     hover: "hover:bg-base-200/50",
@@ -411,118 +340,94 @@ const painelAtivo = ref<PainelId | null>(null);
 const route = useRoute();
 const router = useRouter();
 
-const abaAtual = computed<AbaOperacao>(() =>
-  route.query.aba === "calendario" ? "calendario" : "painel",
-);
+const abaAtual = computed<AbaOperacao>(() => (route.query.aba === "calendario" ? "calendario" : "painel"));
 
 function ordenarPorData(lista: AgendamentoResumo[]) {
-  return [...lista].sort(
-    (a, b) =>
-      new Date(a.dataHoraAgendada).getTime() -
-      new Date(b.dataHoraAgendada).getTime(),
-  );
+  return [...lista].sort((a, b) => new Date(a.dataHoraAgendada).getTime() - new Date(b.dataHoraAgendada).getTime());
 }
 
 const aguardandoSuaConfirmacao = computed(() =>
   ordenarPorData(
     agendamentosCliente.value.filter(
-      (ag) =>
-        ag.status === StatusAgendamento.Solicitado &&
-        ag.aguardandoRespostaDe === TipoUsuario.Cliente,
+      (ag) => ag.status === StatusAgendamento.Solicitado && ag.aguardandoRespostaDe === TipoUsuario.Cliente,
     ),
   ),
 );
 const aguardandoConfirmacaoPrestador = computed(() =>
   ordenarPorData(
     agendamentosCliente.value.filter(
-      (ag) =>
-        ag.status === StatusAgendamento.Solicitado &&
-        ag.aguardandoRespostaDe === TipoUsuario.Prestador,
+      (ag) => ag.status === StatusAgendamento.Solicitado && ag.aguardandoRespostaDe === TipoUsuario.Prestador,
     ),
   ),
 );
 const agendados = computed(() =>
-  ordenarPorData(
-    agendamentosCliente.value.filter(
-      (ag) => ag.status === StatusAgendamento.Aceito,
-    ),
-  ),
+  ordenarPorData(agendamentosCliente.value.filter((ag) => ag.status === StatusAgendamento.Aceito)),
 );
 const emAndamento = computed(() =>
-  ordenarPorData(
-    agendamentosCliente.value.filter(
-      (ag) => ag.status === StatusAgendamento.EmAndamento,
-    ),
-  ),
+  ordenarPorData(agendamentosCliente.value.filter((ag) => ag.status === StatusAgendamento.EmAndamento)),
 );
 const concluidos = computed(() =>
-  ordenarPorData(
-    agendamentosCliente.value.filter(
-      (ag) => ag.status === StatusAgendamento.Concluido,
-    ),
-  ),
+  ordenarPorData(agendamentosCliente.value.filter((ag) => ag.status === StatusAgendamento.Concluido)),
 );
 const canceladosOuRecusados = computed(() =>
   ordenarPorData(
     agendamentosCliente.value.filter(
-      (ag) =>
-        ag.status === StatusAgendamento.Cancelado ||
-        ag.status === StatusAgendamento.Recusado,
+      (ag) => ag.status === StatusAgendamento.Cancelado || ag.status === StatusAgendamento.Recusado,
     ),
   ),
 );
 const paineis = computed(() => [
   {
     id: "aguardando-sua-confirmacao" as const,
-    titulo: "Aguardando sua confirmacao",
-    descricao: "Solicitacoes pendentes da sua resposta.",
+    titulo: "Aguardando sua confirmação",
+    descricao: "Solicitações pendentes da sua resposta.",
     itens: aguardandoSuaConfirmacao.value,
-    vazio: "Nenhuma solicitacao aguardando sua confirmacao.",
+    vazio: "Nenhuma solicitação aguardando sua confirmação.",
     tom: "warning" as const,
     icone: "schedule",
   },
   {
     id: "aguardando-confirmacao-prestador" as const,
-    titulo: "Aguardando confirmacao do prestador",
+    titulo: "Aguardando confirmação do prestador",
     descricao: "Pedidos enviados aguardando retorno do prestador.",
     itens: aguardandoConfirmacaoPrestador.value,
-    vazio: "Nenhuma solicitacao aguardando confirmacao do prestador.",
+    vazio: "Nenhuma solicitação aguardando confirmação do prestador.",
     tom: "warning" as const,
     icone: "schedule",
   },
   {
     id: "agendados" as const,
     titulo: "Agendados",
-    descricao: "Servicos confirmados e prontos para iniciar.",
+    descricao: "Serviços confirmados e prontos para iniciar.",
     itens: agendados.value,
-    vazio: "Nenhum servico agendado.",
+    vazio: "Nenhum serviço agendado.",
     tom: "primary" as const,
     icone: "event_available",
   },
   {
     id: "em-andamento" as const,
     titulo: "Em andamento",
-    descricao: "Servicos em execucao no momento.",
+    descricao: "Serviços em execução no momento.",
     itens: emAndamento.value,
-    vazio: "Nenhum servico em andamento.",
+    vazio: "Nenhum serviço em andamento.",
     tom: "accent" as const,
     icone: "play_circle",
   },
   {
     id: "concluidos" as const,
-    titulo: "Concluidos",
-    descricao: "Historico de servicos finalizados.",
+    titulo: "Concluídos",
+    descricao: "Histórico de serviços finalizados.",
     itens: concluidos.value,
-    vazio: "Nenhum servico concluido.",
+    vazio: "Nenhum serviço concluído.",
     tom: "success" as const,
     icone: "task_alt",
   },
   {
     id: "cancelados-recusados" as const,
     titulo: "Cancelados ou recusados",
-    descricao: "Solicitacoes encerradas sem execucao.",
+    descricao: "Solicitações encerradas sem execução.",
     itens: canceladosOuRecusados.value,
-    vazio: "Nenhum servico cancelado ou recusado.",
+    vazio: "Nenhum serviço cancelado ou recusado.",
     tom: "error" as const,
     icone: "cancel",
   },
@@ -532,15 +437,10 @@ const agendaConfirmada = computed(() =>
   agendamentosCliente.value
     .filter(
       (ag) =>
-        (ag.status === StatusAgendamento.Aceito ||
-          ag.status === StatusAgendamento.EmAndamento) &&
+        (ag.status === StatusAgendamento.Aceito || ag.status === StatusAgendamento.EmAndamento) &&
         new Date(ag.dataHoraAgendada) >= inicioDoDia(new Date()),
     )
-    .sort(
-      (a, b) =>
-        new Date(a.dataHoraAgendada).getTime() -
-        new Date(b.dataHoraAgendada).getTime(),
-    ),
+    .sort((a, b) => new Date(a.dataHoraAgendada).getTime() - new Date(b.dataHoraAgendada).getTime()),
 );
 const tituloMesVisivel = computed(() =>
   mesVisivel.value.toLocaleDateString("pt-BR", {
@@ -555,20 +455,14 @@ const eventosPorData = computed(() => {
     const chave = chaveData(ag.dataHoraAgendada);
     const lista = mapa.get(chave) ?? [];
     lista.push(ag);
-    lista.sort(
-      (a, b) =>
-        new Date(a.dataHoraAgendada).getTime() -
-        new Date(b.dataHoraAgendada).getTime(),
-    );
+    lista.sort((a, b) => new Date(a.dataHoraAgendada).getTime() - new Date(b.dataHoraAgendada).getTime());
     mapa.set(chave, lista);
   }
 
   return mapa;
 });
 const eventosMesAtual = computed(() =>
-  agendaConfirmada.value.filter((ag) =>
-    mesmoMes(new Date(ag.dataHoraAgendada), mesVisivel.value),
-  ),
+  agendaConfirmada.value.filter((ag) => mesmoMes(new Date(ag.dataHoraAgendada), mesVisivel.value)),
 );
 const diasCalendario = computed<DiaCalendario[]>(() => {
   const primeiroDia = inicioDoMes(mesVisivel.value);
@@ -590,9 +484,7 @@ const diasCalendario = computed<DiaCalendario[]>(() => {
     };
   });
 });
-const eventosDiaSelecionado = computed(
-  () => eventosPorData.value.get(dataSelecionada.value) ?? [],
-);
+const eventosDiaSelecionado = computed(() => eventosPorData.value.get(dataSelecionada.value) ?? []);
 const tituloDiaSelecionado = computed(() => {
   const [ano, mes, dia] = dataSelecionada.value.split("-").map(Number);
   const data = new Date(ano ?? 0, (mes ?? 1) - 1, dia ?? 1);
@@ -605,11 +497,9 @@ const tituloDiaSelecionado = computed(() => {
 
 onMounted(async () => {
   try {
-    const { data } = await api.get<AgendamentoResumo[]>(
-      "/api/Agendamento/ObterMeusAgendamentosCliente",
-    );
+    const { data } = await api.get<AgendamentoResumo[]>("/api/Agendamento/ObterMeusAgendamentosCliente");
     agendamentosCliente.value = data;
-    alinharSelecaoCalendario();
+    selecionarDiaHoje();
   } finally {
     carregando.value = false;
   }
@@ -635,43 +525,18 @@ function abrirDetalhes(id: string) {
 }
 
 function labelCliente(ag: AgendamentoResumo): string {
-  if (
-    ag.status === StatusAgendamento.Solicitado &&
-    ag.aguardandoRespostaDe === TipoUsuario.Cliente
-  ) {
-    return "Aguardando sua confirmacao";
+  if (ag.status === StatusAgendamento.Solicitado && ag.aguardandoRespostaDe === TipoUsuario.Cliente) {
+    return "Aguardando sua confirmação";
   }
-  if (
-    ag.status === StatusAgendamento.Solicitado &&
-    ag.aguardandoRespostaDe === TipoUsuario.Prestador
-  ) {
-    return "Aguardando confirmacao do prestador";
+  if (ag.status === StatusAgendamento.Solicitado && ag.aguardandoRespostaDe === TipoUsuario.Prestador) {
+    return "Aguardando confirmação do prestador";
   }
   if (ag.status === StatusAgendamento.Aceito) return "Agendado";
-  if (ag.status === StatusAgendamento.Concluido) return "Concluido";
+  if (ag.status === StatusAgendamento.Concluido) return "Concluído";
   if (ag.status === StatusAgendamento.EmAndamento) return "Em andamento";
   if (ag.status === StatusAgendamento.Recusado) return "Recusado";
   if (ag.status === StatusAgendamento.Cancelado) return "Cancelado";
   return "Solicitado";
-}
-
-function formatarDataCurta(iso: string) {
-  return new Date(iso).toLocaleDateString("pt-BR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
-}
-
-function formatarHora(iso: string) {
-  return new Date(iso).toLocaleTimeString("pt-BR", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-
-function formatarMoeda(v: number) {
-  return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
 function obterVariantStatus(status: StatusAgendamento): HtBadgeVariant {
@@ -708,14 +573,11 @@ function alterarMes(direcao: number) {
 }
 
 function irParaMesAtual() {
-  mesVisivel.value = inicioDoMes(new Date());
-  alinharSelecaoCalendario();
+  selecionarDiaHoje();
 }
 
 function alinharSelecaoCalendario() {
-  const noMesSelecionado = eventosMesAtual.value.find(
-    (ag) => chaveData(ag.dataHoraAgendada) === dataSelecionada.value,
-  );
+  const noMesSelecionado = eventosMesAtual.value.find((ag) => chaveData(ag.dataHoraAgendada) === dataSelecionada.value);
   if (noMesSelecionado) return;
 
   const primeiroEventoMes = agendaConfirmada.value.find((ag) =>
