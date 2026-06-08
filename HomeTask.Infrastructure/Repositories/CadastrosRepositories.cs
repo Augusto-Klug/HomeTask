@@ -16,6 +16,9 @@ public class UsuarioRepository : RepositoryBase<Usuario>, IUsuarioRepository
         Context.Usuarios
             .Include(u => u.Cliente)
             .Include(u => u.Prestador)
+              .ThenInclude(p => p.Certificacoes)
+            .Include(u => u.Prestador)
+              .ThenInclude(p => p.Portfolios)
             .Include(u => u.Endereco)
                 .ThenInclude(e => e.Cidade)
             .FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
@@ -90,6 +93,8 @@ public class PrestadorRepository : RepositoryBase<Prestador>, IPrestadorReposito
                 .ThenInclude(u => u.Endereco)
                     .ThenInclude(e => e.Cidade)
             .Include(p => p.ServicosOferecidos)
+            .Include(p => p.Certificacoes)
+            .Include(p => p.Portfolios)
             .FirstOrDefaultAsync(p => p.UsuarioId == usuarioId, cancellationToken);
 
     public async Task<IEnumerable<Prestador>> BuscarAsync(CategoriaServico? categoria, string? cidade, DateTime? dataDisponivel, CancellationToken cancellationToken = default)

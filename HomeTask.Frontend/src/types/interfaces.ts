@@ -20,6 +20,28 @@ export interface Categoria {
   icone: string
 }
 
+export interface Certificacao {
+  id: string
+  prestadorId: string
+  nome: string
+  instituicao?: string
+  dataEmissao?: string
+  dataValidade?: string
+  urlDocumento?: string
+  verificada: boolean
+  dataCadastro: string
+}
+
+export interface Portfolio {
+  id: string
+  prestadorId: string
+  titulo?: string
+  descricao?: string
+  urlImagem: string
+  dataCadastro: string
+  ordem: number
+}
+
 export interface Servico {
   id: string
   titulo: string
@@ -177,6 +199,22 @@ export interface PerfilForm {
   estado: string
   descricao: string
   raioAtendimentoKm: number | null
+  certificacoes?: Certificacao[]
+  portfolios?: Portfolio[]
+}
+
+export interface CertificacaoForm {
+  nome: string
+  instituicao: string
+  dataEmissao: string
+  dataValidade: string
+  documento?: File
+}
+
+export interface PortfolioForm {
+  titulo: string
+  descricao: string
+  imagem?: File
 }
 
 export interface ServicoClienteForm {

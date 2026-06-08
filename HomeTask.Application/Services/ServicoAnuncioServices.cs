@@ -210,9 +210,15 @@ public class CertificacaoService : ICertificacaoService
         _arquivoService = arquivoService;
     }
 
-    public async Task<CertificacaoDto> AdicionarAsync(Guid prestadorId, Stream documento, string nomeArquivo, string nome, string? instituicao, DateTime? dataEmissao, DateTime? dataValidade, CancellationToken cancellationToken = default)
+    public async Task<CertificacaoDto> AdicionarAsync(Guid prestadorId, Stream? documento, string? nomeArquivo, string nome, string? instituicao, DateTime? dataEmissao, DateTime? dataValidade, CancellationToken cancellationToken = default)
     {
-        var urlDocumento = await _arquivoService.SalvarAsync(documento, nomeArquivo, $"certificacoes/{prestadorId}", cancellationToken);
+        string? urlDocumento = null;
+        
+        if (documento != null && !string.IsNullOrEmpty(nomeArquivo))
+        {
+            urlDocumento = await _arquivoService.SalvarAsync(documento, nomeArquivo, $"certificacoes/{prestadorId}", cancellationToken);
+        }
+        
         var certificacao = new Domain.Entidades.Certificacao();
         certificacao.DefinirDados(prestadorId, nome, instituicao, dataEmissao, dataValidade, urlDocumento, DateTime.UtcNow);
 
