@@ -11,6 +11,9 @@ import api from '@/services/api'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null)
+  const initialized = ref(false)
+  const initializing = ref(false)
+  let initializationPromise: Promise<void> | null = null
 
   const isLoggedIn = computed(() => user.value !== null)
 
@@ -38,12 +41,45 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function fetchMe(): Promise<void> {
     try {
-      const { data } = await api.get<AuthResponse>('/api/Auth/Me')
+      const { data } = await api.get<AuthResponse>('/api/Auth/Me', {
+        skipAuthRedirect: true,
+      })
       setUser(data)
     } catch {
       user.value = null
     }
   }
 
-  return { user, isLoggedIn, setUser, login, logout, fetchMe }
+  async function initialize(): Promise<void> {
+    if (initialized.value) {
+      return
+    }
+
+    if (initializationPromise) {
+      await initializationPromise
+      return
+    }
+
+    initializing.value = true
+    initializationPromise = (async () => {
+      await fetchMe()
+      initialized.value = true
+      initializing.value = false
+      initializationPromise = null
+    })()
+
+    await initializationPromise
+  }
+
+  return {
+    user,
+    isLoggedIn,
+    initialized,
+    initializing,
+    setUser,
+    login,
+    logout,
+    fetchMe,
+    initialize,
+  }
 })

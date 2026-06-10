@@ -82,6 +82,8 @@ internal static class EntityDtoMapper
             perfil.MediaAvaliacoes = dadosPrestador.MediaAvaliacoes;
             perfil.TotalAvaliacoes = dadosPrestador.TotalAvaliacoes;
             perfil.TotalServicosConcluidos = dadosPrestador.TotalServicosConcluidos;
+            perfil.Certificacoes = dadosPrestador.Certificacoes.Select(c => c.ParaDto()).ToList();
+            perfil.Portfolios = dadosPrestador.Portfolios.Select(p => p.ParaDto()).ToList();
         }
 
         return perfil;

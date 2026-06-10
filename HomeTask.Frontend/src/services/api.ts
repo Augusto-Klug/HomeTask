@@ -9,6 +9,18 @@
 import axios from "axios";
 import router from "@/router";
 
+declare module "axios" {
+  export interface AxiosRequestConfig {
+    _retry?: boolean;
+    skipAuthRedirect?: boolean;
+  }
+
+  export interface InternalAxiosRequestConfig {
+    _retry?: boolean;
+    skipAuthRedirect?: boolean;
+  }
+}
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5000'
 
 const api = axios.create({
@@ -35,6 +47,12 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+    const requestUrl = originalRequest?.url ?? "";
+    const isRefreshRequest = requestUrl.includes("/api/Auth/Refresh");
+
+    if (error.response?.status === 401 && isRefreshRequest) {
+      return Promise.reject(error);
+    }
 
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
@@ -54,7 +72,9 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError);
-        router.push("/login");
+        if (!originalRequest.skipAuthRedirect) {
+          router.push("/login");
+        }
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

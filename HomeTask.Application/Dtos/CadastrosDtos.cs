@@ -56,6 +56,8 @@ public class PerfilDto
     public decimal? MediaAvaliacoes { get; set; }
     public int? TotalAvaliacoes { get; set; }
     public int? TotalServicosConcluidos { get; set; }
+    public List<CertificacaoDto> Certificacoes { get; set; } = [];
+    public List<PortfolioDto> Portfolios { get; set; } = [];
 }
 
 public class ClienteDto

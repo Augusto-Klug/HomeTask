@@ -4,7 +4,7 @@
     <div class="flex items-center justify-between mb-8">
       <h1 class="text-2xl font-bold">Minha conta</h1>
       <button
-        v-if="!editando && !carregando"
+        v-if="!editando && !carregando && !mostrandoCertificacoes && !mostrandoPortfolio"
         type="button"
         data-testid="btn-editar"
         class="btn btn-ghost btn-sm btn-square"
@@ -28,7 +28,51 @@
         class="mb-4"
       />
 
-      <form @submit.prevent="salvar" class="flex flex-col gap-4">
+      <!-- Abas para Prestador -->
+      <div v-if="isPrestador" class="tabs tabs-bordered mb-6">
+        <input
+          type="radio"
+          name="minha_conta_tabs"
+          class="tab"
+          aria-label="Informações"
+          :checked="!mostrandoCertificacoes && !mostrandoPortfolio"
+          @change="mostrandoCertificacoes = false; mostrandoPortfolio = false"
+        />
+        <div class="tab-content p-0">
+          <!-- Conteúdo de informações -->
+        </div>
+
+        <input
+          type="radio"
+          name="minha_conta_tabs"
+          class="tab"
+          aria-label="Certificações"
+          :checked="mostrandoCertificacoes"
+          @change="mostrandoCertificacoes = true; mostrandoPortfolio = false"
+        />
+        <div class="tab-content p-0">
+          <!-- Conteúdo de certificações -->
+        </div>
+
+        <input
+          type="radio"
+          name="minha_conta_tabs"
+          class="tab"
+          aria-label="Portfólio"
+          :checked="mostrandoPortfolio"
+          @change="mostrandoCertificacoes = false; mostrandoPortfolio = true"
+        />
+        <div class="tab-content p-0">
+          <!-- Conteúdo de portfólio -->
+        </div>
+      </div>
+
+      <!-- Conteúdo: Informações Gerais -->
+      <form
+        v-if="!mostrandoCertificacoes && !mostrandoPortfolio"
+        @submit.prevent="salvar"
+        class="flex flex-col gap-4"
+      >
         <section>
           <h2
             class="text-xs font-semibold text-base-content/50 uppercase tracking-wide mb-3"
@@ -147,20 +191,53 @@
           </HtButton>
         </div>
       </form>
+
+      <!-- Conteúdo: Certificações -->
+      <div v-if="mostrandoCertificacoes && isPrestador" class="pt-4">
+        <HtCertificacaoForm
+          :prestador-id="prestadorId"
+          :is-prestador="isPrestador"
+          :certificacoes="form.certificacoes || []"
+          @certificacao-adicionada="onCertificacaoAdicionada"
+          @certificacao-removida="onCertificacaoRemovida"
+          @certificacao-clicada="onCertificacaoClicada"
+        />
+      </div>
+
+      <!-- Conteúdo: Portfólio -->
+      <div v-if="mostrandoPortfolio && isPrestador" class="pt-4">
+        <HtPortfolioGaleria
+          :prestador-id="prestadorId"
+          :is-prestador="isPrestador"
+          :portfolios="form.portfolios || []"
+          @portfolio-adicionado="onPortfolioAdicionado"
+          @portfolio-removido="onPortfolioRemovido"
+        />
+      </div>
     </template>
+
+    <!-- Modal de detalhes da certificação -->
+    <HtCertificacaoDetail
+      :certificacao="certificacaoSelecionada"
+      :is-open="mostrarDetalhesCertificacao"
+      @close="mostrarDetalhesCertificacao = false"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, computed } from "vue";
+import { ref, reactive, onMounted, computed, watch } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import api from "@/services/api";
-import type { PerfilForm } from "@/types";
+import type { PerfilForm, Certificacao, Portfolio } from "@/types";
 import HtInput from "@/components/ui/HtInput.vue";
 import HtSearchSelect from "@/components/ui/HtSearchSelect.vue";
 import HtButton from "@/components/ui/HtButton.vue";
 import HtAlert from "@/components/ui/HtAlert.vue";
 import HtSpinner from "@/components/ui/HtSpinner.vue";
+import HtCertificacaoForm from "./components/HtCertificacaoForm.vue";
+import HtPortfolioGaleria from "./components/HtPortfolioGaleria.vue";
+import HtCertificacaoDetail from "./components/HtCertificacaoDetail.vue";
 import { UF_OPTIONS } from "@/statics/selects";
 
 const auth = useAuthStore();
@@ -170,6 +247,12 @@ const editando = ref(false);
 const salvando = ref(false);
 const erro = ref("");
 const sucesso = ref(false);
+const mostrandoCertificacoes = ref(false);
+const mostrandoPortfolio = ref(false);
+
+const prestadorId = ref("");
+const certificacaoSelecionada = ref<any | null>(null);
+const mostrarDetalhesCertificacao = ref(false);
 
 const form = reactive<PerfilForm>({
   nome: "",
@@ -183,22 +266,49 @@ const form = reactive<PerfilForm>({
   estado: "",
   descricao: "",
   raioAtendimentoKm: null,
+  certificacoes: [],
+  portfolios: [],
 });
 
 const isPrestador = computed(
   () => auth.user?.tipo === 2 || auth.user?.tipo === 3,
 );
 
-onMounted(async () => {
+async function carregarDados() {
   try {
     const { data } = await api.get<PerfilForm>(
       "/api/Usuario/ObterPerfilUsuario",
     );
     Object.assign(form, data);
+
+    // Obter prestadorId se for prestador
+    if (isPrestador.value && auth.user?.userId) {
+      try {
+        const prestadorResponse = await api.get<{ id: string }>(
+          "/api/Prestador/ObterPrestadorPorUsuarioId",
+          {
+            params: { usuarioId: auth.user.userId },
+          }
+        );
+        prestadorId.value = prestadorResponse.data.id;
+      } catch {
+        // Silenciar erro de busca de prestador
+      }
+    }
   } catch {
     erro.value = "Não foi possível carregar seus dados.";
-  } finally {
-    carregando.value = false;
+  }
+}
+
+onMounted(async () => {
+  await carregarDados();
+  carregando.value = false;
+});
+
+// Recarregar dados quando mudar para a aba de certificações ou portfólio
+watch([mostrandoCertificacoes, mostrandoPortfolio], async (newVal) => {
+  if ((newVal[0] || newVal[1]) && form.certificacoes?.length === 0 && form.portfolios?.length === 0) {
+    await carregarDados();
   }
 });
 
@@ -221,5 +331,36 @@ async function salvar() {
   } finally {
     salvando.value = false;
   }
+}
+
+function onCertificacaoAdicionada(cert: Certificacao) {
+  if (!form.certificacoes) {
+    form.certificacoes = [];
+  }
+  form.certificacoes.push(cert);
+}
+
+function onCertificacaoRemovida(id: string) {
+  if (form.certificacoes) {
+    form.certificacoes = form.certificacoes.filter((c) => c.id !== id);
+  }
+}
+
+function onPortfolioAdicionado(portfolio: Portfolio) {
+  if (!form.portfolios) {
+    form.portfolios = [];
+  }
+  form.portfolios.push(portfolio);
+}
+
+function onPortfolioRemovido(id: string) {
+  if (form.portfolios) {
+    form.portfolios = form.portfolios.filter((p) => p.id !== id);
+  }
+}
+
+function onCertificacaoClicada(cert: Certificacao) {
+  certificacaoSelecionada.value = cert;
+  mostrarDetalhesCertificacao.value = true;
 }
 </script>
