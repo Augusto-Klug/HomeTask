@@ -6,6 +6,7 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 import { initTheme } from './composables/useTheme'
+import { useAuthStore } from './stores/auth'
 
 async function bootstrap() {
   if (import.meta.env.VITE_USE_MOCK === 'true') {
@@ -16,7 +17,13 @@ async function bootstrap() {
   }
 
   const app = createApp(App)
-  app.use(createPinia())
+  const pinia = createPinia()
+
+  app.use(pinia)
+
+  const auth = useAuthStore(pinia)
+  await auth.initialize()
+
   app.use(router)
   app.mount('#app')
   initTheme()

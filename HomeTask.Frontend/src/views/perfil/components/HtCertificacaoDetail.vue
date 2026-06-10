@@ -40,13 +40,41 @@
           </label>
           <div class="bg-base-200 rounded p-4 h-96 overflow-auto">
             <img
-              :src="certificacao.urlDocumento"
+              v-if="arquivoEhImagem(certificacao.urlDocumento)"
+              :src="obterUrlDocumento(certificacao.urlDocumento)"
               :alt="certificacao.nome"
-              class="w-full"
+              class="w-full rounded"
             />
+            <iframe
+              v-else-if="arquivoEhPdf(certificacao.urlDocumento)"
+              :src="obterUrlDocumento(certificacao.urlDocumento)"
+              :title="certificacao.nome"
+              class="w-full h-full border-0"
+            />
+            <div
+              v-else-if="arquivoEhDocumentoOffice(certificacao.urlDocumento)"
+              class="h-full flex flex-col items-center justify-center gap-3 text-center"
+            >
+              <span class="material-symbols-rounded text-6xl text-primary">description</span>
+              <div>
+                <p class="font-medium">Preview indisponível para este formato</p>
+                <p class="text-sm text-base-content/70">
+                  Arquivos `.doc` e `.docx` devem ser abertos por download.
+                </p>
+              </div>
+            </div>
+            <div
+              v-else
+              class="h-full flex flex-col items-center justify-center gap-3 text-center"
+            >
+              <span class="material-symbols-rounded text-6xl text-base-content/50">draft</span>
+              <p class="text-sm text-base-content/70">
+                Não foi possível gerar preview deste arquivo.
+              </p>
+            </div>
           </div>
           <a
-            :href="certificacao.urlDocumento"
+            :href="obterUrlDocumento(certificacao.urlDocumento)"
             target="_blank"
             download
             class="link link-primary text-sm mt-2 inline-block"
@@ -70,6 +98,12 @@
 
 <script setup lang="ts">
 import type { Certificacao } from "@/types";
+import {
+  arquivoEhDocumentoOffice,
+  arquivoEhImagem,
+  arquivoEhPdf,
+  resolverUrlArquivo,
+} from "@/shared/utils";
 
 interface Props {
   certificacao: Certificacao | null;
@@ -92,5 +126,9 @@ function formatarData(data: string): string {
   } catch {
     return data;
   }
+}
+
+function obterUrlDocumento(url: string): string {
+  return resolverUrlArquivo(url);
 }
 </script>

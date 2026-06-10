@@ -71,6 +71,41 @@ export async function logoutHandler(
   await Promise.resolve(redirect());
 }
 
+export function resolverUrlArquivo(url?: string | null): string {
+  if (!url) {
+    return "";
+  }
+
+  if (/^(data:|blob:|https?:\/\/)/i.test(url)) {
+    return url;
+  }
+
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5000";
+  return new URL(url, apiBaseUrl).toString();
+}
+
+export function obterExtensaoArquivo(url?: string | null): string {
+  if (!url) {
+    return "";
+  }
+
+  const path = url.split("?")[0] ?? "";
+  const partes = path.split(".");
+  return partes.length > 1 ? partes[partes.length - 1]?.toLowerCase() ?? "" : "";
+}
+
+export function arquivoEhImagem(url?: string | null): boolean {
+  return ["png", "jpg", "jpeg", "webp", "gif", "bmp", "svg"].includes(obterExtensaoArquivo(url));
+}
+
+export function arquivoEhPdf(url?: string | null): boolean {
+  return obterExtensaoArquivo(url) === "pdf";
+}
+
+export function arquivoEhDocumentoOffice(url?: string | null): boolean {
+  return ["doc", "docx"].includes(obterExtensaoArquivo(url));
+}
+
 function criarData(valor: DateLike): Date {
   return valor instanceof Date ? new Date(valor) : new Date(valor);
 }

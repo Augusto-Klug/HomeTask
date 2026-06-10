@@ -102,7 +102,7 @@ describe('MinhaContaView', () => {
     await wrapper.find('[data-testid="btn-editar"]').trigger('click')
     await wrapper.find('form').trigger('submit')
     await flushPromises()
-    expect(apiModule.default.put).toHaveBeenCalledWith('/api/Usuarios/perfil', expect.any(Object))
+    expect(apiModule.default.put).toHaveBeenCalledWith('/api/Usuario/AtualizarPrefilUsuario', expect.any(Object))
   })
 
   it('usa um select pesquisável para a UF', async () => {

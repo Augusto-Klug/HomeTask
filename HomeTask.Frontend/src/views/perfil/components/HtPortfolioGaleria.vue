@@ -96,10 +96,19 @@
         class="card bg-base-100 shadow-sm overflow-hidden border border-base-300 hover:shadow-md transition"
       >
         <figure class="relative h-48 bg-base-200">
+          <div
+            v-if="imagensComErro[item.id]"
+            class="w-full h-full flex flex-col items-center justify-center gap-2 text-center text-base-content/60"
+          >
+            <span class="material-symbols-rounded text-5xl">image_not_supported</span>
+            <p class="text-sm px-4">Não foi possível carregar esta imagem.</p>
+          </div>
           <img
-            :src="item.urlImagem"
+            v-else
+            :src="obterUrlImagem(item.urlImagem)"
             :alt="item.titulo || 'Portfolio'"
             class="w-full h-full object-cover"
+            @error="marcarErroImagem(item.id)"
           />
           <button
             v-if="isPrestador"
@@ -128,6 +137,7 @@
 <script setup lang="ts">
 import { ref, reactive } from "vue";
 import api from "@/services/api";
+import { resolverUrlArquivo } from "@/shared/utils";
 import HtInput from "@/components/ui/HtInput.vue";
 import HtAlert from "@/components/ui/HtAlert.vue";
 import type { Portfolio, PortfolioForm } from "@/types";
@@ -150,6 +160,7 @@ const erro = ref("");
 const sucesso = ref("");
 const previewUrl = ref("");
 const inputFoto = ref<HTMLInputElement>();
+const imagensComErro = reactive<Record<string, boolean>>({});
 
 const formPortfolio = reactive<PortfolioForm>({
   titulo: "",
@@ -162,6 +173,14 @@ function formatarData(data: string): string {
   } catch {
     return data;
   }
+}
+
+function obterUrlImagem(url: string): string {
+  return resolverUrlArquivo(url);
+}
+
+function marcarErroImagem(id: string) {
+  imagensComErro[id] = true;
 }
 
 function mostrarPreview(file: File) {

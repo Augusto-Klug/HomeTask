@@ -15,6 +15,8 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+    volumes:
+      - hometask_uploads_data:/app/uploads
     networks:
       - app-network
 
@@ -50,6 +52,7 @@ services:
 
 volumes:
   hometask_mysql_data:
+  hometask_uploads_data:
 
 networks:
   app-network:

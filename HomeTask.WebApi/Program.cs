@@ -3,6 +3,7 @@ using HomeTask.Infrastructure.Data;
 using HomeTask.Infrastructure.DI;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -70,7 +71,16 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+var uploadsPath = Path.Combine(app.Environment.ContentRootPath, "uploads");
+Directory.CreateDirectory(uploadsPath);
+
 app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(uploadsPath),
+    RequestPath = "/uploads"
+});
 app.UseCors("Frontend");
 app.UseAuthentication();
 app.UseAuthorization();

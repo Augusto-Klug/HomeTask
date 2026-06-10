@@ -11,7 +11,7 @@ public class LocalArquivoService : IArquivoService
 
     public LocalArquivoService(IWebHostEnvironment env, IConfiguration config)
     {
-        _raiz = Path.Combine(env.WebRootPath ?? env.ContentRootPath, "uploads");
+        _raiz = Path.Combine(env.ContentRootPath, "uploads");
         _urlBase = config["Arquivos:UrlBase"] ?? "/uploads";
     }
 

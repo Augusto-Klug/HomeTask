@@ -47,11 +47,11 @@
         </div>
         <div>
           <label class="label">
-            <span class="label-text text-sm">Documento (PDF, JPG ou PNG - opcional)</span>
+            <span class="label-text text-sm">Documento (PDF, DOC, DOCX, JPG ou PNG - opcional)</span>
           </label>
           <input
             type="file"
-            accept=".pdf,.jpg,.jpeg,.png"
+            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
             @change="(e: Event) => {
               const target = e.target as HTMLInputElement;
               formCertificacao.documento = target.files?.[0];

@@ -123,8 +123,9 @@ const router = createRouter({
 });
 
 // Navigation guard
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
   const auth = useAuthStore();
+  await auth.initialize();
 
   if (to.meta.requiresAuth && !auth.isLoggedIn) {
     return { name: "login", query: { redirect: to.fullPath } };
