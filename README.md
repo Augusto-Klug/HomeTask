@@ -1,4 +1,4 @@
-# HomeTask WebApi - Guia de Execução (Docker & Kubernetes)
+# HomeTask - Guia de Execução (Docker & Kubernetes)
 
 Este repositório agora está totalmente conteinerizado! Isso significa que você não precisa mais instalar o MySQL separadamente na sua máquina ou configurar o ambiente manualmente para rodar a API.
 
