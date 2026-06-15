@@ -12,6 +12,11 @@ services:
       - ConnectionStrings__DefaultConnection=${CONNECTION_STRING}
       # Chave secreta do JWT
       - Jwt__Key=${JWT_SECRET_KEY}
+      # Credenciais e URLs do Mercado Pago
+      - MercadoPago__AccessToken=${MERCADOPAGO_ACCESS_TOKEN}
+      - MercadoPago__ApiBaseUrl=${MERCADOPAGO_API_BASE_URL}
+      - MercadoPago__FrontendBaseUrl=${MERCADOPAGO_FRONTEND_BASE_URL}
+      - MercadoPago__WebhookPath=${MERCADOPAGO_WEBHOOK_PATH}
     depends_on:
       mysql:
         condition: service_healthy
@@ -25,6 +30,8 @@ services:
     build:
       context: ./HomeTask.Frontend
       dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL}
     ports:
       - "8080:8080"
     depends_on:

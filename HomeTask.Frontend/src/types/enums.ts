@@ -22,4 +22,13 @@ export enum StatusAgendamento {
   EmAndamento = 4,
   Concluido = 5,
   Cancelado = 6,
+  AguardandoPagamento = 7,
+}
+
+export enum StatusPagamento {
+  Pendente = 1,
+  Processando = 2,
+  Aprovado = 3,
+  Recusado = 4,
+  Estornado = 5,
 }

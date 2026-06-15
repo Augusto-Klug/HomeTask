@@ -1,6 +1,6 @@
 import { delay, http, HttpResponse } from "msw";
-import type { AgendamentoResumo, AuthResponse, Avaliacao, PerfilForm, Servico } from "@/types";
-import { StatusAgendamento, TipoUsuario, UnidadeCobranca } from "@/types";
+import type { AgendamentoResumo, AuthResponse, Avaliacao, PagamentoResumo, PerfilForm, Servico } from "@/types";
+import { StatusAgendamento, StatusPagamento, TipoUsuario, UnidadeCobranca } from "@/types";
 
 const MOCK_DELAY = 200;
 
@@ -202,6 +202,8 @@ const MOCK_AGENDAMENTOS_PRESTADOR: AgendamentoResumo[] = [
   },
 ];
 
+const MOCK_PAGAMENTOS: PagamentoResumo[] = [];
+
 const MOCK_PERFIL: PerfilForm = {
   nome: "Usuario Demo",
   email: "demo@hometask.com",
@@ -366,10 +368,46 @@ export const handlers = [
     const body = (await request.json()) as { id?: string };
     const alvo = MOCK_AGENDAMENTOS_PRESTADOR.find((a) => a.id === body.id);
     if (alvo) {
-      alvo.status = StatusAgendamento.Concluido;
+      alvo.status = StatusAgendamento.AguardandoPagamento;
       alvo.dataConclusao = new Date().toISOString();
     }
     return HttpResponse.json(alvo ?? { ok: true });
+  }),
+
+  http.get("*/api/Pagamento/ObterPagamentoPorAgendamento", async ({ request }) => {
+    await delay(MOCK_DELAY);
+    const url = new URL(request.url);
+    const agendamentoId = url.searchParams.get("agendamentoId");
+    const pagamento = MOCK_PAGAMENTOS.find((item) => item.agendamentoId === agendamentoId);
+    if (!pagamento) return new HttpResponse(null, { status: 404 });
+    return HttpResponse.json(pagamento);
+  }),
+
+  http.post("*/api/Pagamento/IniciarPagamento", async ({ request }) => {
+    await delay(MOCK_DELAY);
+    const body = (await request.json()) as { agendamentoId?: string };
+    const agendamento = [...MOCK_AGENDAMENTOS_CLIENTE, ...MOCK_AGENDAMENTOS_PRESTADOR].find((item) => item.id === body.agendamentoId);
+    if (!agendamento) return new HttpResponse(null, { status: 404 });
+
+    let pagamento = MOCK_PAGAMENTOS.find((item) => item.agendamentoId === agendamento.id);
+    if (!pagamento) {
+      pagamento = {
+        id: crypto.randomUUID(),
+        agendamentoId: agendamento.id,
+        valor: agendamento.valorTotal,
+        status: StatusPagamento.Processando,
+        checkoutExternoId: `pref-${agendamento.id}`,
+        checkoutUrl: `https://mercadopago.mock/checkout/${agendamento.id}`,
+        statusExterno: "pending",
+        dataCriacao: new Date().toISOString(),
+        dataProcessamento: new Date().toISOString(),
+        dataConfirmacao: null,
+        motivoRecusa: null,
+      };
+      MOCK_PAGAMENTOS.push(pagamento);
+    }
+
+    return HttpResponse.json(pagamento);
   }),
 
   http.post("*/api/Agendamento/CancelarAgendamento", async ({ request }) => {

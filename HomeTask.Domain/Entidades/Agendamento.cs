@@ -119,10 +119,15 @@ public class Agendamento
         Status = StatusAgendamento.EmAndamento;
     }
 
-    public void Concluir(DateTime dataConclusao)
+    public void MarcarAguardandoPagamento(DateTime dataConclusao)
+    {
+        Status = StatusAgendamento.AguardandoPagamento;
+        DataConclusao = dataConclusao;
+    }
+
+    public void ConcluirFinanceiramente()
     {
         Status = StatusAgendamento.Concluido;
-        DataConclusao = dataConclusao;
     }
 
     public void Cancelar(string motivo)

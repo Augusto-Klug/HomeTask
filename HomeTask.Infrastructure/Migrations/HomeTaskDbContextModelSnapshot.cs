@@ -22,174 +22,7 @@ namespace HomeTask.Infrastructure.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
-            modelBuilder.Entity("HomeTask.Domain.Entidades.AgendamentoServico", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("AgendamentoId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<int>("Quantidade")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
-
-                    b.Property<Guid>("ServicoBaseId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<decimal>("ValorUnitario")
-                        .HasColumnType("decimal(10,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AgendamentoId");
-
-                    b.HasIndex("ServicoBaseId");
-
-                    b.ToTable("AgendamentoServicos");
-                });
-
-            modelBuilder.Entity("HomeTask.Domain.Entidades.Cidade", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("CodIBGE")
-                        .HasMaxLength(10)
-                        .HasColumnType("varchar(10)");
-
-                    b.Property<string>("Estado")
-                        .IsRequired()
-                        .HasMaxLength(2)
-                        .HasColumnType("varchar(2)");
-
-                    b.Property<string>("Nome")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Cidades");
-                });
-
-            modelBuilder.Entity("HomeTask.Domain.Entidades.Conversa", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("ClienteId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<DateTime>("DataCriacao")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<Guid>("PrestadorId")
-                        .HasColumnType("char(36)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PrestadorId");
-
-                    b.HasIndex("ClienteId", "PrestadorId")
-                        .IsUnique();
-
-                    b.ToTable("Conversas");
-                });
-
-            modelBuilder.Entity("HomeTask.Domain.Entidades.Endereco", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("Bairro")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
-
-                    b.Property<string>("Cep")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("varchar(10)");
-
-                    b.Property<Guid>("CidadeId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("Complemento")
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
-
-                    b.Property<string>("Logradouro")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("varchar(200)");
-
-                    b.Property<string>("Numero")
-                        .HasMaxLength(10)
-                        .HasColumnType("varchar(10)");
-
-                    b.Property<Guid>("UsuarioId")
-                        .HasColumnType("char(36)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CidadeId");
-
-                    b.HasIndex("UsuarioId")
-                        .IsUnique();
-
-                    b.ToTable("Enderecos");
-                });
-
-            modelBuilder.Entity("HomeTask.Domain.Entidades.ServicoBase", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<bool>("Ativo")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<int>("Categoria")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("DataCriacao")
-                        .HasColumnType("datetime");
-
-                    b.Property<string>("Descricao")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("varchar(500)");
-
-                    b.Property<decimal>("PrecoBase")
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<int>("TipoAnuncio")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Titulo")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
-
-                    b.Property<int>("UnidadeCobranca")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Servicos");
-
-                    b.HasDiscriminator<int>("TipoAnuncio");
-
-                    b.UseTphMappingStrategy();
-                });
-
-            modelBuilder.Entity("HomeTask.Domain.Entities.Agendamento", b =>
+            modelBuilder.Entity("HomeTask.Domain.Entidades.Agendamento", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -244,7 +77,36 @@ namespace HomeTask.Infrastructure.Migrations
                     b.ToTable("Agendamentos");
                 });
 
-            modelBuilder.Entity("HomeTask.Domain.Entities.Avaliacao", b =>
+            modelBuilder.Entity("HomeTask.Domain.Entidades.AgendamentoServico", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("AgendamentoId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("Quantidade")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
+                    b.Property<Guid>("ServicoBaseId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<decimal>("ValorUnitario")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AgendamentoId");
+
+                    b.HasIndex("ServicoBaseId");
+
+                    b.ToTable("AgendamentoServicos");
+                });
+
+            modelBuilder.Entity("HomeTask.Domain.Entidades.Avaliacao", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -284,7 +146,7 @@ namespace HomeTask.Infrastructure.Migrations
                     b.ToTable("Avaliacoes");
                 });
 
-            modelBuilder.Entity("HomeTask.Domain.Entities.Certificacao", b =>
+            modelBuilder.Entity("HomeTask.Domain.Entidades.Certificacao", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -325,7 +187,32 @@ namespace HomeTask.Infrastructure.Migrations
                     b.ToTable("Certificacoes");
                 });
 
-            modelBuilder.Entity("HomeTask.Domain.Entities.Cliente", b =>
+            modelBuilder.Entity("HomeTask.Domain.Entidades.Cidade", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("CodIBGE")
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar(10)");
+
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasMaxLength(2)
+                        .HasColumnType("varchar(2)");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Cidades");
+                });
+
+            modelBuilder.Entity("HomeTask.Domain.Entidades.Cliente", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -342,7 +229,32 @@ namespace HomeTask.Infrastructure.Migrations
                     b.ToTable("Clientes");
                 });
 
-            modelBuilder.Entity("HomeTask.Domain.Entities.Disponibilidade", b =>
+            modelBuilder.Entity("HomeTask.Domain.Entidades.Conversa", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("ClienteId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("DataCriacao")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("PrestadorId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PrestadorId");
+
+                    b.HasIndex("ClienteId", "PrestadorId")
+                        .IsUnique();
+
+                    b.ToTable("Conversas");
+                });
+
+            modelBuilder.Entity("HomeTask.Domain.Entidades.Disponibilidade", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -370,7 +282,52 @@ namespace HomeTask.Infrastructure.Migrations
                     b.ToTable("Disponibilidades");
                 });
 
-            modelBuilder.Entity("HomeTask.Domain.Entities.Mensagem", b =>
+            modelBuilder.Entity("HomeTask.Domain.Entidades.Endereco", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Bairro")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("Cep")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar(10)");
+
+                    b.Property<Guid>("CidadeId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Complemento")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("Logradouro")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("Numero")
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar(10)");
+
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CidadeId");
+
+                    b.HasIndex("UsuarioId")
+                        .IsUnique();
+
+                    b.ToTable("Enderecos");
+                });
+
+            modelBuilder.Entity("HomeTask.Domain.Entidades.Mensagem", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -410,7 +367,7 @@ namespace HomeTask.Infrastructure.Migrations
                     b.ToTable("Mensagens");
                 });
 
-            modelBuilder.Entity("HomeTask.Domain.Entities.Pagamento", b =>
+            modelBuilder.Entity("HomeTask.Domain.Entidades.Pagamento", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -418,6 +375,14 @@ namespace HomeTask.Infrastructure.Migrations
 
                     b.Property<Guid>("AgendamentoId")
                         .HasColumnType("char(36)");
+
+                    b.Property<string>("CheckoutExternoId")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("CheckoutUrl")
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
 
                     b.Property<DateTime?>("DataConfirmacao")
                         .HasColumnType("datetime(6)");
@@ -432,8 +397,15 @@ namespace HomeTask.Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
 
+                    b.Property<string>("PayloadExterno")
+                        .HasColumnType("longtext");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
+
+                    b.Property<string>("StatusExterno")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<int>("TipoPagamento")
                         .HasColumnType("int");
@@ -453,7 +425,7 @@ namespace HomeTask.Infrastructure.Migrations
                     b.ToTable("Pagamentos");
                 });
 
-            modelBuilder.Entity("HomeTask.Domain.Entities.Portfolio", b =>
+            modelBuilder.Entity("HomeTask.Domain.Entidades.Portfolio", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -488,7 +460,7 @@ namespace HomeTask.Infrastructure.Migrations
                     b.ToTable("Portfolios");
                 });
 
-            modelBuilder.Entity("HomeTask.Domain.Entities.Prestador", b =>
+            modelBuilder.Entity("HomeTask.Domain.Entidades.Prestador", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -527,7 +499,50 @@ namespace HomeTask.Infrastructure.Migrations
                     b.ToTable("Prestadores");
                 });
 
-            modelBuilder.Entity("HomeTask.Domain.Entities.Usuario", b =>
+            modelBuilder.Entity("HomeTask.Domain.Entidades.ServicoBase", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("Categoria")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DataCriacao")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("Descricao")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<decimal>("PrecoBase")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("TipoAnuncio")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Titulo")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<int>("UnidadeCobranca")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Servicos");
+
+                    b.HasDiscriminator<int>("TipoAnuncio");
+
+                    b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("HomeTask.Domain.Entidades.Usuario", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -613,9 +628,36 @@ namespace HomeTask.Infrastructure.Migrations
                     b.HasDiscriminator().HasValue(1);
                 });
 
+            modelBuilder.Entity("HomeTask.Domain.Entidades.Agendamento", b =>
+                {
+                    b.HasOne("HomeTask.Domain.Entidades.Cliente", "Cliente")
+                        .WithMany("Agendamentos")
+                        .HasForeignKey("ClienteId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("HomeTask.Domain.Entidades.Endereco", "Endereco")
+                        .WithMany("Agendamentos")
+                        .HasForeignKey("EnderecoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("HomeTask.Domain.Entidades.Prestador", "Prestador")
+                        .WithMany("Agendamentos")
+                        .HasForeignKey("PrestadorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Cliente");
+
+                    b.Navigation("Endereco");
+
+                    b.Navigation("Prestador");
+                });
+
             modelBuilder.Entity("HomeTask.Domain.Entidades.AgendamentoServico", b =>
                 {
-                    b.HasOne("HomeTask.Domain.Entities.Agendamento", "Agendamento")
+                    b.HasOne("HomeTask.Domain.Entidades.Agendamento", "Agendamento")
                         .WithMany("AgendamentoServicos")
                         .HasForeignKey("AgendamentoId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -632,21 +674,81 @@ namespace HomeTask.Infrastructure.Migrations
                     b.Navigation("ServicoBase");
                 });
 
+            modelBuilder.Entity("HomeTask.Domain.Entidades.Avaliacao", b =>
+                {
+                    b.HasOne("HomeTask.Domain.Entidades.Agendamento", "Agendamento")
+                        .WithOne("Avaliacao")
+                        .HasForeignKey("HomeTask.Domain.Entidades.Avaliacao", "AgendamentoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HomeTask.Domain.Entidades.Cliente", "Cliente")
+                        .WithMany("Avaliacoes")
+                        .HasForeignKey("ClienteId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("HomeTask.Domain.Entidades.Prestador", "Prestador")
+                        .WithMany("Avaliacoes")
+                        .HasForeignKey("PrestadorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Agendamento");
+
+                    b.Navigation("Cliente");
+
+                    b.Navigation("Prestador");
+                });
+
+            modelBuilder.Entity("HomeTask.Domain.Entidades.Certificacao", b =>
+                {
+                    b.HasOne("HomeTask.Domain.Entidades.Prestador", "Prestador")
+                        .WithMany("Certificacoes")
+                        .HasForeignKey("PrestadorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Prestador");
+                });
+
+            modelBuilder.Entity("HomeTask.Domain.Entidades.Cliente", b =>
+                {
+                    b.HasOne("HomeTask.Domain.Entidades.Usuario", "Usuario")
+                        .WithOne("Cliente")
+                        .HasForeignKey("HomeTask.Domain.Entidades.Cliente", "UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
+                });
+
             modelBuilder.Entity("HomeTask.Domain.Entidades.Conversa", b =>
                 {
-                    b.HasOne("HomeTask.Domain.Entities.Cliente", "Cliente")
+                    b.HasOne("HomeTask.Domain.Entidades.Cliente", "Cliente")
                         .WithMany("Conversas")
                         .HasForeignKey("ClienteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HomeTask.Domain.Entities.Prestador", "Prestador")
+                    b.HasOne("HomeTask.Domain.Entidades.Prestador", "Prestador")
                         .WithMany("Conversas")
                         .HasForeignKey("PrestadorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Cliente");
+
+                    b.Navigation("Prestador");
+                });
+
+            modelBuilder.Entity("HomeTask.Domain.Entidades.Disponibilidade", b =>
+                {
+                    b.HasOne("HomeTask.Domain.Entidades.Prestador", "Prestador")
+                        .WithMany("Disponibilidades")
+                        .HasForeignKey("PrestadorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Prestador");
                 });
@@ -659,7 +761,7 @@ namespace HomeTask.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("HomeTask.Domain.Entities.Usuario", "Usuario")
+                    b.HasOne("HomeTask.Domain.Entidades.Usuario", "Usuario")
                         .WithOne("Endereco")
                         .HasForeignKey("HomeTask.Domain.Entidades.Endereco", "UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -670,96 +772,9 @@ namespace HomeTask.Infrastructure.Migrations
                     b.Navigation("Usuario");
                 });
 
-            modelBuilder.Entity("HomeTask.Domain.Entities.Agendamento", b =>
+            modelBuilder.Entity("HomeTask.Domain.Entidades.Mensagem", b =>
                 {
-                    b.HasOne("HomeTask.Domain.Entities.Cliente", "Cliente")
-                        .WithMany("Agendamentos")
-                        .HasForeignKey("ClienteId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("HomeTask.Domain.Entidades.Endereco", "Endereco")
-                        .WithMany("Agendamentos")
-                        .HasForeignKey("EnderecoId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("HomeTask.Domain.Entities.Prestador", "Prestador")
-                        .WithMany("Agendamentos")
-                        .HasForeignKey("PrestadorId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Cliente");
-
-                    b.Navigation("Endereco");
-
-                    b.Navigation("Prestador");
-                });
-
-            modelBuilder.Entity("HomeTask.Domain.Entities.Avaliacao", b =>
-                {
-                    b.HasOne("HomeTask.Domain.Entities.Agendamento", "Agendamento")
-                        .WithOne("Avaliacao")
-                        .HasForeignKey("HomeTask.Domain.Entities.Avaliacao", "AgendamentoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HomeTask.Domain.Entities.Cliente", "Cliente")
-                        .WithMany("Avaliacoes")
-                        .HasForeignKey("ClienteId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("HomeTask.Domain.Entities.Prestador", "Prestador")
-                        .WithMany("Avaliacoes")
-                        .HasForeignKey("PrestadorId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Agendamento");
-
-                    b.Navigation("Cliente");
-
-                    b.Navigation("Prestador");
-                });
-
-            modelBuilder.Entity("HomeTask.Domain.Entities.Certificacao", b =>
-                {
-                    b.HasOne("HomeTask.Domain.Entities.Prestador", "Prestador")
-                        .WithMany("Certificacoes")
-                        .HasForeignKey("PrestadorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Prestador");
-                });
-
-            modelBuilder.Entity("HomeTask.Domain.Entities.Cliente", b =>
-                {
-                    b.HasOne("HomeTask.Domain.Entities.Usuario", "Usuario")
-                        .WithOne("Cliente")
-                        .HasForeignKey("HomeTask.Domain.Entities.Cliente", "UsuarioId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Usuario");
-                });
-
-            modelBuilder.Entity("HomeTask.Domain.Entities.Disponibilidade", b =>
-                {
-                    b.HasOne("HomeTask.Domain.Entities.Prestador", "Prestador")
-                        .WithMany("Disponibilidades")
-                        .HasForeignKey("PrestadorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Prestador");
-                });
-
-            modelBuilder.Entity("HomeTask.Domain.Entities.Mensagem", b =>
-                {
-                    b.HasOne("HomeTask.Domain.Entities.Agendamento", "Agendamento")
+                    b.HasOne("HomeTask.Domain.Entidades.Agendamento", "Agendamento")
                         .WithMany()
                         .HasForeignKey("AgendamentoId")
                         .OnDelete(DeleteBehavior.SetNull);
@@ -770,7 +785,7 @@ namespace HomeTask.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("HomeTask.Domain.Entities.Usuario", "Remetente")
+                    b.HasOne("HomeTask.Domain.Entidades.Usuario", "Remetente")
                         .WithMany()
                         .HasForeignKey("RemetenteId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -783,20 +798,20 @@ namespace HomeTask.Infrastructure.Migrations
                     b.Navigation("Remetente");
                 });
 
-            modelBuilder.Entity("HomeTask.Domain.Entities.Pagamento", b =>
+            modelBuilder.Entity("HomeTask.Domain.Entidades.Pagamento", b =>
                 {
-                    b.HasOne("HomeTask.Domain.Entities.Agendamento", "Agendamento")
+                    b.HasOne("HomeTask.Domain.Entidades.Agendamento", "Agendamento")
                         .WithOne("Pagamento")
-                        .HasForeignKey("HomeTask.Domain.Entities.Pagamento", "AgendamentoId")
+                        .HasForeignKey("HomeTask.Domain.Entidades.Pagamento", "AgendamentoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Agendamento");
                 });
 
-            modelBuilder.Entity("HomeTask.Domain.Entities.Portfolio", b =>
+            modelBuilder.Entity("HomeTask.Domain.Entidades.Portfolio", b =>
                 {
-                    b.HasOne("HomeTask.Domain.Entities.Prestador", "Prestador")
+                    b.HasOne("HomeTask.Domain.Entidades.Prestador", "Prestador")
                         .WithMany("Portfolios")
                         .HasForeignKey("PrestadorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -805,11 +820,11 @@ namespace HomeTask.Infrastructure.Migrations
                     b.Navigation("Prestador");
                 });
 
-            modelBuilder.Entity("HomeTask.Domain.Entities.Prestador", b =>
+            modelBuilder.Entity("HomeTask.Domain.Entidades.Prestador", b =>
                 {
-                    b.HasOne("HomeTask.Domain.Entities.Usuario", "Usuario")
+                    b.HasOne("HomeTask.Domain.Entidades.Usuario", "Usuario")
                         .WithOne("Prestador")
-                        .HasForeignKey("HomeTask.Domain.Entities.Prestador", "UsuarioId")
+                        .HasForeignKey("HomeTask.Domain.Entidades.Prestador", "UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -818,7 +833,7 @@ namespace HomeTask.Infrastructure.Migrations
 
             modelBuilder.Entity("HomeTask.Domain.Entidades.ServicoCliente", b =>
                 {
-                    b.HasOne("HomeTask.Domain.Entities.Cliente", "Cliente")
+                    b.HasOne("HomeTask.Domain.Entidades.Cliente", "Cliente")
                         .WithMany("ServicosClientes")
                         .HasForeignKey("ClienteId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -829,7 +844,7 @@ namespace HomeTask.Infrastructure.Migrations
 
             modelBuilder.Entity("HomeTask.Domain.Entidades.ServicoPrestador", b =>
                 {
-                    b.HasOne("HomeTask.Domain.Entities.Prestador", "Prestador")
+                    b.HasOne("HomeTask.Domain.Entidades.Prestador", "Prestador")
                         .WithMany("ServicosOferecidos")
                         .HasForeignKey("PrestadorId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -838,9 +853,29 @@ namespace HomeTask.Infrastructure.Migrations
                     b.Navigation("Prestador");
                 });
 
+            modelBuilder.Entity("HomeTask.Domain.Entidades.Agendamento", b =>
+                {
+                    b.Navigation("AgendamentoServicos");
+
+                    b.Navigation("Avaliacao");
+
+                    b.Navigation("Pagamento");
+                });
+
             modelBuilder.Entity("HomeTask.Domain.Entidades.Cidade", b =>
                 {
                     b.Navigation("Enderecos");
+                });
+
+            modelBuilder.Entity("HomeTask.Domain.Entidades.Cliente", b =>
+                {
+                    b.Navigation("Agendamentos");
+
+                    b.Navigation("Avaliacoes");
+
+                    b.Navigation("Conversas");
+
+                    b.Navigation("ServicosClientes");
                 });
 
             modelBuilder.Entity("HomeTask.Domain.Entidades.Conversa", b =>
@@ -853,32 +888,7 @@ namespace HomeTask.Infrastructure.Migrations
                     b.Navigation("Agendamentos");
                 });
 
-            modelBuilder.Entity("HomeTask.Domain.Entidades.ServicoBase", b =>
-                {
-                    b.Navigation("AgendamentoServicos");
-                });
-
-            modelBuilder.Entity("HomeTask.Domain.Entities.Agendamento", b =>
-                {
-                    b.Navigation("AgendamentoServicos");
-
-                    b.Navigation("Avaliacao");
-
-                    b.Navigation("Pagamento");
-                });
-
-            modelBuilder.Entity("HomeTask.Domain.Entities.Cliente", b =>
-                {
-                    b.Navigation("Agendamentos");
-
-                    b.Navigation("Avaliacoes");
-
-                    b.Navigation("Conversas");
-
-                    b.Navigation("ServicosClientes");
-                });
-
-            modelBuilder.Entity("HomeTask.Domain.Entities.Prestador", b =>
+            modelBuilder.Entity("HomeTask.Domain.Entidades.Prestador", b =>
                 {
                     b.Navigation("Agendamentos");
 
@@ -895,7 +905,12 @@ namespace HomeTask.Infrastructure.Migrations
                     b.Navigation("ServicosOferecidos");
                 });
 
-            modelBuilder.Entity("HomeTask.Domain.Entities.Usuario", b =>
+            modelBuilder.Entity("HomeTask.Domain.Entidades.ServicoBase", b =>
+                {
+                    b.Navigation("AgendamentoServicos");
+                });
+
+            modelBuilder.Entity("HomeTask.Domain.Entidades.Usuario", b =>
                 {
                     b.Navigation("Cliente");
 

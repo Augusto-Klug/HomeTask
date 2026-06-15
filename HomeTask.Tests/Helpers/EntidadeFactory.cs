@@ -49,6 +49,13 @@ internal static class EntidadeFactory
         return agendamento;
     }
 
+    public static Pagamento CriarPagamento(Guid? id = null, Guid? agendamentoId = null, StatusPagamento status = StatusPagamento.Pendente, decimal valor = 150)
+    {
+        var pagamento = new Pagamento();
+        pagamento.DefinirDados(id ?? Guid.NewGuid(), agendamentoId ?? Guid.NewGuid(), valor, TipoPagamento.Pix, status, null, null, null, null, null, DateTime.UtcNow, null, null, null);
+        return pagamento;
+    }
+
     public static AgendamentoServico CriarAgendamentoServico(Guid agendamentoId, Guid servicoId, decimal valor)
     {
         var agendamentoServico = new AgendamentoServico();

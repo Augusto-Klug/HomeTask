@@ -6,6 +6,7 @@ using HomeTask.Application.Services;
 using HomeTask.Domain.Repositories;
 using HomeTask.Infrastructure.Data;
 using HomeTask.Infrastructure.Repositories;
+using HomeTask.Infrastructure.Services;
 using LocalArquivoService = HomeTask.Infrastructure.Services.LocalArquivoService;
 
 namespace HomeTask.Infrastructure.DI;
@@ -28,6 +29,9 @@ public static class DependencyInjection
                 )
             )
         );
+
+        services.Configure<MercadoPagoOptions>(configuration.GetSection(MercadoPagoOptions.SectionName));
+        services.AddHttpClient<IPagamentoGateway, MercadoPagoPaymentGateway>();
 
         services.AddScoped<IUsuarioRepository, UsuarioRepository>();
         services.AddScoped<IClienteRepository, ClienteRepository>();

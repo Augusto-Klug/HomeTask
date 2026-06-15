@@ -1,4 +1,4 @@
-import { StatusAgendamento, TipoAnuncio, TipoUsuario, UnidadeCobranca } from "./enums";
+import { StatusAgendamento, StatusPagamento, TipoAnuncio, TipoUsuario, UnidadeCobranca } from "./enums";
 
 export interface User {
   userId: string
@@ -165,6 +165,20 @@ export interface AgendamentoResumo {
   motivoRecusa: string | null
   aguardandoRespostaDe?: TipoUsuario | null
   servicos: Array<ServicoOferecido & { unidadeCobranca: UnidadeCobranca }>
+}
+
+export interface PagamentoResumo {
+  id: string
+  agendamentoId: string
+  valor: number
+  status: StatusPagamento
+  checkoutExternoId?: string | null
+  checkoutUrl?: string | null
+  statusExterno?: string | null
+  dataCriacao: string
+  dataProcessamento?: string | null
+  dataConfirmacao?: string | null
+  motivoRecusa?: string | null
 }
 
 export interface ServicoPrestadorDetalhe extends Servico {

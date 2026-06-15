@@ -2,6 +2,8 @@ using HomeTask.Domain.Common;
 using HomeTask.Domain.Entidades;
 using HomeTask.Domain.Enums;
 using HomeTask.Domain.Repositories;
+using HomeTask.Application.Dtos;
+using HomeTask.Application.Interfaces;
 
 namespace HomeTask.Tests.Helpers;
 
@@ -119,6 +121,31 @@ internal sealed class FakePrestadorRepository : FakeRepositoryBase<Prestador>, I
         Task.FromResult(Enumerable.Empty<Agendamento>());
 
     public Task<Prestador?> ObterComAvaliacoesAsync(Guid prestadorId, CancellationToken cancellationToken = default) => ObterPorIdAsync(prestadorId, cancellationToken);
+}
+
+internal sealed class FakePagamentoRepository : FakeRepositoryBase<Pagamento>, IPagamentoRepository
+{
+    public Task<Pagamento?> ObterPorAgendamentoAsync(Guid agendamentoId, CancellationToken cancellationToken = default) =>
+        Task.FromResult(Itens.Values.FirstOrDefault(p => p.AgendamentoId == agendamentoId));
+}
+
+internal sealed class FakePagamentoGateway : IPagamentoGateway
+{
+    public PagamentoCheckoutResponseDto CheckoutResponse { get; set; } = new()
+    {
+        CheckoutExternoId = "pref-123",
+        CheckoutUrl = "https://checkout.test/pref-123",
+        StatusExterno = "pending",
+        PayloadExterno = "{}"
+    };
+
+    public PagamentoStatusGatewayDto? StatusResponse { get; set; }
+
+    public Task<PagamentoCheckoutResponseDto> CriarCheckoutPixAsync(PagamentoCheckoutRequestDto pagamento, CancellationToken cancellationToken = default) =>
+        Task.FromResult(CheckoutResponse);
+
+    public Task<PagamentoStatusGatewayDto?> ObterStatusPagamentoAsync(string pagamentoExternoId, CancellationToken cancellationToken = default) =>
+        Task.FromResult(StatusResponse);
 }
 
 internal sealed class FakeClienteRepository : FakeRepositoryBase<Cliente>, IClienteRepository

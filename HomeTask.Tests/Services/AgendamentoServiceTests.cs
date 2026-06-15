@@ -10,7 +10,6 @@ public class AgendamentoServiceTests
     [Fact]
     public async Task CriarAsync_QuandoServicoPrestadorValido_DeveCriarSolicitacaoComValorDuracaoEEndereco()
     {
-        // Arrange
         var agendamentoRepository = new FakeAgendamentoRepository();
         var prestadorRepository = new FakePrestadorRepository();
         var service = new AgendamentoService(agendamentoRepository, prestadorRepository);
@@ -28,10 +27,8 @@ public class AgendamentoServiceTests
             ServicosOferecidosIds = [servico.Id]
         };
 
-        // Act
         var resultado = await service.CriarAsync(dto);
 
-        // Assert
         Assert.Equal(StatusAgendamento.Solicitado, resultado.Status);
         Assert.Equal(clienteId, resultado.ClienteId);
         Assert.Equal(prestadorId, resultado.PrestadorId);
@@ -46,16 +43,13 @@ public class AgendamentoServiceTests
     [Fact]
     public async Task CriarAsync_QuandoNaoEncontrarServico_DeveLancarErroENaoSalvar()
     {
-        // Arrange
         var agendamentoRepository = new FakeAgendamentoRepository();
         var service = new AgendamentoService(agendamentoRepository, new FakePrestadorRepository());
         var dto = new AgendamentoDto { ClienteId = Guid.NewGuid(), ServicosOferecidosIds = [Guid.NewGuid()] };
 
-        // Act
         var excecao = await Assert.ThrowsAsync<InvalidOperationException>(() => service.CriarAsync(dto));
 
-        // Assert
-        Assert.Equal("Nenhum serviço válido encontrado para o agendamento.", excecao.Message);
+        Assert.Equal("Nenhum servico valido encontrado para o agendamento.", excecao.Message);
         Assert.Equal(0, agendamentoRepository.AdicionarChamadas);
         Assert.Equal(0, agendamentoRepository.SalvarChamadas);
     }
@@ -63,16 +57,13 @@ public class AgendamentoServiceTests
     [Fact]
     public async Task AceitarAsync_QuandoSolicitado_DeveAlterarStatusParaAceito()
     {
-        // Arrange
         var agendamentoRepository = new FakeAgendamentoRepository();
         var agendamento = EntidadeFactory.CriarAgendamento(status: StatusAgendamento.Solicitado);
         agendamentoRepository.Seed(agendamento);
         var service = new AgendamentoService(agendamentoRepository, new FakePrestadorRepository());
 
-        // Act
         var resultado = await service.AceitarAsync(agendamento.Id);
 
-        // Assert
         Assert.Equal(StatusAgendamento.Aceito, resultado.Status);
         Assert.NotNull(resultado.DataResposta);
         Assert.Equal(1, agendamentoRepository.AtualizarChamadas);
@@ -82,25 +73,21 @@ public class AgendamentoServiceTests
     [Fact]
     public async Task IniciarAsync_QuandoNaoAceito_DeveLancarErro()
     {
-        // Arrange
         var agendamentoRepository = new FakeAgendamentoRepository();
         var agendamento = EntidadeFactory.CriarAgendamento(status: StatusAgendamento.Solicitado);
         agendamentoRepository.Seed(agendamento);
         var service = new AgendamentoService(agendamentoRepository, new FakePrestadorRepository());
 
-        // Act
         var excecao = await Assert.ThrowsAsync<InvalidOperationException>(() => service.IniciarAsync(agendamento.Id));
 
-        // Assert
-        Assert.Equal("Agendamento não pode ser iniciado neste status", excecao.Message);
+        Assert.Equal("Agendamento nao pode ser iniciado neste status", excecao.Message);
         Assert.Equal(0, agendamentoRepository.AtualizarChamadas);
         Assert.Equal(0, agendamentoRepository.SalvarChamadas);
     }
 
     [Fact]
-    public async Task ConcluirAsync_QuandoEmAndamento_DeveConcluirEIncrementarServicosDoPrestador()
+    public async Task ConcluirAsync_QuandoEmAndamento_DeveMoverParaAguardandoPagamentoSemIncrementarServicosDoPrestador()
     {
-        // Arrange
         var agendamentoRepository = new FakeAgendamentoRepository();
         var prestadorRepository = new FakePrestadorRepository();
         var prestador = EntidadeFactory.CriarPrestador();
@@ -109,14 +96,12 @@ public class AgendamentoServiceTests
         prestadorRepository.Seed(prestador);
         var service = new AgendamentoService(agendamentoRepository, prestadorRepository);
 
-        // Act
         var resultado = await service.ConcluirAsync(agendamento.Id);
 
-        // Assert
-        Assert.Equal(StatusAgendamento.Concluido, resultado.Status);
+        Assert.Equal(StatusAgendamento.AguardandoPagamento, resultado.Status);
         Assert.NotNull(resultado.DataConclusao);
-        Assert.Equal(1, prestador.TotalServicosConcluidos);
-        Assert.Equal(1, prestadorRepository.AtualizarChamadas);
+        Assert.Equal(0, prestador.TotalServicosConcluidos);
+        Assert.Equal(0, prestadorRepository.AtualizarChamadas);
         Assert.Equal(1, agendamentoRepository.AtualizarChamadas);
     }
 }

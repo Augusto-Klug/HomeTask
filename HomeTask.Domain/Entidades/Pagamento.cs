@@ -35,6 +35,14 @@ public class Pagamento
     /// </summary>
     public string? TransacaoId { get; private set; }
 
+    public string? CheckoutExternoId { get; private set; }
+
+    public string? CheckoutUrl { get; private set; }
+
+    public string? StatusExterno { get; private set; }
+
+    public string? PayloadExterno { get; private set; }
+
     public DateTime DataCriacao { get; private set; } = DateTime.UtcNow;
 
     public DateTime? DataProcessamento { get; private set; }
@@ -50,6 +58,10 @@ public class Pagamento
         TipoPagamento tipoPagamento,
         StatusPagamento status,
         string? transacaoId,
+        string? checkoutExternoId,
+        string? checkoutUrl,
+        string? statusExterno,
+        string? payloadExterno,
         DateTime dataCriacao,
         DateTime? dataProcessamento,
         DateTime? dataConfirmacao,
@@ -61,6 +73,10 @@ public class Pagamento
         TipoPagamento = tipoPagamento;
         Status = status;
         TransacaoId = transacaoId;
+        CheckoutExternoId = checkoutExternoId;
+        CheckoutUrl = checkoutUrl;
+        StatusExterno = statusExterno;
+        PayloadExterno = payloadExterno;
         DataCriacao = dataCriacao;
         DataProcessamento = dataProcessamento;
         DataConfirmacao = dataConfirmacao;
@@ -77,6 +93,24 @@ public class Pagamento
     {
         Status = StatusPagamento.Processando;
         DataProcessamento = dataProcessamento;
+    }
+
+    public void RegistrarCheckout(string checkoutExternoId, string checkoutUrl, string? statusExterno, string? payloadExterno)
+    {
+        CheckoutExternoId = checkoutExternoId;
+        CheckoutUrl = checkoutUrl;
+        StatusExterno = statusExterno;
+        PayloadExterno = payloadExterno;
+    }
+
+    public void AtualizarRetornoGateway(string? transacaoId, string? statusExterno, string? payloadExterno, string? motivoRecusa)
+    {
+        if (!string.IsNullOrWhiteSpace(transacaoId))
+            TransacaoId = transacaoId;
+
+        StatusExterno = statusExterno;
+        PayloadExterno = payloadExterno;
+        MotivoRecusa = motivoRecusa;
     }
 
     public void Aprovar(string transacaoId, DateTime dataConfirmacao)
