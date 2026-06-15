@@ -2,6 +2,7 @@ using HomeTask.Application.Dtos;
 using HomeTask.Application.Interfaces;
 using HomeTask.Application.Mappings;
 using HomeTask.Domain.Enums;
+using HomeTask.Domain.Entidades;
 using HomeTask.Domain.Repositories;
 
 namespace HomeTask.Application.Services;
@@ -103,23 +104,62 @@ public class PrestadorService : IPrestadorService
     public async Task AtualizarMediaAvaliacoesAsync(Guid prestadorId, CancellationToken cancellationToken = default)
     {
         var prestador = await _prestadorRepository.ObterComAvaliacoesAsync(prestadorId, cancellationToken);
-        if (prestador == null || prestador.Avaliacoes.Count == 0)
+        if (prestador == null)
             return;
 
-        prestador.AtualizarMetricasAvaliacao(
-            (decimal)prestador.Avaliacoes.Average(a => a.Nota),
-            prestador.Avaliacoes.Count);
+        var avaliacoesVisiveis = prestador.Avaliacoes.Where(a => a.Visivel).ToList();
+        if (avaliacoesVisiveis.Count == 0)
+        {
+            prestador.AtualizarMetricasAvaliacao(0, 0);
+        }
+        else
+        {
+            prestador.AtualizarMetricasAvaliacao(
+                (decimal)avaliacoesVisiveis.Average(a => a.NotaPrestador),
+                avaliacoesVisiveis.Count);
+        }
 
-        var avaliacoesRecentes = prestador.Avaliacoes
+        var avaliacoesRecentes = avaliacoesVisiveis
             .OrderByDescending(a => a.DataAvaliacao)
             .Take(5)
             .ToList();
 
-        if (avaliacoesRecentes.Count >= 5 && avaliacoesRecentes.Average(a => a.Nota) < 2)
+        if (avaliacoesRecentes.Count >= 5 && avaliacoesRecentes.Average(a => a.NotaPrestador) < 2)
             prestador.DefinirStatus(StatusPrestador.Suspenso);
 
         _prestadorRepository.Atualizar(prestador);
         await _prestadorRepository.SalvarAlteracoesAsync(cancellationToken);
+    }
+
+    public async Task<PrestadorPerfilPublicoDto?> ObterPerfilPublicoAsync(Guid prestadorId, CancellationToken cancellationToken = default)
+    {
+        var prestador = await _prestadorRepository.ObterPorIdAsync(prestadorId, cancellationToken);
+        if (prestador == null)
+            return null;
+
+        var historico = await _prestadorRepository.ObterHistoricoServicosAsync(prestadorId, cancellationToken);
+
+        return new PrestadorPerfilPublicoDto
+        {
+            Id = prestador.Id,
+            Nome = prestador.Usuario.Nome,
+            Descricao = prestador.Descricao,
+            Cidade = prestador.Usuario.Endereco?.Cidade?.Nome,
+            Estado = prestador.Usuario.Endereco?.Cidade?.Estado,
+            MediaAvaliacoes = prestador.MediaAvaliacoes,
+            TotalAvaliacoes = prestador.TotalAvaliacoes,
+            TotalServicosConcluidos = prestador.TotalServicosConcluidos,
+            ServicosOferecidos = prestador.ServicosOferecidos
+                .Where(s => s.Ativo)
+                .Select(s => s.ParaDto())
+                .ToList(),
+            HistoricoConcluido = historico
+                .Where(a => a.Status == StatusAgendamento.Concluido)
+                .Select(MapearHistoricoPublico)
+                .Where(item => item != null)
+                .Cast<PrestadorHistoricoPublicoDto>()
+                .ToList()
+        };
     }
 
     public async Task AtualizarStatusAsync(Guid prestadorId, StatusPrestador status, CancellationToken cancellationToken = default)
@@ -134,6 +174,29 @@ public class PrestadorService : IPrestadorService
 
         _prestadorRepository.Atualizar(prestador);
         await _prestadorRepository.SalvarAlteracoesAsync(cancellationToken);
+    }
+
+    private static PrestadorHistoricoPublicoDto? MapearHistoricoPublico(Agendamento agendamento)
+    {
+        var servicoPrestador = agendamento.AgendamentoServicos
+            .Select(item => item.ServicoBase)
+            .OfType<ServicoPrestador>()
+            .FirstOrDefault();
+
+        if (servicoPrestador == null)
+            return null;
+
+        return new PrestadorHistoricoPublicoDto
+        {
+            AgendamentoId = agendamento.Id,
+            ServicoPrestadorId = servicoPrestador.Id,
+            TituloServico = servicoPrestador.Titulo,
+            DataHoraAgendada = agendamento.DataHoraAgendada,
+            Cidade = agendamento.Endereco?.Cidade?.Nome ?? string.Empty,
+            Estado = agendamento.Endereco?.Cidade?.Estado ?? string.Empty,
+            NotaServico = agendamento.Avaliacao?.NotaServico,
+            NotaPrestador = agendamento.Avaliacao?.NotaPrestador
+        };
     }
 }
 

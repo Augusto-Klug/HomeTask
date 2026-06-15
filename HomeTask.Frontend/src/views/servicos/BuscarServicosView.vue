@@ -1,7 +1,7 @@
 <template>
   <div class="mx-auto max-w-6xl px-4 py-8">
     <div class="mb-6">
-      <h1 class="text-title font-semibold text-foreground">Buscar Serviços</h1>
+      <h1 class="text-title font-semibold text-foreground">Buscar Servicos</h1>
       <p class="mt-1 text-sm text-muted">{{ totalLabel }}</p>
     </div>
 
@@ -14,15 +14,11 @@
           placeholder="Todas as categorias"
         />
 
-        <HtInput
-          v-model="filtro.cidade"
-          label="Cidade"
-          placeholder="Ex: Blumenau"
-        />
+        <HtInput v-model="filtro.cidade" label="Cidade" placeholder="Ex: Blumenau" />
 
         <HtInput
           v-model="filtroPrecoStr"
-          label="Preço máximo (R$)"
+          label="Preco maximo (R$)"
           type="number"
           :allowNegative="false"
           placeholder="Ex: 150"
@@ -31,15 +27,15 @@
         <HtSelect
           v-model="tamanhoPaginaSelecionado"
           :options="opcoesTamanhoPagina"
-          label="Registros por página"
+          label="Registros por pagina"
         />
 
         <div class="flex items-end gap-2">
-          <HtButton class="flex-1" @click="aplicarFiltros" :loading="carregando">
+          <HtButton class="flex-1" :loading="carregando" @click="aplicarFiltros">
             <span class="material-symbols-rounded text-base">search</span>
             Buscar
           </HtButton>
-          <HtButton variant="outline" @click="limparFiltros" :disabled="carregando">
+          <HtButton variant="outline" :disabled="carregando" @click="limparFiltros">
             Limpar
           </HtButton>
         </div>
@@ -52,41 +48,46 @@
 
     <template v-else>
       <p v-if="resultado.itens.length === 0" class="py-12 text-center text-sm text-muted">
-        Nenhum serviço encontrado com os filtros selecionados.
+        Nenhum servico encontrado com os filtros selecionados.
       </p>
 
       <div v-else class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <HtCard
-          v-for="s in resultado.itens"
-          :key="s.id"
-          class="hover:border-primary transition-colors"
+          v-for="servico in resultado.itens"
+          :key="servico.id"
+          class="transition-colors hover:border-primary"
         >
           <div class="mb-2 flex items-start justify-between gap-3">
             <div>
-              <h3 class="text-sm font-semibold text-foreground">{{ s.titulo }}</h3>
+              <h3 class="text-sm font-semibold text-foreground">{{ servico.titulo }}</h3>
               <p class="mt-0.5 text-xs text-muted">
-                {{ s.prestadorId ? 'Prestador:' : 'Solicitante:' }}
-                {{ s.prestadorNome || s.clienteNome || 'N/A' }}
+                {{ servico.prestadorId ? "Prestador:" : "Solicitante:" }}
+                {{ servico.prestadorNome || servico.clienteNome || "N/A" }}
               </p>
             </div>
-              <HtBadge :variant="HtBadgeVariant.Primary">{{ obterNomeCategoria(s.categoria) }}</HtBadge>
+            <HtBadge :variant="HtBadgeVariant.Primary">{{ obterNomeCategoria(servico.categoria) }}</HtBadge>
           </div>
 
           <p class="mb-3 flex items-center gap-1 text-xs text-muted">
             <span class="material-symbols-rounded text-sm">location_on</span>
-            {{ s.cidade || 'N/A' }}/{{ s.estado || 'N/A' }}
+            {{ servico.cidade || "N/A" }}/{{ servico.estado || "N/A" }}
           </p>
 
           <div class="mb-4 flex items-center justify-between gap-3">
             <span class="text-sm font-bold text-primary">
-              {{ formatarPrecoServico(s.precoBase, s.unidadeCobranca) }}
+              {{ formatarPrecoServico(servico.precoBase, servico.unidadeCobranca) }}
             </span>
-            <span v-if="typeof s.mediaAvaliacoes === 'number'" class="text-sm text-yellow-500">
-              {{ estrelas(s.mediaAvaliacoes) }}
-            </span>
+            <div v-if="servico.prestadorId" class="text-right text-xs">
+              <p v-if="typeof servico.mediaAvaliacoes === 'number'" class="text-yellow-500">
+                Servico {{ estrelas(servico.mediaAvaliacoes) }}
+              </p>
+              <p v-if="typeof servico.mediaAvaliacoesPrestador === 'number'" class="text-yellow-500">
+                Prestador {{ estrelas(servico.mediaAvaliacoesPrestador) }}
+              </p>
+            </div>
           </div>
 
-          <router-link :to="`/servicos/detalhes/${s.id}`">
+          <router-link :to="`/servicos/detalhes/${servico.id}`">
             <HtButton variant="outline" size="sm" class="w-full">Ver detalhes</HtButton>
           </router-link>
         </HtCard>
@@ -95,13 +96,13 @@
       <HtCard class="mt-6">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <p class="text-sm text-muted">
-            Página {{ resultado.paginaAtual }} de {{ Math.max(resultado.totalPaginas, 1) }}
+            Pagina {{ resultado.paginaAtual }} de {{ Math.max(resultado.totalPaginas, 1) }}
           </p>
 
           <div class="flex flex-col gap-3 sm:flex-row sm:items-end">
             <HtInput
               v-model="paginaDigitada"
-              label="Ir para a página"
+              label="Ir para a pagina"
               type="number"
               :allowNegative="false"
               placeholder="Ex: 3"
@@ -110,23 +111,23 @@
             <div class="flex gap-2">
               <HtButton
                 variant="outline"
-                @click="irParaPagina(resultado.paginaAtual - 1)"
                 :disabled="resultado.paginaAtual <= 1 || carregando"
+                @click="irParaPagina(resultado.paginaAtual - 1)"
               >
                 Anterior
               </HtButton>
               <HtButton
                 variant="outline"
-                @click="irParaPaginaDigitada"
                 :disabled="carregando || resultado.totalPaginas === 0"
+                @click="irParaPaginaDigitada"
               >
                 Ir
               </HtButton>
               <HtButton
-                @click="irParaPagina(resultado.paginaAtual + 1)"
                 :disabled="resultado.paginaAtual >= resultado.totalPaginas || carregando"
+                @click="irParaPagina(resultado.paginaAtual + 1)"
               >
-                Próxima
+                Proxima
               </HtButton>
             </div>
           </div>
@@ -137,41 +138,41 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import api from '@/services/api'
-import { CATEGORIAS_SERVICO, type BuscarFiltro, type ResultadoPaginado, type ServicoBuscaResumo } from '@/types'
-import { formatarPrecoServico } from '@/shared/utils'
-import HtInput from '@/components/ui/HtInput.vue'
-import HtSelect from '@/components/ui/HtSelect.vue'
-import HtButton from '@/components/ui/HtButton.vue'
-import HtCard from '@/components/ui/HtCard.vue'
-import HtBadge, { HtBadgeVariant } from '@/components/ui/HtBadge.vue'
-import HtSpinner from '@/components/ui/HtSpinner.vue'
+import { computed, reactive, ref, watch } from "vue"
+import { useRoute, useRouter } from "vue-router"
+import api from "@/services/api"
+import { formatarPrecoServico } from "@/shared/utils"
+import { CATEGORIAS_SERVICO, type BuscarFiltro, type ResultadoPaginado, type ServicoBuscaResumo } from "@/types"
+import HtInput from "@/components/ui/HtInput.vue"
+import HtSelect from "@/components/ui/HtSelect.vue"
+import HtButton from "@/components/ui/HtButton.vue"
+import HtCard from "@/components/ui/HtCard.vue"
+import HtBadge, { HtBadgeVariant } from "@/components/ui/HtBadge.vue"
+import HtSpinner from "@/components/ui/HtSpinner.vue"
 
 const route = useRoute()
 const router = useRouter()
 
 const categoriasOpcoes = [
-  { value: '', label: 'Todas as categorias' },
-  ...CATEGORIAS_SERVICO.map(categoria => ({ value: String(categoria.value), label: categoria.label })),
+  { value: "", label: "Todas as categorias" },
+  ...CATEGORIAS_SERVICO.map((categoria) => ({ value: String(categoria.value), label: categoria.label })),
 ]
 
 const opcoesTamanhoPagina = [
-  { value: '10', label: '10 registros' },
-  { value: '30', label: '30 registros' },
-  { value: '50', label: '50 registros' },
+  { value: "10", label: "10 registros" },
+  { value: "30", label: "30 registros" },
+  { value: "50", label: "50 registros" },
 ]
 
 const filtro = reactive<BuscarFiltro>({
-  categoria: '',
-  cidade: '',
+  categoria: "",
+  cidade: "",
   precoMaximo: null,
 })
 
-const filtroPrecoStr = ref('')
-const tamanhoPaginaSelecionado = ref('30')
-const paginaDigitada = ref('1')
+const filtroPrecoStr = ref("")
+const tamanhoPaginaSelecionado = ref("30")
+const paginaDigitada = ref("1")
 const carregando = ref(false)
 let ultimaBuscaId = 0
 
@@ -185,18 +186,18 @@ const resultado = reactive<ResultadoPaginado<ServicoBuscaResumo>>({
 
 const totalLabel = computed(() => {
   if (resultado.totalRegistros === 0) {
-    return 'Nenhum resultado para esta consulta.'
+    return "Nenhum resultado para esta consulta."
   }
 
-  return `${resultado.totalRegistros} serviço(s) encontrados nesta consulta.`
+  return `${resultado.totalRegistros} servico(s) encontrados nesta consulta.`
 })
 
 watch(
   () => route.query,
-  async query => {
-    filtro.categoria = typeof query.categoria === 'string' ? query.categoria : ''
-    filtro.cidade = typeof query.cidade === 'string' ? query.cidade : ''
-    filtroPrecoStr.value = typeof query.precoMaximo === 'string' ? query.precoMaximo : ''
+  async (query) => {
+    filtro.categoria = typeof query.categoria === "string" ? query.categoria : ""
+    filtro.cidade = typeof query.cidade === "string" ? query.cidade : ""
+    filtroPrecoStr.value = typeof query.precoMaximo === "string" ? query.precoMaximo : ""
     filtro.precoMaximo = filtroPrecoStr.value ? Number(filtroPrecoStr.value) : null
     tamanhoPaginaSelecionado.value = normalizarTamanhoPagina(query.tamanhoPagina)
 
@@ -222,7 +223,10 @@ async function buscar(pagina: number) {
     if (filtro.cidade) params.cidade = filtro.cidade
     if (filtroPrecoStr.value) params.precoMaximo = Number(filtroPrecoStr.value)
 
-    const { data } = await api.get<ResultadoPaginado<ServicoBuscaResumo> | ServicoBuscaResumo[]>('/api/ServicoOferecido/BuscarServicos', { params })
+    const { data } = await api.get<ResultadoPaginado<ServicoBuscaResumo> | ServicoBuscaResumo[]>(
+      "/api/ServicoOferecido/BuscarServicos",
+      { params },
+    )
     if (buscaAtualId !== ultimaBuscaId) return
 
     const normalizado = normalizarResultadoBusca(data, pagina, Number(tamanhoPaginaSelecionado.value))
@@ -250,11 +254,11 @@ async function aplicarFiltros() {
 }
 
 async function limparFiltros() {
-  filtro.categoria = ''
-  filtro.cidade = ''
+  filtro.categoria = ""
+  filtro.cidade = ""
   filtro.precoMaximo = null
-  filtroPrecoStr.value = ''
-  tamanhoPaginaSelecionado.value = '30'
+  filtroPrecoStr.value = ""
+  tamanhoPaginaSelecionado.value = "30"
   await sincronizarBusca(1)
 }
 
@@ -295,18 +299,15 @@ async function sincronizarBusca(pagina: number) {
   await router.push({ query })
 }
 
-function queriesSaoIguais(
-  queryAtual: Record<string, unknown>,
-  novaQuery: Record<string, string>,
-): boolean {
-  const chavesAtuais = Object.keys(queryAtual).filter(chave => typeof queryAtual[chave] !== 'undefined')
+function queriesSaoIguais(queryAtual: Record<string, unknown>, novaQuery: Record<string, string>): boolean {
+  const chavesAtuais = Object.keys(queryAtual).filter((chave) => typeof queryAtual[chave] !== "undefined")
   const chavesNovas = Object.keys(novaQuery)
 
   if (chavesAtuais.length !== chavesNovas.length) {
     return false
   }
 
-  return chavesNovas.every(chave => String(queryAtual[chave] ?? '') === novaQuery[chave])
+  return chavesNovas.every((chave) => String(queryAtual[chave] ?? "") === novaQuery[chave])
 }
 
 function normalizarPagina(valor: unknown): number {
@@ -315,20 +316,20 @@ function normalizarPagina(valor: unknown): number {
 }
 
 function normalizarTamanhoPagina(valor: unknown): string {
-  return valor === '10' || valor === '50' ? String(valor) : '30'
+  return valor === "10" || valor === "50" ? String(valor) : "30"
 }
 
 function estrelas(media: number): string {
   const cheias = Math.floor(media ?? 0)
-  return '★'.repeat(cheias) + '☆'.repeat(5 - cheias)
+  return "★".repeat(cheias) + "☆".repeat(5 - cheias)
 }
 
 function obterNomeCategoria(categoria: number | { id: string; nome: string; icone: string }): string {
-  if (typeof categoria === 'object' && categoria !== null) {
+  if (typeof categoria === "object" && categoria !== null) {
     return categoria.nome
   }
 
-  const encontrada = CATEGORIAS_SERVICO.find(item => String(item.value) === String(categoria))
+  const encontrada = CATEGORIAS_SERVICO.find((item) => String(item.value) === String(categoria))
   return encontrada?.label ?? String(categoria)
 }
 
@@ -349,9 +350,9 @@ function normalizarResultadoBusca(
 
   const payload = data as unknown as Record<string, unknown>
   const itens = Array.isArray(payload.itens)
-    ? payload.itens as ServicoBuscaResumo[]
+    ? (payload.itens as ServicoBuscaResumo[])
     : Array.isArray(payload.Itens)
-      ? payload.Itens as ServicoBuscaResumo[]
+      ? (payload.Itens as ServicoBuscaResumo[])
       : []
 
   const paginaAtual = obterNumeroPayload(payload.paginaAtual, payload.PaginaAtual, pagina)
@@ -373,7 +374,7 @@ function normalizarResultadoBusca(
 }
 
 function obterNumeroPayload(valorCamel: unknown, valorPascal: unknown, fallback: number): number {
-  const valor = typeof valorCamel !== 'undefined' ? valorCamel : valorPascal
+  const valor = typeof valorCamel !== "undefined" ? valorCamel : valorPascal
   const numero = Number(valor)
   return Number.isFinite(numero) ? numero : fallback
 }

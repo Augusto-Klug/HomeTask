@@ -60,6 +60,28 @@ public class ServicoPrestadorService : IServicoPrestadorService
         return servicos.Select(s => s.ParaDto());
     }
 
+    public async Task AtualizarMediaAvaliacoesAsync(Guid servicoPrestadorId, CancellationToken cancellationToken = default)
+    {
+        var servico = await _servicoPrestadorRepository.ObterComAvaliacoesAsync(servicoPrestadorId, cancellationToken);
+        if (servico == null)
+            return;
+
+        var avaliacoesVisiveis = servico.Avaliacoes.Where(a => a.Visivel).ToList();
+        if (avaliacoesVisiveis.Count == 0)
+        {
+            servico.AtualizarMetricasAvaliacao(0, 0);
+        }
+        else
+        {
+            servico.AtualizarMetricasAvaliacao(
+                (decimal)avaliacoesVisiveis.Average(a => a.NotaServico),
+                avaliacoesVisiveis.Count);
+        }
+
+        _servicoPrestadorRepository.Atualizar(servico);
+        await _servicoPrestadorRepository.SalvarAlteracoesAsync(cancellationToken);
+    }
+
     public async Task<ServicoBuscaPaginadaDto> BuscarTodosPaginadoAsync(HomeTask.Domain.Enums.CategoriaServico? categoria, string? cidade, decimal? precoMaximo, Guid? usuarioId, int pagina, int tamanhoPagina, CancellationToken cancellationToken = default)
     {
         var resultado = await _servicoPrestadorRepository.BuscarTodosPaginadoAsync(categoria, cidade, precoMaximo, usuarioId, pagina, tamanhoPagina, cancellationToken);

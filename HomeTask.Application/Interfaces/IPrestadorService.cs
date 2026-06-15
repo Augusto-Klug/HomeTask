@@ -12,4 +12,5 @@ public interface IPrestadorService
     Task<IEnumerable<AgendamentoResumoDto>> ObterHistoricoServicosAsync(Guid prestadorId, CancellationToken cancellationToken = default);
     Task AtualizarMediaAvaliacoesAsync(Guid prestadorId, CancellationToken cancellationToken = default);
     Task AtualizarStatusAsync(Guid prestadorId, StatusPrestador status, CancellationToken cancellationToken = default);
+    Task<PrestadorPerfilPublicoDto?> ObterPerfilPublicoAsync(Guid prestadorId, CancellationToken cancellationToken = default);
 }

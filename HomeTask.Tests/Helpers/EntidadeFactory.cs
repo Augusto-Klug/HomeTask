@@ -31,7 +31,7 @@ internal static class EntidadeFactory
     public static ServicoPrestador CriarServicoPrestador(Guid? id = null, Guid? prestadorId = null, CategoriaServico categoria = CategoriaServico.Faxina, decimal preco = 100, DateTime? dataCriacao = null, bool ativo = true)
     {
         var servico = new ServicoPrestador();
-        servico.DefinirDados(id ?? Guid.NewGuid(), prestadorId ?? Guid.NewGuid(), categoria, "Faxina completa", "Servico de faxina", preco, FormatoCobranca.Total, 120, true, ativo, dataCriacao ?? DateTime.UtcNow);
+        servico.DefinirDados(id ?? Guid.NewGuid(), prestadorId ?? Guid.NewGuid(), categoria, "Faxina completa", "Servico de faxina", preco, FormatoCobranca.Total, 120, true, 0, 0, ativo, dataCriacao ?? DateTime.UtcNow);
         return servico;
     }
 
@@ -42,10 +42,10 @@ internal static class EntidadeFactory
         return servico;
     }
 
-    public static Agendamento CriarAgendamento(Guid? id = null, Guid? clienteId = null, Guid? prestadorId = null, Guid? enderecoId = null, StatusAgendamento status = StatusAgendamento.Solicitado)
+    public static Agendamento CriarAgendamento(Guid? id = null, Guid? clienteId = null, Guid? prestadorId = null, Guid? enderecoId = null, Guid? principalServicoPrestadorId = null, StatusAgendamento status = StatusAgendamento.Solicitado)
     {
         var agendamento = new Agendamento();
-        agendamento.DefinirDados(id ?? Guid.NewGuid(), clienteId ?? Guid.NewGuid(), prestadorId ?? Guid.NewGuid(), DateTime.UtcNow.AddDays(1), 60, status, enderecoId ?? Guid.NewGuid(), "Observacao", 150, DateTime.UtcNow, null, null, null, null);
+        agendamento.DefinirDados(id ?? Guid.NewGuid(), clienteId ?? Guid.NewGuid(), prestadorId ?? Guid.NewGuid(), principalServicoPrestadorId, DateTime.UtcNow.AddDays(1), 60, status, enderecoId ?? Guid.NewGuid(), "Observacao", 150, DateTime.UtcNow, null, null, null, null);
         return agendamento;
     }
 

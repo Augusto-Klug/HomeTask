@@ -8,6 +8,7 @@ public class AgendamentoDto
     public Guid Id { get; set; } = Guid.NewGuid();
     public Guid ClienteId { get; set; }
     public Guid PrestadorId { get; set; }
+    public Guid? PrincipalServicoPrestadorId { get; set; }
     public DateTime DataHoraAgendada { get; set; }
     public int DuracaoMinutos { get; set; }
     public Guid EnderecoId { get; set; }
@@ -35,6 +36,7 @@ public class AgendamentoResumoDto
     public string ClienteNome { get; set; } = string.Empty;
     public Guid PrestadorId { get; set; }
     public string PrestadorNome { get; set; } = string.Empty;
+    public Guid? PrincipalServicoPrestadorId { get; set; }
     public DateTime DataHoraAgendada { get; set; }
     public int DuracaoMinutos { get; set; }
     public StatusAgendamento Status { get; set; }
@@ -46,6 +48,8 @@ public class AgendamentoResumoDto
     public DateTime? DataConclusao { get; set; }
     public string? MotivoRecusa { get; set; }
     public TipoUsuario? AguardandoRespostaDe { get; set; }
+    public bool PodeAvaliar { get; set; }
+    public bool Avaliado { get; set; }
     public EnderecoResumoDto Endereco { get; set; } = new();
     public List<ServicoResumoDto> Servicos { get; set; } = [];
 }

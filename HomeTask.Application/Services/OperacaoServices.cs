@@ -35,6 +35,7 @@ public class AgendamentoService : IAgendamentoService
         var duracaoTotal = 0;
         var prestadorId = agendamento.PrestadorId;
         var clienteId = agendamento.ClienteId;
+        Guid? principalServicoPrestadorId = dto.PrincipalServicoPrestadorId;
 
         foreach (var servico in servicos)
         {
@@ -42,6 +43,8 @@ public class AgendamentoService : IAgendamentoService
             {
                 if (prestadorId == Guid.Empty)
                     prestadorId = sp.PrestadorId;
+
+                principalServicoPrestadorId ??= sp.Id;
 
                 duracaoTotal += sp.DuracaoEstimadaMinutos ?? 0;
             }
@@ -66,10 +69,20 @@ public class AgendamentoService : IAgendamentoService
         if (enderecoId == Guid.Empty)
             throw new InvalidOperationException("Cliente nao possui endereco cadastrado para o agendamento.");
 
+        if (principalServicoPrestadorId.HasValue)
+        {
+            var servicoPrincipal = await _agendamentoRepository.ObterServicosPorIdsAsync([principalServicoPrestadorId.Value], cancellationToken);
+            var servicoPrestadorPrincipal = servicoPrincipal.OfType<Domain.Entidades.ServicoPrestador>().FirstOrDefault();
+
+            if (servicoPrestadorPrincipal == null || servicoPrestadorPrincipal.PrestadorId != prestadorId)
+                throw new InvalidOperationException("O servico principal do prestador informado nao pertence ao agendamento.");
+        }
+
         agendamento.DefinirDados(
             agendamento.Id,
             clienteId,
             prestadorId,
+            principalServicoPrestadorId,
             agendamento.DataHoraAgendada,
             duracaoTotal > 0 ? duracaoTotal : agendamento.DuracaoMinutos,
             StatusAgendamento.Solicitado,
@@ -226,11 +239,16 @@ public class AvaliacaoService : IAvaliacaoService
 {
     private readonly IAvaliacaoRepository _avaliacaoRepository;
     private readonly IPrestadorService _prestadorService;
+    private readonly IServicoPrestadorService _servicoPrestadorService;
 
-    public AvaliacaoService(IAvaliacaoRepository avaliacaoRepository, IPrestadorService prestadorService)
+    public AvaliacaoService(
+        IAvaliacaoRepository avaliacaoRepository,
+        IPrestadorService prestadorService,
+        IServicoPrestadorService servicoPrestadorService)
     {
         _avaliacaoRepository = avaliacaoRepository;
         _prestadorService = prestadorService;
+        _servicoPrestadorService = servicoPrestadorService;
     }
 
     public async Task<AvaliacaoDto?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken = default)
@@ -247,13 +265,19 @@ public class AvaliacaoService : IAvaliacaoService
 
     public async Task<AvaliacaoDto> CriarAsync(AvaliacaoDto dto, CancellationToken cancellationToken = default)
     {
-        var podeAvaliar = await _avaliacaoRepository.PodeAvaliarAsync(dto.ClienteId, dto.AgendamentoId, cancellationToken);
-        if (!podeAvaliar)
+        var agendamento = await _avaliacaoRepository.ObterAgendamentoElegivelParaAvaliacaoAsync(dto.ClienteId, dto.AgendamentoId, cancellationToken);
+        if (agendamento == null)
             throw new InvalidOperationException("Somente servicos concluidos podem ser avaliados");
 
         var existente = await _avaliacaoRepository.ObterPorAgendamentoAsync(dto.AgendamentoId, cancellationToken);
         if (existente != null)
             throw new InvalidOperationException("Este servico ja foi avaliado");
+
+        dto.PrestadorId = agendamento.PrestadorId;
+        dto.ServicoPrestadorId = await ResolverServicoPrestadorAvaliadoAsync(agendamento, cancellationToken);
+
+        if (dto.ServicoPrestadorId == Guid.Empty)
+            throw new InvalidOperationException("Nao foi possivel identificar o servico principal do prestador neste agendamento");
 
         var avaliacao = dto.ParaEntidade();
         avaliacao.Publicar(DateTime.UtcNow);
@@ -261,6 +285,7 @@ public class AvaliacaoService : IAvaliacaoService
         await _avaliacaoRepository.AdicionarAsync(avaliacao, cancellationToken);
         await _avaliacaoRepository.SalvarAlteracoesAsync(cancellationToken);
         await _prestadorService.AtualizarMediaAvaliacoesAsync(dto.PrestadorId, cancellationToken);
+        await _servicoPrestadorService.AtualizarMediaAvaliacoesAsync(dto.ServicoPrestadorId, cancellationToken);
         return avaliacao.ParaDto();
     }
 
@@ -278,6 +303,37 @@ public class AvaliacaoService : IAvaliacaoService
 
     public Task<bool> PodeAvaliarAsync(Guid clienteId, Guid agendamentoId, CancellationToken cancellationToken = default) =>
         _avaliacaoRepository.PodeAvaliarAsync(clienteId, agendamentoId, cancellationToken);
+
+    private async Task<Guid> ResolverServicoPrestadorAvaliadoAsync(
+        Domain.Entidades.Agendamento agendamento,
+        CancellationToken cancellationToken)
+    {
+        if (agendamento.PrincipalServicoPrestadorId.HasValue)
+            return agendamento.PrincipalServicoPrestadorId.Value;
+
+        var servicoPrestadorNoAgendamento = agendamento.AgendamentoServicos
+            .Select(item => item.ServicoBase)
+            .OfType<Domain.Entidades.ServicoPrestador>()
+            .FirstOrDefault();
+
+        if (servicoPrestadorNoAgendamento != null)
+            return servicoPrestadorNoAgendamento.Id;
+
+        var categoriaDoPedido = agendamento.AgendamentoServicos
+            .Select(item => item.ServicoBase)
+            .OfType<Domain.Entidades.ServicoCliente>()
+            .Select(servico => servico.Categoria)
+            .FirstOrDefault();
+
+        if (categoriaDoPedido == default)
+            return Guid.Empty;
+
+        var servicosDoPrestador = await _servicoPrestadorService.ObterPorPrestadorAsync(agendamento.PrestadorId, cancellationToken);
+        return servicosDoPrestador
+            .Where(servico => servico.Categoria == categoriaDoPedido)
+            .Select(servico => servico.Id)
+            .FirstOrDefault();
+    }
 }
 
 public class PagamentoService : IPagamentoService

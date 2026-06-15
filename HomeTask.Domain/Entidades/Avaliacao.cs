@@ -21,10 +21,19 @@ public class Avaliacao
 
     public Prestador Prestador { get; private set; } = null!;
 
+    public Guid ServicoPrestadorId { get; private set; }
+
+    public ServicoPrestador ServicoPrestador { get; private set; } = null!;
+
     /// <summary>
-    /// Nota de 0 a 5 estrelas (NEG07)
+    /// Nota de 0 a 5 estrelas para o servico executado
     /// </summary>
-    public int Nota { get; private set; }
+    public int NotaServico { get; private set; }
+
+    /// <summary>
+    /// Nota de 0 a 5 estrelas para o prestador
+    /// </summary>
+    public int NotaPrestador { get; private set; }
 
     /// <summary>
     /// Comentário opcional sobre o serviço
@@ -43,7 +52,9 @@ public class Avaliacao
         Guid agendamentoId,
         Guid clienteId,
         Guid prestadorId,
-        int nota,
+        Guid servicoPrestadorId,
+        int notaServico,
+        int notaPrestador,
         string? comentario,
         DateTime dataAvaliacao,
         bool visivel)
@@ -52,7 +63,9 @@ public class Avaliacao
         AgendamentoId = agendamentoId;
         ClienteId = clienteId;
         PrestadorId = prestadorId;
-        Nota = nota;
+        ServicoPrestadorId = servicoPrestadorId;
+        NotaServico = notaServico;
+        NotaPrestador = notaPrestador;
         Comentario = comentario;
         DataAvaliacao = dataAvaliacao;
         Visivel = visivel;

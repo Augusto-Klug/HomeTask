@@ -75,6 +75,9 @@ internal sealed class FakeServicoPrestadorRepository : FakeRepositoryBase<Servic
             TotalPaginas = itens.Count == 0 ? 0 : 1
         });
     }
+
+    public Task<ServicoPrestador?> ObterComAvaliacoesAsync(Guid servicoPrestadorId, CancellationToken cancellationToken = default) =>
+        ObterPorIdAsync(servicoPrestadorId, cancellationToken);
 }
 
 internal sealed class FakeServicoClienteRepository : FakeRepositoryBase<ServicoCliente>, IServicoClienteRepository
@@ -111,6 +114,8 @@ internal sealed class FakeAgendamentoRepository : FakeRepositoryBase<Agendamento
 
 internal sealed class FakePrestadorRepository : FakeRepositoryBase<Prestador>, IPrestadorRepository
 {
+    public List<Agendamento> HistoricoServicos { get; } = [];
+
     public Task<Prestador?> ObterPorUsuarioIdAsync(Guid usuarioId, CancellationToken cancellationToken = default) =>
         Task.FromResult(Itens.Values.FirstOrDefault(p => p.UsuarioId == usuarioId));
 
@@ -118,7 +123,7 @@ internal sealed class FakePrestadorRepository : FakeRepositoryBase<Prestador>, I
         Task.FromResult(Itens.Values.AsEnumerable());
 
     public Task<IEnumerable<Agendamento>> ObterHistoricoServicosAsync(Guid prestadorId, CancellationToken cancellationToken = default) =>
-        Task.FromResult(Enumerable.Empty<Agendamento>());
+        Task.FromResult(HistoricoServicos.Where(a => a.PrestadorId == prestadorId).AsEnumerable());
 
     public Task<Prestador?> ObterComAvaliacoesAsync(Guid prestadorId, CancellationToken cancellationToken = default) => ObterPorIdAsync(prestadorId, cancellationToken);
 }
@@ -160,4 +165,29 @@ internal sealed class FakeClienteRepository : FakeRepositoryBase<Cliente>, IClie
 
     public Task<IEnumerable<Agendamento>> ObterHistoricoAgendamentosAsync(Guid clienteId, CancellationToken cancellationToken = default) =>
         Task.FromResult(Enumerable.Empty<Agendamento>());
+}
+
+internal sealed class FakeAvaliacaoRepository : FakeRepositoryBase<Avaliacao>, IAvaliacaoRepository
+{
+    public Dictionary<Guid, Agendamento> AgendamentosElegiveis { get; } = [];
+
+    public Task<Avaliacao?> ObterPorAgendamentoAsync(Guid agendamentoId, CancellationToken cancellationToken = default) =>
+        Task.FromResult(Itens.Values.FirstOrDefault(a => a.AgendamentoId == agendamentoId));
+
+    public Task<IEnumerable<Avaliacao>> ObterPorPrestadorAsync(Guid prestadorId, CancellationToken cancellationToken = default) =>
+        Task.FromResult(Itens.Values.Where(a => a.PrestadorId == prestadorId).AsEnumerable());
+
+    public Task<IEnumerable<Avaliacao>> ObterPorClienteAsync(Guid clienteId, CancellationToken cancellationToken = default) =>
+        Task.FromResult(Itens.Values.Where(a => a.ClienteId == clienteId).AsEnumerable());
+
+    public Task<bool> PodeAvaliarAsync(Guid clienteId, Guid agendamentoId, CancellationToken cancellationToken = default) =>
+        Task.FromResult(AgendamentosElegiveis.TryGetValue(agendamentoId, out var agendamento) && agendamento.ClienteId == clienteId);
+
+    public Task<Agendamento?> ObterAgendamentoElegivelParaAvaliacaoAsync(Guid clienteId, Guid agendamentoId, CancellationToken cancellationToken = default)
+    {
+        AgendamentosElegiveis.TryGetValue(agendamentoId, out var agendamento);
+        if (agendamento?.ClienteId != clienteId)
+            agendamento = null;
+        return Task.FromResult(agendamento);
+    }
 }

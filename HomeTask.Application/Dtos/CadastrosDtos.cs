@@ -82,6 +82,32 @@ public class PrestadorDto
     public DateTime? DataVerificacao { get; set; }
 }
 
+public class PrestadorPerfilPublicoDto
+{
+    public Guid Id { get; set; }
+    public string Nome { get; set; } = string.Empty;
+    public string? Descricao { get; set; }
+    public string? Cidade { get; set; }
+    public string? Estado { get; set; }
+    public decimal MediaAvaliacoes { get; set; }
+    public int TotalAvaliacoes { get; set; }
+    public int TotalServicosConcluidos { get; set; }
+    public List<ServicoPrestadorDto> ServicosOferecidos { get; set; } = [];
+    public List<PrestadorHistoricoPublicoDto> HistoricoConcluido { get; set; } = [];
+}
+
+public class PrestadorHistoricoPublicoDto
+{
+    public Guid AgendamentoId { get; set; }
+    public Guid ServicoPrestadorId { get; set; }
+    public string TituloServico { get; set; } = string.Empty;
+    public DateTime DataHoraAgendada { get; set; }
+    public string Cidade { get; set; } = string.Empty;
+    public string Estado { get; set; } = string.Empty;
+    public decimal? NotaServico { get; set; }
+    public decimal? NotaPrestador { get; set; }
+}
+
 public class CidadeDto
 {
     public Guid Id { get; set; }

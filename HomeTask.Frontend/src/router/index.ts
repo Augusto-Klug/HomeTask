@@ -54,6 +54,13 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: "/prestadores/:id",
+      name: "prestador-perfil-publico",
+      component: () => import("@/views/perfil/PrestadorPerfilPublicoView.vue"),
+      props: true,
+      meta: { requiresAuth: true },
+    },
+    {
       path: "/servicos/novo-cliente",
       name: "servicos-novo-cliente",
       component: () => import("@/views/servicos/CadastrarServicoClienteView.vue"),

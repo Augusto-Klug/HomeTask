@@ -1,6 +1,7 @@
 using HomeTask.Application.Interfaces;
 using HomeTask.Application.Dtos;
 using HomeTask.Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HomeTask.WebApi.Controllers
@@ -41,6 +42,17 @@ namespace HomeTask.WebApi.Controllers
         {
             var prestadores = await _prestadorService.BuscarAsync(categoria, cidade, dataDisponivel, cancellationToken);
             return prestadores.ToList();
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<ActionResult<PrestadorPerfilPublicoDto>> ObterPerfilPublico([FromQuery] Guid prestadorId, CancellationToken cancellationToken)
+        {
+            var perfil = await _prestadorService.ObterPerfilPublicoAsync(prestadorId, cancellationToken);
+            if (perfil == null)
+                return NotFound();
+
+            return perfil;
         }
 
         [HttpPost]

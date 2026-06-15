@@ -9,15 +9,22 @@ public class AvaliacaoDto
     public Guid AgendamentoId { get; set; }
     public Guid ClienteId { get; set; }
     public Guid PrestadorId { get; set; }
+    public Guid ServicoPrestadorId { get; set; }
 
     [Range(0, 5)]
-    public int Nota { get; set; }
+    public int NotaServico { get; set; }
+
+    [Range(0, 5)]
+    public int NotaPrestador { get; set; }
 
     [MaxLength(1000)]
     public string? Comentario { get; set; }
 
     public DateTime DataAvaliacao { get; set; }
     public bool Visivel { get; set; } = true;
+    public string? ClienteNome { get; set; }
+    public string? PrestadorNome { get; set; }
+    public string? ServicoTitulo { get; set; }
 }
 
 public class PagamentoDto

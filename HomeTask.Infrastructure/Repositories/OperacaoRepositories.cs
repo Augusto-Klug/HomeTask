@@ -102,18 +102,25 @@ public class AvaliacaoRepository : RepositoryBase<Avaliacao>, IAvaliacaoReposito
             .Include(a => a.Cliente)
                 .ThenInclude(c => c.Usuario)
             .Include(a => a.Prestador)
+                .ThenInclude(p => p.Usuario)
+            .Include(a => a.ServicoPrestador)
             .Include(a => a.Agendamento)
             .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
 
     public Task<Avaliacao?> ObterPorAgendamentoAsync(Guid agendamentoId, CancellationToken cancellationToken = default) =>
         Context.Avaliacoes
             .Include(a => a.Cliente)
+                .ThenInclude(c => c.Usuario)
+            .Include(a => a.Prestador)
+                .ThenInclude(p => p.Usuario)
+            .Include(a => a.ServicoPrestador)
             .FirstOrDefaultAsync(a => a.AgendamentoId == agendamentoId, cancellationToken);
 
     public async Task<IEnumerable<Avaliacao>> ObterPorPrestadorAsync(Guid prestadorId, CancellationToken cancellationToken = default) =>
         await Context.Avaliacoes
             .Include(a => a.Cliente)
                 .ThenInclude(c => c.Usuario)
+            .Include(a => a.ServicoPrestador)
             .Include(a => a.Agendamento)
                 .ThenInclude(ag => ag.AgendamentoServicos)
                     .ThenInclude(ags => ags.ServicoBase)
@@ -125,6 +132,7 @@ public class AvaliacaoRepository : RepositoryBase<Avaliacao>, IAvaliacaoReposito
         await Context.Avaliacoes
             .Include(a => a.Prestador)
                 .ThenInclude(p => p.Usuario)
+            .Include(a => a.ServicoPrestador)
             .Include(a => a.Agendamento)
                 .ThenInclude(ag => ag.AgendamentoServicos)
                     .ThenInclude(ags => ags.ServicoBase)
@@ -139,6 +147,16 @@ public class AvaliacaoRepository : RepositoryBase<Avaliacao>, IAvaliacaoReposito
 
         return agendamento?.Status == StatusAgendamento.Concluido;
     }
+
+    public Task<Agendamento?> ObterAgendamentoElegivelParaAvaliacaoAsync(Guid clienteId, Guid agendamentoId, CancellationToken cancellationToken = default) =>
+        Context.Agendamentos
+            .Include(a => a.AgendamentoServicos)
+                .ThenInclude(item => item.ServicoBase)
+            .FirstOrDefaultAsync(
+                a => a.Id == agendamentoId
+                    && a.ClienteId == clienteId
+                    && a.Status == StatusAgendamento.Concluido,
+                cancellationToken);
 }
 
 public class PagamentoRepository : RepositoryBase<Pagamento>, IPagamentoRepository

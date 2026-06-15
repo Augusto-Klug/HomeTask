@@ -25,7 +25,15 @@ public class AvaliacaoMap : IEntityTypeConfiguration<Avaliacao>
             .HasForeignKey(av => av.PrestadorId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasOne(av => av.ServicoPrestador)
+            .WithMany(sp => sp.Avaliacoes)
+            .HasForeignKey(av => av.ServicoPrestadorId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.Property(a => a.Comentario)
             .HasMaxLength(1000);
+
+        builder.HasIndex(a => a.AgendamentoId)
+            .IsUnique();
     }
 }
