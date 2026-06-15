@@ -19,6 +19,7 @@ public class AgendamentoDto
     public decimal ValorTotal { get; set; }
     public DateTime DataSolicitacao { get; set; }
     public DateTime? DataResposta { get; set; }
+    public DateTime? DataInicio { get; set; }
     public DateTime? DataConclusao { get; set; }
 
     [MaxLength(500)]
@@ -41,6 +42,7 @@ public class AgendamentoResumoDto
     public decimal ValorTotal { get; set; }
     public DateTime DataSolicitacao { get; set; }
     public DateTime? DataResposta { get; set; }
+    public DateTime? DataInicio { get; set; }
     public DateTime? DataConclusao { get; set; }
     public string? MotivoRecusa { get; set; }
     public TipoUsuario? AguardandoRespostaDe { get; set; }

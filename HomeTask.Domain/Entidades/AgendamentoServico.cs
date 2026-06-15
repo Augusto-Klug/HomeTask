@@ -28,5 +28,11 @@ namespace HomeTask.Domain.Entidades
             Quantidade = quantidade;
             ValorUnitario = valorUnitario;
         }
+
+        public void AtualizarCobranca(int quantidade, decimal valorUnitario)
+        {
+            Quantidade = quantidade;
+            ValorUnitario = valorUnitario;
+        }
     }
 }

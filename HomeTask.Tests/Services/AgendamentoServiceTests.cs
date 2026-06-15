@@ -1,5 +1,6 @@
 using HomeTask.Application.Dtos;
 using HomeTask.Application.Services;
+using HomeTask.Domain.Entidades;
 using HomeTask.Domain.Enums;
 using HomeTask.Tests.Helpers;
 
@@ -103,5 +104,49 @@ public class AgendamentoServiceTests
         Assert.Equal(0, prestador.TotalServicosConcluidos);
         Assert.Equal(0, prestadorRepository.AtualizarChamadas);
         Assert.Equal(1, agendamentoRepository.AtualizarChamadas);
+    }
+
+    [Fact]
+    public async Task ConcluirAsync_QuandoServicoEhPorHora_DeveArredondarParaCimaEAtualizarValorFinal()
+    {
+        var agendamentoRepository = new FakeAgendamentoRepository();
+        var prestadorRepository = new FakePrestadorRepository();
+        var service = new AgendamentoService(agendamentoRepository, prestadorRepository);
+
+        var prestador = EntidadeFactory.CriarPrestador();
+        var servico = new ServicoPrestador();
+        servico.DefinirDados(Guid.NewGuid(), prestador.Id, CategoriaServico.Faxina, "Limpeza", "Limpeza por hora", 100, FormatoCobranca.PorHora, 60, true, true, DateTime.UtcNow);
+
+        var agendamento = EntidadeFactory.CriarAgendamento(prestadorId: prestador.Id, status: StatusAgendamento.EmAndamento);
+        var inicio = DateTime.UtcNow.AddHours(-2).AddMinutes(-1);
+        agendamento.DefinirDados(
+            agendamento.Id,
+            agendamento.ClienteId,
+            agendamento.PrestadorId,
+            agendamento.DataHoraAgendada,
+            agendamento.DuracaoMinutos,
+            agendamento.Status,
+            agendamento.EnderecoId,
+            agendamento.Observacoes,
+            agendamento.ValorTotal,
+            agendamento.DataSolicitacao,
+            agendamento.DataResposta,
+            inicio,
+            agendamento.DataConclusao,
+            agendamento.MotivoRecusa);
+
+        var item = EntidadeFactory.CriarAgendamentoServico(agendamento.Id, servico.Id, servico.PrecoBase);
+        EntidadeFactory.DefinirNavegacao(item, nameof(item.ServicoBase), servico);
+        agendamento.AdicionarServico(item);
+
+        agendamentoRepository.Seed(agendamento);
+        prestadorRepository.Seed(prestador);
+
+        var resultado = await service.ConcluirAsync(agendamento.Id);
+
+        Assert.Equal(StatusAgendamento.AguardandoPagamento, resultado.Status);
+        Assert.Equal(300, resultado.ValorTotal);
+        Assert.Equal(3, agendamento.AgendamentoServicos.Single().Quantidade);
+        Assert.Equal(100, agendamento.AgendamentoServicos.Single().ValorUnitario);
     }
 }

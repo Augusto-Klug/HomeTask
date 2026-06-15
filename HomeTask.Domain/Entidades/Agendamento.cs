@@ -51,6 +51,8 @@ public class Agendamento
 
     public DateTime? DataResposta { get; private set; }
 
+    public DateTime? DataInicio { get; private set; }
+
     public DateTime? DataConclusao { get; private set; }
 
     public string? MotivoRecusa { get; private set; }
@@ -77,6 +79,7 @@ public class Agendamento
         decimal valorTotal,
         DateTime dataSolicitacao,
         DateTime? dataResposta,
+        DateTime? dataInicio,
         DateTime? dataConclusao,
         string? motivoRecusa)
     {
@@ -91,6 +94,7 @@ public class Agendamento
         ValorTotal = valorTotal;
         DataSolicitacao = dataSolicitacao;
         DataResposta = dataResposta;
+        DataInicio = dataInicio;
         DataConclusao = dataConclusao;
         MotivoRecusa = motivoRecusa;
     }
@@ -114,14 +118,16 @@ public class Agendamento
         MotivoRecusa = motivo;
     }
 
-    public void Iniciar()
+    public void Iniciar(DateTime dataInicio)
     {
         Status = StatusAgendamento.EmAndamento;
+        DataInicio = dataInicio;
     }
 
-    public void MarcarAguardandoPagamento(DateTime dataConclusao)
+    public void MarcarAguardandoPagamento(DateTime dataConclusao, decimal valorTotal)
     {
         Status = StatusAgendamento.AguardandoPagamento;
+        ValorTotal = valorTotal;
         DataConclusao = dataConclusao;
     }
 

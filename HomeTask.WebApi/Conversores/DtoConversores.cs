@@ -40,7 +40,7 @@ public static class DtoConversores
     public static Agendamento ParaEntidade(this AgendamentoDto dto)
     {
         var agendamento = new Agendamento();
-        agendamento.DefinirDados(dto.Id, dto.ClienteId, dto.PrestadorId, dto.DataHoraAgendada, dto.DuracaoMinutos, dto.Status, dto.EnderecoId, dto.Observacoes, dto.ValorTotal, dto.DataSolicitacao, dto.DataResposta, dto.DataConclusao, dto.MotivoRecusa);
+        agendamento.DefinirDados(dto.Id, dto.ClienteId, dto.PrestadorId, dto.DataHoraAgendada, dto.DuracaoMinutos, dto.Status, dto.EnderecoId, dto.Observacoes, dto.ValorTotal, dto.DataSolicitacao, dto.DataResposta, dto.DataInicio, dto.DataConclusao, dto.MotivoRecusa);
         return agendamento;
     }
 
@@ -58,6 +58,7 @@ public static class DtoConversores
             ValorTotal = agendamento.ValorTotal,
             DataSolicitacao = agendamento.DataSolicitacao,
             DataResposta = agendamento.DataResposta,
+            DataInicio = agendamento.DataInicio,
             DataConclusao = agendamento.DataConclusao,
             MotivoRecusa = agendamento.MotivoRecusa,
             ServicosOferecidosIds = agendamento.AgendamentoServicos.Select(s => s.ServicoBaseId).ToList()

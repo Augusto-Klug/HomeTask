@@ -116,4 +116,49 @@ public class PagamentoServiceTests
 
         Assert.Equal(1, prestador.TotalServicosConcluidos);
     }
+
+    [Fact]
+    public async Task IniciarCheckoutAsync_QuandoValorFinalDoAgendamentoMudar_DeveSincronizarPagamentoEEnviarValorAtualizado()
+    {
+        var clienteUsuario = EntidadeFactory.CriarUsuario(tipo: TipoUsuario.Cliente);
+        var cliente = EntidadeFactory.CriarCliente(id: Guid.NewGuid(), usuarioId: clienteUsuario.Id);
+        EntidadeFactory.DefinirNavegacao(cliente, nameof(cliente.Usuario), clienteUsuario);
+
+        var agendamento = EntidadeFactory.CriarAgendamento(clienteId: cliente.Id, status: StatusAgendamento.AguardandoPagamento);
+        agendamento.DefinirDados(
+            agendamento.Id,
+            agendamento.ClienteId,
+            agendamento.PrestadorId,
+            agendamento.DataHoraAgendada,
+            agendamento.DuracaoMinutos,
+            agendamento.Status,
+            agendamento.EnderecoId,
+            agendamento.Observacoes,
+            300,
+            agendamento.DataSolicitacao,
+            agendamento.DataResposta,
+            agendamento.DataInicio,
+            agendamento.DataConclusao,
+            agendamento.MotivoRecusa);
+        EntidadeFactory.DefinirNavegacao(agendamento, nameof(agendamento.Cliente), cliente);
+
+        var pagamento = EntidadeFactory.CriarPagamento(agendamentoId: agendamento.Id, status: StatusPagamento.Recusado, valor: 100);
+
+        var agendamentoRepository = new FakeAgendamentoRepository();
+        agendamentoRepository.Seed(agendamento);
+
+        var pagamentoRepository = new FakePagamentoRepository();
+        pagamentoRepository.Seed(pagamento);
+
+        var prestadorRepository = new FakePrestadorRepository();
+        var gateway = new FakePagamentoGateway();
+
+        var service = new PagamentoService(pagamentoRepository, agendamentoRepository, prestadorRepository, gateway);
+
+        var resultado = await service.IniciarCheckoutAsync(agendamento.Id, agendamento.ClienteId);
+
+        Assert.Equal(300, resultado.Valor);
+        Assert.Equal(300, pagamento.Valor);
+        Assert.Equal(300, gateway.UltimoCheckoutRequest!.Valor);
+    }
 }

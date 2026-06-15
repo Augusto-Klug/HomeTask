@@ -95,6 +95,11 @@ public class Pagamento
         DataProcessamento = dataProcessamento;
     }
 
+    public void AtualizarValor(decimal valor)
+    {
+        Valor = valor;
+    }
+
     public void RegistrarCheckout(string checkoutExternoId, string checkoutUrl, string? statusExterno, string? payloadExterno)
     {
         CheckoutExternoId = checkoutExternoId;

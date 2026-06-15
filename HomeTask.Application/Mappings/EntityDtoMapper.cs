@@ -157,6 +157,7 @@ internal static class EntityDtoMapper
             ValorTotal = agendamento.ValorTotal,
             DataSolicitacao = agendamento.DataSolicitacao,
             DataResposta = agendamento.DataResposta,
+            DataInicio = agendamento.DataInicio,
             DataConclusao = agendamento.DataConclusao,
             MotivoRecusa = agendamento.MotivoRecusa
         };
@@ -176,6 +177,7 @@ internal static class EntityDtoMapper
             dto.ValorTotal,
             dto.DataSolicitacao,
             dto.DataResposta,
+            dto.DataInicio,
             dto.DataConclusao,
             dto.MotivoRecusa);
         return agendamento;
@@ -196,6 +198,7 @@ internal static class EntityDtoMapper
             ValorTotal = agendamento.ValorTotal,
             DataSolicitacao = agendamento.DataSolicitacao,
             DataResposta = agendamento.DataResposta,
+            DataInicio = agendamento.DataInicio,
             DataConclusao = agendamento.DataConclusao,
             MotivoRecusa = agendamento.MotivoRecusa,
             AguardandoRespostaDe = Agendamento.ObterResponsavelPelaResposta(agendamento),

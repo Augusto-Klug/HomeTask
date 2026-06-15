@@ -79,6 +79,7 @@ public class AgendamentoService : IAgendamentoService
             DateTime.UtcNow,
             null,
             null,
+            null,
             null);
 
         await _agendamentoRepository.AdicionarAsync(agendamento, cancellationToken);
@@ -116,7 +117,7 @@ public class AgendamentoService : IAgendamentoService
         if (agendamento.Status != StatusAgendamento.Aceito)
             throw new InvalidOperationException("Agendamento nao pode ser iniciado neste status");
 
-        agendamento.Iniciar();
+        agendamento.Iniciar(DateTime.UtcNow);
         _agendamentoRepository.Atualizar(agendamento);
         await _agendamentoRepository.SalvarAlteracoesAsync(cancellationToken);
         return agendamento.ParaDto();
@@ -128,7 +129,9 @@ public class AgendamentoService : IAgendamentoService
         if (agendamento.Status != StatusAgendamento.EmAndamento)
             throw new InvalidOperationException("Agendamento nao pode ser concluido neste status");
 
-        agendamento.MarcarAguardandoPagamento(DateTime.UtcNow);
+        var dataConclusao = DateTime.UtcNow;
+        var valorFinal = CalcularValorFinal(agendamento, dataConclusao);
+        agendamento.MarcarAguardandoPagamento(dataConclusao, valorFinal);
         _agendamentoRepository.Atualizar(agendamento);
         await _agendamentoRepository.SalvarAlteracoesAsync(cancellationToken);
         return agendamento.ParaDto();
@@ -174,6 +177,48 @@ public class AgendamentoService : IAgendamentoService
     {
         var agendamento = await _agendamentoRepository.ObterPorIdAsync(id, cancellationToken);
         return agendamento ?? throw new InvalidOperationException("Agendamento nao encontrado");
+    }
+
+    private static decimal CalcularValorFinal(Domain.Entidades.Agendamento agendamento, DateTime dataConclusao)
+    {
+        if (agendamento.AgendamentoServicos.Count == 0)
+            return agendamento.ValorTotal;
+
+        var horasCobradas = ObterHorasCobradas(agendamento, dataConclusao);
+        decimal valorFinal = 0;
+
+        foreach (var item in agendamento.AgendamentoServicos)
+        {
+            var servico = item.ServicoBase;
+            if (servico == null)
+            {
+                valorFinal += item.Quantidade * item.ValorUnitario;
+                continue;
+            }
+
+            if (servico.UnidadeCobranca == FormatoCobranca.PorHora)
+            {
+                item.AtualizarCobranca(horasCobradas, servico.PrecoBase);
+            }
+            else
+            {
+                item.AtualizarCobranca(1, servico.PrecoBase);
+            }
+
+            valorFinal += item.Quantidade * item.ValorUnitario;
+        }
+
+        return valorFinal;
+    }
+
+    private static int ObterHorasCobradas(Domain.Entidades.Agendamento agendamento, DateTime dataConclusao)
+    {
+        var dataInicio = agendamento.DataInicio ?? dataConclusao;
+        var duracao = dataConclusao - dataInicio;
+        if (duracao <= TimeSpan.Zero)
+            return 1;
+
+        return Math.Max(1, (int)Math.Ceiling(duracao.TotalHours));
     }
 }
 
@@ -296,6 +341,10 @@ public class PagamentoService : IPagamentoService
                 null);
             await _pagamentoRepository.AdicionarAsync(pagamento, cancellationToken);
             pagamentoCriadoAgora = true;
+        }
+        else if (pagamento.Valor != agendamento.ValorTotal)
+        {
+            pagamento.AtualizarValor(agendamento.ValorTotal);
         }
 
         var precisaGerarNovoCheckout = pagamento.Status != StatusPagamento.Aprovado;
