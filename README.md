@@ -1,4 +1,4 @@
-# HomeTask WebApi
+# HomeTask - Guia de Execução (Docker & Kubernetes)
 
 Guia rapido para subir o ambiente local com Docker e testar o fluxo de pagamento do Mercado Pago.
 
