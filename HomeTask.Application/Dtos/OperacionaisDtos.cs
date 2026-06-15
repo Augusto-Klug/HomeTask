@@ -31,12 +31,70 @@ public class PagamentoDto
     [MaxLength(100)]
     public string? TransacaoId { get; set; }
 
+    [MaxLength(100)]
+    public string? CheckoutExternoId { get; set; }
+
+    [MaxLength(1000)]
+    public string? CheckoutUrl { get; set; }
+
+    [MaxLength(100)]
+    public string? StatusExterno { get; set; }
+
+    public string? PayloadExterno { get; set; }
+
     public DateTime DataCriacao { get; set; }
     public DateTime? DataProcessamento { get; set; }
     public DateTime? DataConfirmacao { get; set; }
 
     [MaxLength(500)]
     public string? MotivoRecusa { get; set; }
+}
+
+public class IniciarPagamentoDto
+{
+    public Guid AgendamentoId { get; set; }
+}
+
+public class ReconciliarPagamentoDto
+{
+    public string PagamentoExternoId { get; set; } = string.Empty;
+}
+
+public class PagamentoCheckoutRequestDto
+{
+    public Guid PagamentoId { get; set; }
+    public Guid AgendamentoId { get; set; }
+    public decimal Valor { get; set; }
+    public string Descricao { get; set; } = string.Empty;
+    public string ClienteEmail { get; set; } = string.Empty;
+    public string? ClienteNome { get; set; }
+    public string? ClienteDocumento { get; set; }
+}
+
+public class PagamentoCheckoutResponseDto
+{
+    public string CheckoutExternoId { get; set; } = string.Empty;
+    public string CheckoutUrl { get; set; } = string.Empty;
+    public string? StatusExterno { get; set; }
+    public string? PayloadExterno { get; set; }
+}
+
+public class PagamentoStatusGatewayDto
+{
+    public string PagamentoExternoId { get; set; } = string.Empty;
+    public string ReferenciaInterna { get; set; } = string.Empty;
+    public StatusPagamento Status { get; set; }
+    public string? StatusExterno { get; set; }
+    public string? MotivoRecusa { get; set; }
+    public string? PayloadExterno { get; set; }
+}
+
+public class PagamentoWebhookDto
+{
+    public string? Topico { get; set; }
+    public string? Acao { get; set; }
+    public string? PagamentoExternoId { get; set; }
+    public string? PayloadExterno { get; set; }
 }
 
 public class MensagemDto

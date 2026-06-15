@@ -113,6 +113,9 @@ const agendados = computed(() =>
 const emAndamento = computed(() =>
   ordenarPorData(agendamentos.value.filter((ag) => ag.status === StatusAgendamento.EmAndamento)),
 );
+const aguardandoPagamento = computed(() =>
+  ordenarPorData(agendamentos.value.filter((ag) => ag.status === StatusAgendamento.AguardandoPagamento)),
+);
 const concluidos = computed(() =>
   ordenarPorData(agendamentos.value.filter((ag) => ag.status === StatusAgendamento.Concluido)),
 );
@@ -159,6 +162,15 @@ const paineis = computed(() => [
     "Nenhum serviço em andamento.",
     "accent",
     "play_circle",
+  ),
+  painel(
+    "aguardando-pagamento",
+    "Aguardando pagamento",
+    "Serviços concluídos pelo prestador e pendentes de pagamento.",
+    aguardandoPagamento.value,
+    "Nenhum serviço aguardando pagamento.",
+    "secondary",
+    "payments",
   ),
   painel(
     "concluidos",
@@ -240,6 +252,7 @@ function labelStatus(ag: AgendamentoResumo): string {
     return "Aguardando confirmação do prestador";
   if (ag.status === StatusAgendamento.Aceito) return "Agendado";
   if (ag.status === StatusAgendamento.EmAndamento) return "Em andamento";
+  if (ag.status === StatusAgendamento.AguardandoPagamento) return "Aguardando pagamento";
   if (ag.status === StatusAgendamento.Concluido) return "Concluído";
   if (ag.status === StatusAgendamento.Recusado) return "Recusado";
   if (ag.status === StatusAgendamento.Cancelado) return "Cancelado";
@@ -252,6 +265,8 @@ function obterVariantStatus(status: StatusAgendamento): HtBadgeVariant {
       return HtBadgeVariant.Primary;
     case StatusAgendamento.Concluido:
       return HtBadgeVariant.Success;
+    case StatusAgendamento.AguardandoPagamento:
+      return HtBadgeVariant.Default;
     case StatusAgendamento.Cancelado:
     case StatusAgendamento.Recusado:
       return HtBadgeVariant.Error;

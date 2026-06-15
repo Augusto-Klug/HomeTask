@@ -22,6 +22,15 @@ public class PagamentoMap : IEntityTypeConfiguration<Pagamento>
         builder.Property(p => p.TransacaoId)
             .HasMaxLength(100);
 
+        builder.Property(p => p.CheckoutExternoId)
+            .HasMaxLength(100);
+
+        builder.Property(p => p.CheckoutUrl)
+            .HasMaxLength(1000);
+
+        builder.Property(p => p.StatusExterno)
+            .HasMaxLength(100);
+
         builder.Property(p => p.MotivoRecusa)
             .HasMaxLength(500);
     }

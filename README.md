@@ -1,75 +1,164 @@
-# HomeTask WebApi - Guia de Execução (Docker & Kubernetes)
+# HomeTask WebApi
 
-Este repositório agora está totalmente conteinerizado! Isso significa que você não precisa mais instalar o MySQL separadamente na sua máquina ou configurar o ambiente manualmente para rodar a API.
+Guia rapido para subir o ambiente local com Docker e testar o fluxo de pagamento do Mercado Pago.
 
-Abaixo estão as instruções de como rodar a aplicação no seu dia a dia.
+## Pre-requisitos
 
----
+- Docker Desktop instalado e em execucao
+- `cloudflared` instalado para expor a API local publicamente durante os testes de pagamento
 
-## Pré-requisitos
-1. **[Docker Desktop](https://www.docker.com/products/docker-desktop/)** instalado e rodando.
-2. (Opcional, mas recomendado) **Kubernetes** ativado *dentro do próprio Docker Desktop* (Vá em Configurações > Kubernetes > *Enable Kubernetes*).
+## Subindo o ambiente local
 
----
-
-## Opção 1: Docker Compose (Recomendado para o Dia a Dia)
-Ideal para desenvolvimento local rápido. Ele sobe a API e o Banco de Dados em containers e gerencia a conexão entre eles.
-
-### Como rodar:
-No terminal, na raiz do projeto (onde está o arquivo `docker-compose.yml`), execute:
+1. Copie o arquivo de exemplo:
 ```bash
-docker compose up --build -d
-```
-*(O `--build` garante que o Docker recompile seu código mais recente, e o `-d` libera seu terminal)*.
-
-### Acessos:
-- **Swagger / API:** [http://localhost:8080/swagger](http://localhost:8080/swagger)
-- **Banco de Dados (MySQL):** 
-  - **Host:** `localhost`
-  - **Porta:** `3307` *(Usamos a 3307 externa para não conflitar com nenhum MySQL que você já tenha na porta 3306)*
-  - **User:** `root`
-  - **Password:** `123456789`
-
-> **Nota sobre o Banco:** O repositório já está configurado para **rodar as Migrations automaticamente** quando a API sobe (`Program.cs`). Você não precisa rodar comando de `update-database`. Os dados ficam salvos de forma segura em um volume do Docker na sua máquina.
-
-### Como parar:
-```bash
-docker compose down
+cp .env.example .env
 ```
 
----
+2. Preencha as variaveis obrigatorias no `.env`.
 
-## Opção 2: Kubernetes (Simulando Produção/Orquestração)
-Se você quer testar a aplicação em um ambiente orquestrado com **Pods**, balanceamento de carga e *self-healing*, use os manifestos da pasta `/k8s`.
-
-### Como rodar:
-1. Primeiro, construa a imagem Docker (para o K8s usar a versão mais atual do seu código):
+3. Suba os containers:
 ```bash
-docker build -t hometaskwebapi:latest .
-```
-2. Aplique todos os manifestos de uma vez:
-```bash
-kubectl apply -f k8s/
-```
-3. Verifique se os Pods estão rodando:
-```bash
-kubectl get pods
+docker compose up -d --build
 ```
 
-### Acessos:
-A API através do Kubernetes também ficará disponível na mesma porta:
-- **Swagger / API:** [http://localhost:8080/swagger](http://localhost:8080/swagger)
+## Portas locais
 
-### Como parar o Cluster local:
+- Frontend: `http://localhost:8080`
+- API / Swagger: `http://localhost:5000/swagger`
+- MySQL: `localhost:3307`
+
+## Variaveis do `.env`
+
+### Aplicacao
+
+- `DB_PASSWORD`: senha do MySQL local
+- `CONNECTION_STRING`: string de conexao usada pela API dentro do Docker
+- `JWT_SECRET_KEY`: chave do JWT
+- `VITE_API_BASE_URL`: URL base da API consumida pelo frontend local. Em desenvolvimento: `http://localhost:5000`
+
+### Mercado Pago
+
+- `MERCADOPAGO_PUBLIC_KEY`: public key da aplicacao
+- `MERCADOPAGO_ACCESS_TOKEN`: access token da aplicacao
+- `MERCADOPAGO_APP_ID`: numero da aplicacao
+- `MERCADOPAGO_USER_ID`: user id da conta dona da integracao
+- `MERCADOPAGO_TEST_USER`: usuario da conta compradora de teste
+- `MERCADOPAGO_TEST_PASSWORD`: senha da conta compradora de teste
+- `MERCADOPAGO_TEST_VERIFICATION_CODE`: codigo de verificacao da conta compradora de teste
+- `MERCADOPAGO_API_BASE_URL`: URL publica da API usada pelo Mercado Pago para webhook e retorno do checkout
+- `MERCADOPAGO_FRONTEND_BASE_URL`: URL local do frontend para onde a API redireciona o navegador apos o checkout
+- `MERCADOPAGO_WEBHOOK_PATH`: caminho do webhook publico. Padrao atual: `/api/Pagamento/WebhookMercadoPago`
+
+## Onde obter as credenciais do Mercado Pago
+
+No painel do Mercado Pago Developers:
+
+- Credenciais da aplicacao:
+  `Suas integracoes > sua aplicacao > Credenciais`
+- Conta de teste:
+  `Suas integracoes > sua aplicacao > Testes > Contas de teste`
+- Cartoes de teste:
+  `Suas integracoes > sua aplicacao > Testes > Cartoes de teste`
+
+## Configurando o tunel para testes locais
+
+O Mercado Pago precisa acessar a API local publicamente para:
+
+- `POST /api/Pagamento/WebhookMercadoPago`
+- `GET /api/Pagamento/RetornoCheckout/{agendamentoId}`
+
+O tunel deve apontar para a API, nao para o frontend.
+
+1. Abra o tunel:
 ```bash
-kubectl delete -f k8s/
+cloudflared tunnel --url http://localhost:5000
 ```
 
----
+2. Copie a URL gerada, por exemplo:
+```text
+https://seu-tunel.trycloudflare.com
+```
 
-## CI/CD Automatizado
-Temos um workflow configurado no GitHub Actions (`.github/workflows/ci-cd.yml`).
-Sempre que um **Push** ou **Pull Request** for aberto em qualquer branch, o GitHub irá:
-1. Fazer o Build e validar toda a Solução (.NET 10).
-2. Fazer o Build da Imagem Docker.
-3. Publicar automaticamente a imagem no **GitHub Container Registry (GHCR)**.
+3. Atualize o `.env`:
+```env
+MERCADOPAGO_API_BASE_URL=https://seu-tunel.trycloudflare.com
+MERCADOPAGO_FRONTEND_BASE_URL=http://localhost:8080
+MERCADOPAGO_WEBHOOK_PATH=/api/Pagamento/WebhookMercadoPago
+```
+
+4. Rebuild da API:
+```bash
+docker compose up -d --build api
+```
+
+5. No Mercado Pago, configure o webhook publico para:
+```text
+https://seu-tunel.trycloudflare.com/api/Pagamento/WebhookMercadoPago
+```
+
+## Fluxo de retorno do checkout
+
+- O Mercado Pago chama a URL publica da API
+- A API trata o retorno em `/api/Pagamento/RetornoCheckout/{agendamentoId}`
+- A API redireciona o navegador para:
+  `http://localhost:8080/agendamento/detalhes/{agendamentoId}`
+- A confirmacao oficial continua vindo do webhook e da reconciliacao do pagamento
+
+## Como testar pagamento com sucesso
+
+1. Faca login no checkout com a conta compradora de teste.
+2. Escolha pagamento com cartao.
+3. Use um cartao de teste, por exemplo:
+   - Visa: `4235 6477 2802 5682`
+   - CVV: `123`
+   - validade: `11/30`
+4. Para aprovar, use:
+   - nome do titular: `APRO`
+   - documento: `12345678909`
+
+Resultado esperado:
+
+- webhook recebido com sucesso
+- pagamento aprovado
+- agendamento concluido
+
+## Como testar pagamento recusado
+
+Use o mesmo cartao de teste, alterando o nome do titular:
+
+- `OTHE`: recusado por erro geral
+- `FUND`: recusado por saldo insuficiente
+- `SECU`: recusado por codigo de seguranca invalido
+- `EXPI`: recusado por problema de validade
+
+Para `OTHE`, use tambem:
+
+- documento: `12345678909`
+
+Resultado esperado:
+
+- retorno ao HomeTask com mensagem de falha
+- pagamento nao concluido
+- acao `Tentar novamente` disponivel
+
+## Comandos uteis
+
+Subir tudo:
+```bash
+docker compose up -d --build
+```
+
+Rebuild so da API:
+```bash
+docker compose up -d --build api
+```
+
+Rebuild so do frontend:
+```bash
+docker compose up -d --build frontend
+```
+
+Ver logs da API:
+```bash
+docker compose logs api --tail 200
+```

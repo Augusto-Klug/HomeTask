@@ -29,7 +29,7 @@ public class AgendamentoService : IAgendamentoService
         var servicos = await _agendamentoRepository.ObterServicosPorIdsAsync(dto.ServicosOferecidosIds, cancellationToken);
 
         if (servicos.Count == 0)
-            throw new InvalidOperationException("Nenhum serviço válido encontrado para o agendamento.");
+            throw new InvalidOperationException("Nenhum servico valido encontrado para o agendamento.");
 
         decimal valorTotal = 0;
         var duracaoTotal = 0;
@@ -64,7 +64,7 @@ public class AgendamentoService : IAgendamentoService
         }
 
         if (enderecoId == Guid.Empty)
-            throw new InvalidOperationException("Cliente não possui endereço cadastrado para o agendamento.");
+            throw new InvalidOperationException("Cliente nao possui endereco cadastrado para o agendamento.");
 
         agendamento.DefinirDados(
             agendamento.Id,
@@ -90,7 +90,7 @@ public class AgendamentoService : IAgendamentoService
     {
         var agendamento = await ObterAgendamentoOuFalhar(agendamentoId, cancellationToken);
         if (agendamento.Status != StatusAgendamento.Solicitado)
-            throw new InvalidOperationException("Agendamento não pode ser aceito neste status");
+            throw new InvalidOperationException("Agendamento nao pode ser aceito neste status");
 
         agendamento.Aceitar(DateTime.UtcNow);
         _agendamentoRepository.Atualizar(agendamento);
@@ -102,7 +102,7 @@ public class AgendamentoService : IAgendamentoService
     {
         var agendamento = await ObterAgendamentoOuFalhar(agendamentoId, cancellationToken);
         if (agendamento.Status != StatusAgendamento.Solicitado)
-            throw new InvalidOperationException("Agendamento não pode ser recusado neste status");
+            throw new InvalidOperationException("Agendamento nao pode ser recusado neste status");
 
         agendamento.Recusar(motivo, DateTime.UtcNow);
         _agendamentoRepository.Atualizar(agendamento);
@@ -114,7 +114,7 @@ public class AgendamentoService : IAgendamentoService
     {
         var agendamento = await ObterAgendamentoOuFalhar(agendamentoId, cancellationToken);
         if (agendamento.Status != StatusAgendamento.Aceito)
-            throw new InvalidOperationException("Agendamento não pode ser iniciado neste status");
+            throw new InvalidOperationException("Agendamento nao pode ser iniciado neste status");
 
         agendamento.Iniciar();
         _agendamentoRepository.Atualizar(agendamento);
@@ -126,15 +126,9 @@ public class AgendamentoService : IAgendamentoService
     {
         var agendamento = await ObterAgendamentoOuFalhar(agendamentoId, cancellationToken);
         if (agendamento.Status != StatusAgendamento.EmAndamento)
-            throw new InvalidOperationException("Agendamento não pode ser concluído neste status");
+            throw new InvalidOperationException("Agendamento nao pode ser concluido neste status");
 
-        agendamento.Concluir(DateTime.UtcNow);
-
-        var prestador = await _prestadorRepository.ObterPorIdAsync(agendamento.PrestadorId, cancellationToken);
-        prestador?.IncrementarTotalServicosConcluidos();
-        if (prestador != null)
-            _prestadorRepository.Atualizar(prestador);
-
+        agendamento.MarcarAguardandoPagamento(DateTime.UtcNow);
         _agendamentoRepository.Atualizar(agendamento);
         await _agendamentoRepository.SalvarAlteracoesAsync(cancellationToken);
         return agendamento.ParaDto();
@@ -144,7 +138,7 @@ public class AgendamentoService : IAgendamentoService
     {
         var agendamento = await ObterAgendamentoOuFalhar(agendamentoId, cancellationToken);
         if (agendamento.Status is StatusAgendamento.Concluido or StatusAgendamento.Cancelado)
-            throw new InvalidOperationException("Agendamento não pode ser cancelado neste status");
+            throw new InvalidOperationException("Agendamento nao pode ser cancelado neste status");
 
         agendamento.Cancelar(motivo);
         _agendamentoRepository.Atualizar(agendamento);
@@ -179,7 +173,7 @@ public class AgendamentoService : IAgendamentoService
     private async Task<Domain.Entidades.Agendamento> ObterAgendamentoOuFalhar(Guid id, CancellationToken cancellationToken)
     {
         var agendamento = await _agendamentoRepository.ObterPorIdAsync(id, cancellationToken);
-        return agendamento ?? throw new InvalidOperationException("Agendamento não encontrado");
+        return agendamento ?? throw new InvalidOperationException("Agendamento nao encontrado");
     }
 }
 
@@ -210,11 +204,11 @@ public class AvaliacaoService : IAvaliacaoService
     {
         var podeAvaliar = await _avaliacaoRepository.PodeAvaliarAsync(dto.ClienteId, dto.AgendamentoId, cancellationToken);
         if (!podeAvaliar)
-            throw new InvalidOperationException("Somente serviços concluídos podem ser avaliados");
+            throw new InvalidOperationException("Somente servicos concluidos podem ser avaliados");
 
         var existente = await _avaliacaoRepository.ObterPorAgendamentoAsync(dto.AgendamentoId, cancellationToken);
         if (existente != null)
-            throw new InvalidOperationException("Este serviço já foi avaliado");
+            throw new InvalidOperationException("Este servico ja foi avaliado");
 
         var avaliacao = dto.ParaEntidade();
         avaliacao.Publicar(DateTime.UtcNow);
@@ -244,10 +238,20 @@ public class AvaliacaoService : IAvaliacaoService
 public class PagamentoService : IPagamentoService
 {
     private readonly IPagamentoRepository _pagamentoRepository;
+    private readonly IAgendamentoRepository _agendamentoRepository;
+    private readonly IPrestadorRepository _prestadorRepository;
+    private readonly IPagamentoGateway _pagamentoGateway;
 
-    public PagamentoService(IPagamentoRepository pagamentoRepository)
+    public PagamentoService(
+        IPagamentoRepository pagamentoRepository,
+        IAgendamentoRepository agendamentoRepository,
+        IPrestadorRepository prestadorRepository,
+        IPagamentoGateway pagamentoGateway)
     {
         _pagamentoRepository = pagamentoRepository;
+        _agendamentoRepository = agendamentoRepository;
+        _prestadorRepository = prestadorRepository;
+        _pagamentoGateway = pagamentoGateway;
     }
 
     public async Task<PagamentoDto?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken = default)
@@ -262,67 +266,150 @@ public class PagamentoService : IPagamentoService
         return pagamento?.ParaDto();
     }
 
-    public async Task<PagamentoDto> CriarAsync(PagamentoDto dto, CancellationToken cancellationToken = default)
+    public async Task<PagamentoDto> IniciarCheckoutAsync(Guid agendamentoId, Guid clienteId, CancellationToken cancellationToken = default)
     {
-        var pagamento = dto.ParaEntidade();
-        pagamento.DefinirComoPendente(DateTime.UtcNow);
-        await _pagamentoRepository.AdicionarAsync(pagamento, cancellationToken);
+        var agendamento = await ObterAgendamentoOuFalhar(agendamentoId, cancellationToken);
+        if (agendamento.ClienteId != clienteId)
+            throw new InvalidOperationException("Cliente nao pode iniciar pagamento deste agendamento");
+        if (agendamento.Status != StatusAgendamento.AguardandoPagamento)
+            throw new InvalidOperationException("Agendamento nao esta aguardando pagamento");
+
+        var pagamento = await _pagamentoRepository.ObterPorAgendamentoAsync(agendamentoId, cancellationToken);
+        var pagamentoCriadoAgora = false;
+        if (pagamento == null)
+        {
+            pagamento = new Domain.Entidades.Pagamento();
+            pagamento.DefinirDados(
+                Guid.NewGuid(),
+                agendamento.Id,
+                agendamento.ValorTotal,
+                TipoPagamento.Pix,
+                StatusPagamento.Pendente,
+                null,
+                null,
+                null,
+                null,
+                null,
+                DateTime.UtcNow,
+                null,
+                null,
+                null);
+            await _pagamentoRepository.AdicionarAsync(pagamento, cancellationToken);
+            pagamentoCriadoAgora = true;
+        }
+
+        var precisaGerarNovoCheckout = pagamento.Status != StatusPagamento.Aprovado;
+
+        if (precisaGerarNovoCheckout)
+        {
+            var checkout = await _pagamentoGateway.CriarCheckoutPixAsync(
+                new PagamentoCheckoutRequestDto
+                {
+                    PagamentoId = pagamento.Id,
+                    AgendamentoId = agendamento.Id,
+                    Valor = pagamento.Valor,
+                    Descricao = $"Agendamento {agendamento.Id}",
+                    ClienteEmail = agendamento.Cliente.Usuario.Email,
+                    ClienteNome = agendamento.Cliente.Usuario.Nome,
+                    ClienteDocumento = agendamento.Cliente.Usuario.Documento
+                },
+                cancellationToken);
+
+            if (pagamento.Status == StatusPagamento.Pendente)
+                pagamento.Processar(DateTime.UtcNow);
+
+            pagamento.RegistrarCheckout(
+                checkout.CheckoutExternoId,
+                checkout.CheckoutUrl,
+                checkout.StatusExterno,
+                checkout.PayloadExterno);
+            if (!pagamentoCriadoAgora)
+                _pagamentoRepository.Atualizar(pagamento);
+        }
+
         await _pagamentoRepository.SalvarAlteracoesAsync(cancellationToken);
         return pagamento.ParaDto();
     }
 
-    public async Task<PagamentoDto> ProcessarAsync(Guid pagamentoId, CancellationToken cancellationToken = default)
+    public async Task<PagamentoDto?> ProcessarWebhookAsync(PagamentoWebhookDto webhook, CancellationToken cancellationToken = default)
     {
-        var pagamento = await ObterPagamentoOuFalhar(pagamentoId, cancellationToken);
-        if (pagamento.Status != StatusPagamento.Pendente)
-            throw new InvalidOperationException("Pagamento não pode ser processado neste status");
+        if (!string.Equals(webhook.Topico, "payment", StringComparison.OrdinalIgnoreCase) ||
+            string.IsNullOrWhiteSpace(webhook.PagamentoExternoId))
+            return null;
 
-        pagamento.Processar(DateTime.UtcNow);
-        _pagamentoRepository.Atualizar(pagamento);
-        await _pagamentoRepository.SalvarAlteracoesAsync(cancellationToken);
-        return pagamento.ParaDto();
+        return await ReconciliarPagamentoInternoAsync(
+            webhook.PagamentoExternoId,
+            webhook.PayloadExterno,
+            cancellationToken);
     }
 
-    public async Task<PagamentoDto> ConfirmarAsync(Guid pagamentoId, string transacaoId, CancellationToken cancellationToken = default)
+    public async Task<PagamentoDto?> ReconciliarPagamentoExternoAsync(string pagamentoExternoId, CancellationToken cancellationToken = default)
     {
-        var pagamento = await ObterPagamentoOuFalhar(pagamentoId, cancellationToken);
-        if (pagamento.Status != StatusPagamento.Processando)
-            throw new InvalidOperationException("Pagamento não pode ser confirmado neste status");
+        if (string.IsNullOrWhiteSpace(pagamentoExternoId))
+            return null;
 
-        pagamento.Aprovar(transacaoId, DateTime.UtcNow);
-        _pagamentoRepository.Atualizar(pagamento);
-        await _pagamentoRepository.SalvarAlteracoesAsync(cancellationToken);
-        return pagamento.ParaDto();
+        return await ReconciliarPagamentoInternoAsync(pagamentoExternoId, null, cancellationToken);
     }
 
-    public async Task<PagamentoDto> RecusarAsync(Guid pagamentoId, string motivo, CancellationToken cancellationToken = default)
+    private async Task<Domain.Entidades.Agendamento> ObterAgendamentoOuFalhar(Guid id, CancellationToken cancellationToken)
     {
-        var pagamento = await ObterPagamentoOuFalhar(pagamentoId, cancellationToken);
-        if (pagamento.Status != StatusPagamento.Processando)
-            throw new InvalidOperationException("Pagamento não pode ser recusado neste status");
-
-        pagamento.Recusar(motivo);
-        _pagamentoRepository.Atualizar(pagamento);
-        await _pagamentoRepository.SalvarAlteracoesAsync(cancellationToken);
-        return pagamento.ParaDto();
-    }
-
-    public async Task<PagamentoDto> EstornarAsync(Guid pagamentoId, CancellationToken cancellationToken = default)
-    {
-        var pagamento = await ObterPagamentoOuFalhar(pagamentoId, cancellationToken);
-        if (pagamento.Status != StatusPagamento.Aprovado)
-            throw new InvalidOperationException("Pagamento não pode ser estornado neste status");
-
-        pagamento.Estornar();
-        _pagamentoRepository.Atualizar(pagamento);
-        await _pagamentoRepository.SalvarAlteracoesAsync(cancellationToken);
-        return pagamento.ParaDto();
+        var agendamento = await _agendamentoRepository.ObterPorIdAsync(id, cancellationToken);
+        return agendamento ?? throw new InvalidOperationException("Agendamento nao encontrado");
     }
 
     private async Task<Domain.Entidades.Pagamento> ObterPagamentoOuFalhar(Guid id, CancellationToken cancellationToken)
     {
         var pagamento = await _pagamentoRepository.ObterPorIdAsync(id, cancellationToken);
-        return pagamento ?? throw new InvalidOperationException("Pagamento não encontrado");
+        return pagamento ?? throw new InvalidOperationException("Pagamento nao encontrado");
+    }
+
+    private async Task<PagamentoDto?> ReconciliarPagamentoInternoAsync(
+        string pagamentoExternoId,
+        string? payloadExterno,
+        CancellationToken cancellationToken)
+    {
+        var statusGateway = await _pagamentoGateway.ObterStatusPagamentoAsync(pagamentoExternoId, cancellationToken);
+        if (statusGateway == null || !Guid.TryParse(statusGateway.ReferenciaInterna, out var pagamentoId))
+            return null;
+
+        var pagamento = await ObterPagamentoOuFalhar(pagamentoId, cancellationToken);
+        pagamento.AtualizarRetornoGateway(
+            statusGateway.PagamentoExternoId,
+            statusGateway.StatusExterno,
+            statusGateway.PayloadExterno ?? payloadExterno,
+            statusGateway.MotivoRecusa);
+
+        if (statusGateway.Status == StatusPagamento.Aprovado && pagamento.Status != StatusPagamento.Aprovado)
+        {
+            pagamento.Aprovar(statusGateway.PagamentoExternoId, DateTime.UtcNow);
+
+            var agendamento = await ObterAgendamentoOuFalhar(pagamento.AgendamentoId, cancellationToken);
+            if (agendamento.Status != StatusAgendamento.Concluido)
+            {
+                agendamento.ConcluirFinanceiramente();
+                _agendamentoRepository.Atualizar(agendamento);
+
+                var prestador = await _prestadorRepository.ObterPorIdAsync(agendamento.PrestadorId, cancellationToken);
+                if (prestador != null)
+                {
+                    prestador.IncrementarTotalServicosConcluidos();
+                    _prestadorRepository.Atualizar(prestador);
+                }
+            }
+        }
+        else if (statusGateway.Status == StatusPagamento.Recusado && pagamento.Status != StatusPagamento.Aprovado)
+        {
+            pagamento.Recusar(statusGateway.MotivoRecusa ?? "Pagamento recusado pelo gateway");
+        }
+        else if (statusGateway.Status is StatusPagamento.Processando or StatusPagamento.Pendente &&
+            pagamento.Status == StatusPagamento.Pendente)
+        {
+            pagamento.Processar(DateTime.UtcNow);
+        }
+
+        _pagamentoRepository.Atualizar(pagamento);
+        await _pagamentoRepository.SalvarAlteracoesAsync(cancellationToken);
+        return pagamento.ParaDto();
     }
 }
 

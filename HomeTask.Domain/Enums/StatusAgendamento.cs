@@ -10,5 +10,6 @@ public enum StatusAgendamento
     Recusado = 3,
     EmAndamento = 4,
     Concluido = 5,
-    Cancelado = 6
+    Cancelado = 6,
+    AguardandoPagamento = 7
 }

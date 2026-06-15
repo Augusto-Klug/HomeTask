@@ -281,6 +281,7 @@ type PainelId =
   | "aguardando-confirmacao-prestador"
   | "agendados"
   | "em-andamento"
+  | "aguardando-pagamento"
   | "concluidos"
   | "cancelados-recusados";
 type PainelTom = "primary" | "secondary" | "accent" | "success" | "warning" | "error" | "neutro";
@@ -366,6 +367,9 @@ const agendados = computed(() =>
 const emAndamento = computed(() =>
   ordenarPorData(agendamentosCliente.value.filter((ag) => ag.status === StatusAgendamento.EmAndamento)),
 );
+const aguardandoPagamento = computed(() =>
+  ordenarPorData(agendamentosCliente.value.filter((ag) => ag.status === StatusAgendamento.AguardandoPagamento)),
+);
 const concluidos = computed(() =>
   ordenarPorData(agendamentosCliente.value.filter((ag) => ag.status === StatusAgendamento.Concluido)),
 );
@@ -412,6 +416,15 @@ const paineis = computed(() => [
     vazio: "Nenhum serviço em andamento.",
     tom: "accent" as const,
     icone: "play_circle",
+  },
+  {
+    id: "aguardando-pagamento" as const,
+    titulo: "Aguardando pagamento",
+    descricao: "Serviços executados e pendentes de pagamento.",
+    itens: aguardandoPagamento.value,
+    vazio: "Nenhum serviço aguardando pagamento.",
+    tom: "secondary" as const,
+    icone: "payments",
   },
   {
     id: "concluidos" as const,
@@ -532,6 +545,7 @@ function labelCliente(ag: AgendamentoResumo): string {
     return "Aguardando confirmação do prestador";
   }
   if (ag.status === StatusAgendamento.Aceito) return "Agendado";
+  if (ag.status === StatusAgendamento.AguardandoPagamento) return "Aguardando pagamento";
   if (ag.status === StatusAgendamento.Concluido) return "Concluído";
   if (ag.status === StatusAgendamento.EmAndamento) return "Em andamento";
   if (ag.status === StatusAgendamento.Recusado) return "Recusado";
@@ -545,6 +559,8 @@ function obterVariantStatus(status: StatusAgendamento): HtBadgeVariant {
       return HtBadgeVariant.Primary;
     case StatusAgendamento.Concluido:
       return HtBadgeVariant.Success;
+    case StatusAgendamento.AguardandoPagamento:
+      return HtBadgeVariant.Default;
     case StatusAgendamento.Cancelado:
     case StatusAgendamento.Recusado:
       return HtBadgeVariant.Error;
