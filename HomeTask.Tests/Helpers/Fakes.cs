@@ -131,6 +131,8 @@ internal sealed class FakePagamentoRepository : FakeRepositoryBase<Pagamento>, I
 
 internal sealed class FakePagamentoGateway : IPagamentoGateway
 {
+    public PagamentoCheckoutRequestDto? UltimoCheckoutRequest { get; private set; }
+
     public PagamentoCheckoutResponseDto CheckoutResponse { get; set; } = new()
     {
         CheckoutExternoId = "pref-123",
@@ -141,8 +143,11 @@ internal sealed class FakePagamentoGateway : IPagamentoGateway
 
     public PagamentoStatusGatewayDto? StatusResponse { get; set; }
 
-    public Task<PagamentoCheckoutResponseDto> CriarCheckoutPixAsync(PagamentoCheckoutRequestDto pagamento, CancellationToken cancellationToken = default) =>
-        Task.FromResult(CheckoutResponse);
+    public Task<PagamentoCheckoutResponseDto> CriarCheckoutPixAsync(PagamentoCheckoutRequestDto pagamento, CancellationToken cancellationToken = default)
+    {
+        UltimoCheckoutRequest = pagamento;
+        return Task.FromResult(CheckoutResponse);
+    }
 
     public Task<PagamentoStatusGatewayDto?> ObterStatusPagamentoAsync(string pagamentoExternoId, CancellationToken cancellationToken = default) =>
         Task.FromResult(StatusResponse);

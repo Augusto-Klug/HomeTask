@@ -45,7 +45,7 @@ internal static class EntidadeFactory
     public static Agendamento CriarAgendamento(Guid? id = null, Guid? clienteId = null, Guid? prestadorId = null, Guid? enderecoId = null, StatusAgendamento status = StatusAgendamento.Solicitado)
     {
         var agendamento = new Agendamento();
-        agendamento.DefinirDados(id ?? Guid.NewGuid(), clienteId ?? Guid.NewGuid(), prestadorId ?? Guid.NewGuid(), DateTime.UtcNow.AddDays(1), 60, status, enderecoId ?? Guid.NewGuid(), "Observacao", 150, DateTime.UtcNow, null, null, null);
+        agendamento.DefinirDados(id ?? Guid.NewGuid(), clienteId ?? Guid.NewGuid(), prestadorId ?? Guid.NewGuid(), DateTime.UtcNow.AddDays(1), 60, status, enderecoId ?? Guid.NewGuid(), "Observacao", 150, DateTime.UtcNow, null, null, null, null);
         return agendamento;
     }
 

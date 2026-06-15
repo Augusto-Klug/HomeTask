@@ -103,6 +103,12 @@ public class ServicoPrestadorRepository : RepositoryBase<ServicoPrestador>, ISer
             queryClientes = queryClientes.Where(s => s.Cliente.Usuario.Endereco != null && s.Cliente.Usuario.Endereco.Cidade.Nome.Contains(cidade));
         }
 
+        if (usuarioId.HasValue)
+        {
+            queryPrestadores = queryPrestadores.Where(s => s.Prestador.UsuarioId != usuarioId.Value);
+            queryClientes = queryClientes.Where(s => s.Cliente.UsuarioId != usuarioId.Value);
+        }
+
         var servicosPrestadores = await queryPrestadores.ToListAsync(cancellationToken);
         var servicosClientes = await queryClientes.ToListAsync(cancellationToken);
 

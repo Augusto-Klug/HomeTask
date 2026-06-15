@@ -73,6 +73,41 @@ public class ServicoRepositoryIntegrationTests
 
     [Fact]
     [Trait("categoria", "integracao")]
+    public async Task BuscarTodosPaginadoAsync_QuandoUsuarioAtualEhDonoDoServico_DeveExcluirPropriosAnuncios()
+    {
+        using var sqlite = new SqliteTestContext();
+        var repository = new ServicoPrestadorRepository(sqlite.Db);
+        var cidade = EntidadeFactory.CriarCidade();
+        var usuarioAtual = EntidadeFactory.CriarUsuario(nome: "Prestador Atual", tipo: TipoUsuario.Prestador, documento: "77777777771");
+        var usuarioOutro = EntidadeFactory.CriarUsuario(nome: "Outro Prestador", tipo: TipoUsuario.Prestador, documento: "77777777772");
+        var usuarioCliente = EntidadeFactory.CriarUsuario(nome: "Cliente Atual", tipo: TipoUsuario.Cliente, documento: "77777777773");
+        var enderecoAtual = EntidadeFactory.CriarEndereco(usuarioId: usuarioAtual.Id, cidadeId: cidade.Id);
+        var enderecoOutro = EntidadeFactory.CriarEndereco(usuarioId: usuarioOutro.Id, cidadeId: cidade.Id);
+        var enderecoCliente = EntidadeFactory.CriarEndereco(usuarioId: usuarioCliente.Id, cidadeId: cidade.Id);
+        var prestadorAtual = EntidadeFactory.CriarPrestador(usuarioId: usuarioAtual.Id);
+        var prestadorOutro = EntidadeFactory.CriarPrestador(usuarioId: usuarioOutro.Id);
+        var clienteAtual = EntidadeFactory.CriarCliente(usuarioId: usuarioCliente.Id);
+        var servicoProprio = EntidadeFactory.CriarServicoPrestador(prestadorId: prestadorAtual.Id, categoria: CategoriaServico.Jardinagem, preco: 120, dataCriacao: DateTime.UtcNow.AddMinutes(-5));
+        var servicoOutro = EntidadeFactory.CriarServicoPrestador(prestadorId: prestadorOutro.Id, categoria: CategoriaServico.Jardinagem, preco: 130, dataCriacao: DateTime.UtcNow.AddMinutes(-4));
+        var pedidoProprio = EntidadeFactory.CriarServicoCliente(clienteId: clienteAtual.Id, categoria: CategoriaServico.Jardinagem, preco: 80, dataCriacao: DateTime.UtcNow.AddMinutes(-3));
+
+        sqlite.Db.AddRange(cidade, usuarioAtual, usuarioOutro, usuarioCliente, enderecoAtual, enderecoOutro, enderecoCliente, prestadorAtual, prestadorOutro, clienteAtual, servicoProprio, servicoOutro, pedidoProprio);
+        await sqlite.Db.SaveChangesAsync();
+
+        var resultadoPrestador = await repository.BuscarTodosPaginadoAsync(CategoriaServico.Jardinagem, "Blumenau", null, usuarioAtual.Id, 1, 10);
+        var resultadoCliente = await repository.BuscarTodosPaginadoAsync(CategoriaServico.Jardinagem, "Blumenau", null, usuarioCliente.Id, 1, 10);
+
+        Assert.DoesNotContain(resultadoPrestador.Itens, item => item.Id == servicoProprio.Id);
+        Assert.Contains(resultadoPrestador.Itens, item => item.Id == servicoOutro.Id);
+        Assert.Contains(resultadoPrestador.Itens, item => item.Id == pedidoProprio.Id);
+
+        Assert.DoesNotContain(resultadoCliente.Itens, item => item.Id == pedidoProprio.Id);
+        Assert.Contains(resultadoCliente.Itens, item => item.Id == servicoProprio.Id);
+        Assert.Contains(resultadoCliente.Itens, item => item.Id == servicoOutro.Id);
+    }
+
+    [Fact]
+    [Trait("categoria", "integracao")]
     public async Task ServicoClienteRepository_BuscarPedidosAsync_DeveFiltrarPorCategoriaCidadeEPreco()
     {
         // Arrange
