@@ -4,6 +4,7 @@ using HomeTask.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HomeTask.Infrastructure.Migrations
 {
     [DbContext(typeof(HomeTaskDbContext))]
-    partial class HomeTaskDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260615212952_AddDoubleRatingsAndPublicProviderProfile")]
+    partial class AddDoubleRatingsAndPublicProviderProfile
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -63,9 +66,6 @@ namespace HomeTask.Infrastructure.Migrations
                     b.Property<Guid>("PrestadorId")
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid?>("PrincipalServicoPrestadorId")
-                        .HasColumnType("char(36)");
-
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -79,8 +79,6 @@ namespace HomeTask.Infrastructure.Migrations
                     b.HasIndex("EnderecoId");
 
                     b.HasIndex("PrestadorId");
-
-                    b.HasIndex("PrincipalServicoPrestadorId");
 
                     b.ToTable("Agendamentos");
                 });
@@ -670,18 +668,11 @@ namespace HomeTask.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("HomeTask.Domain.Entidades.ServicoPrestador", "PrincipalServicoPrestador")
-                        .WithMany()
-                        .HasForeignKey("PrincipalServicoPrestadorId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.Navigation("Cliente");
 
                     b.Navigation("Endereco");
 
                     b.Navigation("Prestador");
-
-                    b.Navigation("PrincipalServicoPrestador");
                 });
 
             modelBuilder.Entity("HomeTask.Domain.Entidades.AgendamentoServico", b =>

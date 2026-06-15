@@ -129,6 +129,7 @@ public class PagamentoServiceTests
             agendamento.Id,
             agendamento.ClienteId,
             agendamento.PrestadorId,
+            agendamento.PrincipalServicoPrestadorId,
             agendamento.DataHoraAgendada,
             agendamento.DuracaoMinutos,
             agendamento.Status,

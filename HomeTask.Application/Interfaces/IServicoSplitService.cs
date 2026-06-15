@@ -11,6 +11,7 @@ public interface IServicoPrestadorService
     Task<bool> RemoverAsync(Guid id, CancellationToken cancellationToken = default);
     Task<IEnumerable<ServicoPrestadorDto>> ObterPorPrestadorAsync(Guid prestadorId, CancellationToken cancellationToken = default);
     Task<IEnumerable<ServicoPrestadorDto>> BuscarAsync(CategoriaServico? categoria, string? cidade, decimal? precoMaximo, CancellationToken cancellationToken = default);
+    Task AtualizarMediaAvaliacoesAsync(Guid servicoPrestadorId, CancellationToken cancellationToken = default);
     Task<ServicoBuscaPaginadaDto> BuscarTodosPaginadoAsync(
         CategoriaServico? categoria,
         string? cidade,

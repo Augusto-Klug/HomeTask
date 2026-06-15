@@ -115,7 +115,7 @@ public class AgendamentoServiceTests
 
         var prestador = EntidadeFactory.CriarPrestador();
         var servico = new ServicoPrestador();
-        servico.DefinirDados(Guid.NewGuid(), prestador.Id, CategoriaServico.Faxina, "Limpeza", "Limpeza por hora", 100, FormatoCobranca.PorHora, 60, true, true, DateTime.UtcNow);
+        servico.DefinirDados(Guid.NewGuid(), prestador.Id, CategoriaServico.Faxina, "Limpeza", "Limpeza por hora", 100, FormatoCobranca.PorHora, 60, true, 0, 0, true, DateTime.UtcNow);
 
         var agendamento = EntidadeFactory.CriarAgendamento(prestadorId: prestador.Id, status: StatusAgendamento.EmAndamento);
         var inicio = DateTime.UtcNow.AddHours(-2).AddMinutes(-1);
@@ -123,6 +123,7 @@ public class AgendamentoServiceTests
             agendamento.Id,
             agendamento.ClienteId,
             agendamento.PrestadorId,
+            agendamento.PrincipalServicoPrestadorId,
             agendamento.DataHoraAgendada,
             agendamento.DuracaoMinutos,
             agendamento.Status,

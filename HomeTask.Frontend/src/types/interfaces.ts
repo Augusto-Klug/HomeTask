@@ -58,16 +58,27 @@ export interface Servico {
   cidade: string
   estado: string
   mediaAvaliacoes?: number | null
+  totalAvaliacoes?: number
+  mediaAvaliacoesPrestador?: number | null
+  totalAvaliacoesPrestador?: number | null
   dataDesejada?: string | null
   aceitaPagamentoAposFinalizacao?: boolean
 }
 
 export interface Avaliacao {
   id: string
-  clienteNome: string
-  nota: number
-  comentario: string
-  data: string
+  agendamentoId: string
+  clienteId?: string
+  clienteNome?: string
+  prestadorId?: string
+  prestadorNome?: string
+  servicoPrestadorId: string
+  servicoTitulo?: string
+  notaServico: number
+  notaPrestador: number
+  comentario?: string | null
+  dataAvaliacao: string
+  visivel?: boolean
 }
 
 export interface AgendamentoForm {
@@ -164,6 +175,8 @@ export interface AgendamentoResumo {
   dataConclusao: string | null
   motivoRecusa: string | null
   aguardandoRespostaDe?: TipoUsuario | null
+  podeAvaliar?: boolean
+  avaliado?: boolean
   servicos: Array<ServicoOferecido & { unidadeCobranca: UnidadeCobranca }>
 }
 
@@ -215,6 +228,30 @@ export interface PerfilForm {
   raioAtendimentoKm: number | null
   certificacoes?: Certificacao[]
   portfolios?: Portfolio[]
+}
+
+export interface PrestadorHistoricoPublico {
+  agendamentoId: string
+  servicoPrestadorId: string
+  tituloServico: string
+  dataHoraAgendada: string
+  cidade: string
+  estado: string
+  notaServico?: number | null
+  notaPrestador?: number | null
+}
+
+export interface PrestadorPerfilPublico {
+  id: string
+  nome: string
+  descricao?: string | null
+  cidade?: string | null
+  estado?: string | null
+  mediaAvaliacoes: number
+  totalAvaliacoes: number
+  totalServicosConcluidos: number
+  servicosOferecidos: Servico[]
+  historicoConcluido: PrestadorHistoricoPublico[]
 }
 
 export interface CertificacaoForm {

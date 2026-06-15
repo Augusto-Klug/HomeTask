@@ -20,6 +20,7 @@ public class ServicoPrestadorRepository : RepositoryBase<ServicoPrestador>, ISer
                 .ThenInclude(p => p.Usuario)
                     .ThenInclude(u => u.Endereco)
                         .ThenInclude(e => e.Cidade)
+            .Include(s => s.Avaliacoes)
             .FirstOrDefaultAsync(s => s.Id == id, cancellationToken);
 
         if (servico != null && servico.Prestador?.Usuario != null && servico.Prestador.Usuario.Endereco == null)
@@ -61,6 +62,11 @@ public class ServicoPrestadorRepository : RepositoryBase<ServicoPrestador>, ISer
             .ThenBy(s => (double)s.PrecoBase)
             .ToListAsync(cancellationToken);
     }
+
+    public Task<ServicoPrestador?> ObterComAvaliacoesAsync(Guid servicoPrestadorId, CancellationToken cancellationToken = default) =>
+        Context.ServicosPrestadores
+            .Include(s => s.Avaliacoes)
+            .FirstOrDefaultAsync(s => s.Id == servicoPrestadorId, cancellationToken);
 
     public async Task<PaginacaoResultado<ServicoBase>> BuscarTodosPaginadoAsync(CategoriaServico? categoria, string? cidade, decimal? precoMaximo, Guid? usuarioId, int pagina, int tamanhoPagina, CancellationToken cancellationToken = default)
     {

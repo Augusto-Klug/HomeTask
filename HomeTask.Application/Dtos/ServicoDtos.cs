@@ -32,6 +32,9 @@ public class ServicoPrestadorDto
     public string? Cidade { get; set; }
     public string? Estado { get; set; }
     public decimal? MediaAvaliacoes { get; set; }
+    public int TotalAvaliacoes { get; set; }
+    public decimal? MediaAvaliacoesPrestador { get; set; }
+    public int? TotalAvaliacoesPrestador { get; set; }
 }
 
 public class ServicoClienteDto

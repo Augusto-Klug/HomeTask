@@ -154,6 +154,7 @@ async function handleAgendar() {
     await api.post("/api/Agendamento/CriarAgendamento", {
       clienteId: cliente.id,
       prestadorId: servico.value.prestadorId,
+      principalServicoPrestadorId: props.servicoId,
       servicosOferecidosIds: [props.servicoId],
       dataHoraAgendada: dataHora,
       observacoes: form.observacoes,

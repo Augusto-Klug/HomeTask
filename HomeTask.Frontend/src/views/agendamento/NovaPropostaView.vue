@@ -101,6 +101,7 @@ const servico = ref<ServicoClienteDetalhe | null>(null);
 const carregandoServico = ref(true);
 const carregando = ref(false);
 const erro = ref<string | null>(null);
+const servicosPrestador = ref<ServicoPrestadorResumo[]>([]);
 
 const form = reactive<AgendamentoForm>({
   data: "",
@@ -125,6 +126,16 @@ onMounted(async () => {
     }
 
     servico.value = data;
+
+    const { data: prestador } = await api.get<{ id: string }>("/api/Prestador/ObterPrestadorPorUsuarioId", {
+      params: { usuarioId: auth.user?.userId },
+    });
+
+    const { data: servicos } = await api.get<ServicoPrestadorResumo[]>("/api/ServicoOferecido/ObterServicosPorPrestador", {
+      params: { prestadorId: prestador.id },
+    });
+
+    servicosPrestador.value = servicos;
   } catch {
     servico.value = null;
   } finally {
@@ -135,6 +146,11 @@ onMounted(async () => {
 async function handleEnviarProposta() {
   if (!validarCampos([inputData.value, inputHora.value])) return;
   if (!servico.value) return;
+  const servicoPrestadorPrincipalId = obterServicoPrestadorPrincipalId(servicosPrestador.value, servico.value);
+  if (!servicoPrestadorPrincipalId) {
+    erro.value = "Nao foi possivel identificar um servico do prestador para esta proposta.";
+    return;
+  }
 
   erro.value = null;
   carregando.value = true;
@@ -149,6 +165,7 @@ async function handleEnviarProposta() {
     await api.post("/api/Agendamento/CriarAgendamento", {
       clienteId: servico.value.clienteId,
       prestadorId: prestador.id,
+      principalServicoPrestadorId: servicoPrestadorPrincipalId,
       servicosOferecidosIds: [props.servicoId],
       dataHoraAgendada: dataHora,
       observacoes: form.observacoes,
@@ -165,6 +182,30 @@ async function handleEnviarProposta() {
   } finally {
     carregando.value = false;
   }
+}
+
+function obterServicoPrestadorPrincipalId(
+  servicosDoPrestador: ServicoPrestadorResumo[],
+  servicoClienteAtual: ServicoClienteDetalhe,
+) {
+  const categoriaPedido = obterCategoriaId(servicoClienteAtual.categoria);
+  const servicoDaMesmaCategoria = servicosDoPrestador.find((item) => item.ativo && obterCategoriaId(item.categoria) === categoriaPedido);
+  if (servicoDaMesmaCategoria) return servicoDaMesmaCategoria.id;
+
+  const primeiroServicoAtivo = servicosDoPrestador.find((item) => item.ativo);
+  if (primeiroServicoAtivo) return primeiroServicoAtivo.id;
+
+  return servicosDoPrestador[0]?.id ?? "";
+}
+
+function obterCategoriaId(categoria: number | { id: string }) {
+  return typeof categoria === "number" ? categoria : Number(categoria.id);
+}
+
+interface ServicoPrestadorResumo {
+  id: string
+  categoria: number | { id: string }
+  ativo: boolean
 }
 
 </script>

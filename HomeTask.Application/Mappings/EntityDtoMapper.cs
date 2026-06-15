@@ -148,6 +148,7 @@ internal static class EntityDtoMapper
             Id = agendamento.Id,
             ClienteId = agendamento.ClienteId,
             PrestadorId = agendamento.PrestadorId,
+            PrincipalServicoPrestadorId = agendamento.PrincipalServicoPrestadorId,
             ServicosOferecidosIds = agendamento.AgendamentoServicos.Select(s => s.ServicoBaseId).ToList(),
             DataHoraAgendada = agendamento.DataHoraAgendada,
             DuracaoMinutos = agendamento.DuracaoMinutos,
@@ -169,6 +170,7 @@ internal static class EntityDtoMapper
             dto.Id,
             dto.ClienteId,
             dto.PrestadorId,
+            dto.PrincipalServicoPrestadorId,
             dto.DataHoraAgendada,
             dto.DuracaoMinutos,
             dto.Status,
@@ -191,6 +193,7 @@ internal static class EntityDtoMapper
             ClienteNome = agendamento.Cliente?.Usuario?.Nome ?? string.Empty,
             PrestadorId = agendamento.PrestadorId,
             PrestadorNome = agendamento.Prestador?.Usuario?.Nome ?? string.Empty,
+            PrincipalServicoPrestadorId = agendamento.PrincipalServicoPrestadorId,
             DataHoraAgendada = agendamento.DataHoraAgendada,
             DuracaoMinutos = agendamento.DuracaoMinutos,
             Status = agendamento.Status,
@@ -202,6 +205,8 @@ internal static class EntityDtoMapper
             DataConclusao = agendamento.DataConclusao,
             MotivoRecusa = agendamento.MotivoRecusa,
             AguardandoRespostaDe = Agendamento.ObterResponsavelPelaResposta(agendamento),
+            PodeAvaliar = agendamento.Status == StatusAgendamento.Concluido && agendamento.Avaliacao == null,
+            Avaliado = agendamento.Avaliacao != null,
             Endereco = new EnderecoResumoDto
             {
                 Logradouro = agendamento.Endereco?.Logradouro ?? string.Empty,
@@ -227,10 +232,15 @@ internal static class EntityDtoMapper
             AgendamentoId = avaliacao.AgendamentoId,
             ClienteId = avaliacao.ClienteId,
             PrestadorId = avaliacao.PrestadorId,
-            Nota = avaliacao.Nota,
+            ServicoPrestadorId = avaliacao.ServicoPrestadorId,
+            NotaServico = avaliacao.NotaServico,
+            NotaPrestador = avaliacao.NotaPrestador,
             Comentario = avaliacao.Comentario,
             DataAvaliacao = avaliacao.DataAvaliacao,
-            Visivel = avaliacao.Visivel
+            Visivel = avaliacao.Visivel,
+            ClienteNome = avaliacao.Cliente?.Usuario?.Nome,
+            PrestadorNome = avaliacao.Prestador?.Usuario?.Nome,
+            ServicoTitulo = avaliacao.ServicoPrestador?.Titulo
         };
 
     public static Avaliacao ParaEntidade(this AvaliacaoDto dto)
@@ -241,7 +251,9 @@ internal static class EntityDtoMapper
             dto.AgendamentoId,
             dto.ClienteId,
             dto.PrestadorId,
-            dto.Nota,
+            dto.ServicoPrestadorId,
+            dto.NotaServico,
+            dto.NotaPrestador,
             dto.Comentario,
             dto.DataAvaliacao,
             dto.Visivel);
@@ -347,7 +359,10 @@ internal static class EntityDtoMapper
             PrestadorNome = servico.Prestador?.Usuario?.Nome,
             Cidade = endereco?.Cidade?.Nome,
             Estado = endereco?.Cidade?.Estado,
-            MediaAvaliacoes = servico.Prestador?.MediaAvaliacoes
+            MediaAvaliacoes = servico.MediaAvaliacoes,
+            TotalAvaliacoes = servico.TotalAvaliacoes,
+            MediaAvaliacoesPrestador = servico.Prestador?.MediaAvaliacoes,
+            TotalAvaliacoesPrestador = servico.Prestador?.TotalAvaliacoes
         };
     }
 
@@ -364,6 +379,8 @@ internal static class EntityDtoMapper
             dto.UnidadeCobranca,
             dto.DuracaoEstimadaMinutos,
             dto.AceitaPagamentoAposFinalizacao,
+            dto.MediaAvaliacoes ?? 0,
+            dto.TotalAvaliacoes,
             dto.Ativo,
             dto.DataCriacao == default ? DateTime.UtcNow : dto.DataCriacao);
         return servico;

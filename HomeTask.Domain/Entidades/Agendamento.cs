@@ -19,6 +19,10 @@ public class Agendamento
 
     public Prestador Prestador { get; private set; } = null!;
 
+    public Guid? PrincipalServicoPrestadorId { get; private set; }
+
+    public ServicoPrestador? PrincipalServicoPrestador { get; private set; }
+
     /// <summary>
     /// Data e hora agendada para o serviço
     /// </summary>
@@ -71,6 +75,7 @@ public class Agendamento
         Guid id,
         Guid clienteId,
         Guid prestadorId,
+        Guid? principalServicoPrestadorId,
         DateTime dataHoraAgendada,
         int duracaoMinutos,
         StatusAgendamento status,
@@ -86,6 +91,7 @@ public class Agendamento
         Id = id;
         ClienteId = clienteId;
         PrestadorId = prestadorId;
+        PrincipalServicoPrestadorId = principalServicoPrestadorId;
         DataHoraAgendada = dataHoraAgendada;
         DuracaoMinutos = duracaoMinutos;
         Status = status;
@@ -97,6 +103,11 @@ public class Agendamento
         DataInicio = dataInicio;
         DataConclusao = dataConclusao;
         MotivoRecusa = motivoRecusa;
+    }
+
+    public void DefinirPrincipalServicoPrestador(Guid? principalServicoPrestadorId)
+    {
+        PrincipalServicoPrestadorId = principalServicoPrestadorId;
     }
 
     public void DefinirComoSolicitado(DateTime dataSolicitacao)

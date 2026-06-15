@@ -50,6 +50,9 @@ public class ServicoPrestadorMap : IEntityTypeConfiguration<ServicoPrestador>
             .WithMany(p => p.ServicosOferecidos)
             .HasForeignKey(s => s.PrestadorId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Property(s => s.MediaAvaliacoes)
+            .HasColumnType("decimal(10,2)");
     }
 }
 

@@ -19,6 +19,11 @@ public class AgendamentoMap : IEntityTypeConfiguration<Agendamento>
             .WithMany(p => p.Agendamentos)
             .HasForeignKey(a => a.PrestadorId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(a => a.PrincipalServicoPrestador)
+            .WithMany()
+            .HasForeignKey(a => a.PrincipalServicoPrestadorId)
+            .OnDelete(DeleteBehavior.Restrict);
         
             builder.HasOne(a => a.Endereco)
             .WithMany(e => e.Agendamentos)

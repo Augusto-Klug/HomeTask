@@ -41,6 +41,7 @@ public interface IAvaliacaoRepository : IRepositoryBase<Avaliacao>
     Task<IEnumerable<Avaliacao>> ObterPorPrestadorAsync(Guid prestadorId, CancellationToken cancellationToken = default);
     Task<IEnumerable<Avaliacao>> ObterPorClienteAsync(Guid clienteId, CancellationToken cancellationToken = default);
     Task<bool> PodeAvaliarAsync(Guid clienteId, Guid agendamentoId, CancellationToken cancellationToken = default);
+    Task<Agendamento?> ObterAgendamentoElegivelParaAvaliacaoAsync(Guid clienteId, Guid agendamentoId, CancellationToken cancellationToken = default);
 }
 
 public interface IPagamentoRepository : IRepositoryBase<Pagamento>
@@ -65,6 +66,7 @@ public interface IServicoPrestadorRepository : IRepositoryBase<ServicoPrestador>
 {
     Task<IEnumerable<ServicoPrestador>> ObterPorPrestadorAsync(Guid prestadorId, CancellationToken cancellationToken = default);
     Task<IEnumerable<ServicoPrestador>> BuscarAsync(CategoriaServico? categoria, string? cidade, decimal? precoMaximo, CancellationToken cancellationToken = default);
+    Task<ServicoPrestador?> ObterComAvaliacoesAsync(Guid servicoPrestadorId, CancellationToken cancellationToken = default);
     Task<PaginacaoResultado<ServicoBase>> BuscarTodosPaginadoAsync(
         CategoriaServico? categoria,
         string? cidade,

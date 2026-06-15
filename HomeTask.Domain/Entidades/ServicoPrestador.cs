@@ -8,6 +8,9 @@ public class ServicoPrestador : ServicoBase
     public Prestador Prestador { get; private set; } = null!;
     public int? DuracaoEstimadaMinutos { get; private set; }
     public bool AceitaPagamentoAposFinalizacao { get; private set; }
+    public decimal MediaAvaliacoes { get; private set; }
+    public int TotalAvaliacoes { get; private set; }
+    public ICollection<Avaliacao> Avaliacoes { get; private set; } = [];
 
     public ServicoPrestador() 
     {
@@ -24,6 +27,8 @@ public class ServicoPrestador : ServicoBase
         FormatoCobranca unidadeCobranca,
         int? duracaoEstimadaMinutos,
         bool aceitaPagamentoAposFinalizacao,
+        decimal mediaAvaliacoes,
+        int totalAvaliacoes,
         bool ativo,
         DateTime dataCriacao)
     {
@@ -36,8 +41,16 @@ public class ServicoPrestador : ServicoBase
         UnidadeCobranca = unidadeCobranca;
         DuracaoEstimadaMinutos = duracaoEstimadaMinutos;
         AceitaPagamentoAposFinalizacao = aceitaPagamentoAposFinalizacao;
+        MediaAvaliacoes = mediaAvaliacoes;
+        TotalAvaliacoes = totalAvaliacoes;
         Ativo = ativo;
         DataCriacao = dataCriacao;
         TipoAnuncio = TipoAnuncio.Oferta;
+    }
+
+    public void AtualizarMetricasAvaliacao(decimal mediaAvaliacoes, int totalAvaliacoes)
+    {
+        MediaAvaliacoes = mediaAvaliacoes;
+        TotalAvaliacoes = totalAvaliacoes;
     }
 }

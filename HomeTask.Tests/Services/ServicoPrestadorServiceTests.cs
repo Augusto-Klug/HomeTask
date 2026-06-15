@@ -105,4 +105,24 @@ public class ServicoPrestadorServiceTests
         Assert.Equal(CategoriaServico.Faxina, resultado[0].Categoria);
         Assert.True(resultado[0].PrecoBase <= 100);
     }
+
+    [Fact]
+    public async Task AtualizarMediaAvaliacoesAsync_QuandoExistemAvaliacoes_DevePersistirMediaDoServico()
+    {
+        var repository = new FakeServicoPrestadorRepository();
+        var service = new ServicoPrestadorService(repository);
+        var servico = EntidadeFactory.CriarServicoPrestador();
+        var avaliacaoA = new HomeTask.Domain.Entidades.Avaliacao();
+        avaliacaoA.DefinirDados(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), servico.PrestadorId, servico.Id, 5, 4, null, DateTime.UtcNow, true);
+        var avaliacaoB = new HomeTask.Domain.Entidades.Avaliacao();
+        avaliacaoB.DefinirDados(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), servico.PrestadorId, servico.Id, 3, 5, null, DateTime.UtcNow, true);
+        EntidadeFactory.DefinirNavegacao(servico, nameof(servico.Avaliacoes), new List<HomeTask.Domain.Entidades.Avaliacao> { avaliacaoA, avaliacaoB });
+        repository.Seed(servico);
+
+        await service.AtualizarMediaAvaliacoesAsync(servico.Id);
+
+        var atualizado = Assert.IsType<HomeTask.Domain.Entidades.ServicoPrestador>(repository.UltimoAtualizado);
+        Assert.Equal(4, atualizado.MediaAvaliacoes);
+        Assert.Equal(2, atualizado.TotalAvaliacoes);
+    }
 }

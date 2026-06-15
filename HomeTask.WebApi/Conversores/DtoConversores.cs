@@ -40,7 +40,7 @@ public static class DtoConversores
     public static Agendamento ParaEntidade(this AgendamentoDto dto)
     {
         var agendamento = new Agendamento();
-        agendamento.DefinirDados(dto.Id, dto.ClienteId, dto.PrestadorId, dto.DataHoraAgendada, dto.DuracaoMinutos, dto.Status, dto.EnderecoId, dto.Observacoes, dto.ValorTotal, dto.DataSolicitacao, dto.DataResposta, dto.DataInicio, dto.DataConclusao, dto.MotivoRecusa);
+        agendamento.DefinirDados(dto.Id, dto.ClienteId, dto.PrestadorId, dto.PrincipalServicoPrestadorId, dto.DataHoraAgendada, dto.DuracaoMinutos, dto.Status, dto.EnderecoId, dto.Observacoes, dto.ValorTotal, dto.DataSolicitacao, dto.DataResposta, dto.DataInicio, dto.DataConclusao, dto.MotivoRecusa);
         return agendamento;
     }
 
@@ -50,6 +50,7 @@ public static class DtoConversores
             Id = agendamento.Id,
             ClienteId = agendamento.ClienteId,
             PrestadorId = agendamento.PrestadorId,
+            PrincipalServicoPrestadorId = agendamento.PrincipalServicoPrestadorId,
             DataHoraAgendada = agendamento.DataHoraAgendada,
             DuracaoMinutos = agendamento.DuracaoMinutos,
             Status = agendamento.Status,
@@ -67,7 +68,20 @@ public static class DtoConversores
     public static ServicoPrestador ParaEntidade(this ServicoPrestadorDto dto)
     {
         var servico = new ServicoPrestador();
-        servico.DefinirDados(dto.Id, dto.PrestadorId ?? Guid.Empty, dto.Categoria, dto.Titulo, dto.Descricao, dto.PrecoBase, dto.UnidadeCobranca, dto.DuracaoEstimadaMinutos, dto.AceitaPagamentoAposFinalizacao, dto.Ativo, dto.DataCriacao == default ? DateTime.UtcNow : dto.DataCriacao);
+        servico.DefinirDados(
+            dto.Id,
+            dto.PrestadorId ?? Guid.Empty,
+            dto.Categoria,
+            dto.Titulo,
+            dto.Descricao,
+            dto.PrecoBase,
+            dto.UnidadeCobranca,
+            dto.DuracaoEstimadaMinutos,
+            dto.AceitaPagamentoAposFinalizacao,
+            dto.MediaAvaliacoes ?? 0,
+            dto.TotalAvaliacoes,
+            dto.Ativo,
+            dto.DataCriacao == default ? DateTime.UtcNow : dto.DataCriacao);
         return servico;
     }
 
@@ -85,7 +99,11 @@ public static class DtoConversores
             DuracaoEstimadaMinutos = servico.DuracaoEstimadaMinutos,
             AceitaPagamentoAposFinalizacao = servico.AceitaPagamentoAposFinalizacao,
             Ativo = servico.Ativo,
-            TipoAnuncio = TipoAnuncio.Oferta
+            TipoAnuncio = TipoAnuncio.Oferta,
+            MediaAvaliacoes = servico.MediaAvaliacoes,
+            TotalAvaliacoes = servico.TotalAvaliacoes,
+            MediaAvaliacoesPrestador = servico.Prestador?.MediaAvaliacoes,
+            TotalAvaliacoesPrestador = servico.Prestador?.TotalAvaliacoes
         };
 
     public static ServicoCliente ParaEntidade(this ServicoClienteDto dto)
