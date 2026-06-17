@@ -15,11 +15,13 @@ public class AuthController : ControllerBase
     private const string AccessTokenCookieName = "access_token";
 
     private readonly IUsuarioService _usuarioService;
+    private readonly IAuthService _authService;
     private readonly IConfiguration _configuration;
 
-    public AuthController(IUsuarioService usuarioService, IConfiguration configuration)
+    public AuthController(IUsuarioService usuarioService, IAuthService authService, IConfiguration configuration)
     {
         _usuarioService = usuarioService;
+        _authService = authService;
         _configuration = configuration;
     }
 
@@ -62,6 +64,32 @@ public class AuthController : ControllerBase
     public IActionResult Logout()
     {
         Response.Cookies.Delete(AccessTokenCookieName, CriarOpcoesCookie());
+        return NoContent();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> EsqueciSenha([FromBody] EsqueciSenhaRequest request, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(request.Email))
+            return BadRequest("E-mail é obrigatório.");
+
+        await _authService.SolicitarResetSenhaAsync(request.Email, cancellationToken);
+        return NoContent();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> RedefinirSenha([FromBody] RedefinirSenhaRequest request, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(request.Token) || string.IsNullOrWhiteSpace(request.NovaSenha))
+            return BadRequest("Token e nova senha são obrigatórios.");
+
+        if (request.NovaSenha.Length < 6)
+            return BadRequest("A senha deve ter no mínimo 6 caracteres.");
+
+        var redefiniu = await _authService.RedefinirSenhaAsync(request.Token, request.NovaSenha, cancellationToken);
+        if (!redefiniu)
+            return BadRequest("Token inválido ou expirado.");
+
         return NoContent();
     }
 
@@ -179,6 +207,10 @@ public class AuthController : ControllerBase
 }
 
 public record LoginRequest(string Email, string Senha);
+
+public record EsqueciSenhaRequest(string Email);
+
+public record RedefinirSenhaRequest(string Token, string NovaSenha);
 
 public record LoginResponse
 {

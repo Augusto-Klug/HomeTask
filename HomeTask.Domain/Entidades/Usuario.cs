@@ -21,6 +21,7 @@ public class Usuario
     public Cliente? Cliente { get; private set; }
     public Prestador? Prestador { get; private set; }
     public Endereco? Endereco { get; private set; }
+    public Auth? Auth { get; private set; }
 
     public void DefinirDados(
         Guid id,

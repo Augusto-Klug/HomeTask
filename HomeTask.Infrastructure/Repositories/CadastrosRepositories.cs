@@ -38,6 +38,23 @@ public class UsuarioRepository : RepositoryBase<Usuario>, IUsuarioRepository
         Context.Usuarios.AnyAsync(u => u.Documento == cpf, cancellationToken);
 }
 
+public class AuthRepository : RepositoryBase<Auth>, IAuthRepository
+{
+    public AuthRepository(HomeTaskDbContext context) : base(context)
+    {
+    }
+
+    public Task<Auth?> ObterPorUsuarioIdAsync(Guid usuarioId, CancellationToken cancellationToken = default) =>
+        Context.Auth
+            .Include(a => a.Usuario)
+            .FirstOrDefaultAsync(a => a.UsuarioId == usuarioId, cancellationToken);
+
+    public Task<Auth?> ObterPorResetarSenhaTokenAsync(string token, CancellationToken cancellationToken = default) =>
+        Context.Auth
+            .Include(a => a.Usuario)
+            .FirstOrDefaultAsync(a => a.ResetarSenhaToken == token, cancellationToken);
+}
+
 public class ClienteRepository : RepositoryBase<Cliente>, IClienteRepository
 {
     public ClienteRepository(HomeTaskDbContext context) : base(context)

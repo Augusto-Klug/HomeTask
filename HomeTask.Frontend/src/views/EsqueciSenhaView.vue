@@ -76,13 +76,10 @@ async function handleEnviar() {
   erro.value = null
   carregando.value = true
   try {
-    await api.post('/api/Auth/EsqueciSenha', { email: email.value })
+    await api.post('/api/Auth/EsqueciSenha', { email: email.value }, { skipAuthRedirect: true })
     enviado.value = true
-  } catch (err: unknown) {
-    const e = err as { response?: { status?: number } }
-    erro.value = e.response?.status === 404
-      ? 'E-mail não encontrado.'
-      : 'Erro ao enviar o e-mail. Tente novamente.'
+  } catch {
+    erro.value = 'Erro ao enviar o e-mail. Tente novamente.'
   } finally {
     carregando.value = false
   }

@@ -11,6 +11,7 @@ public class HomeTaskDbContext : DbContext
 
     // Usuários
     public DbSet<Usuario> Usuarios => Set<Usuario>();
+    public DbSet<Auth> Auth => Set<Auth>();
     public DbSet<Cliente> Clientes => Set<Cliente>();
     public DbSet<Prestador> Prestadores => Set<Prestador>();
 

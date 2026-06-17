@@ -11,6 +11,12 @@ public interface IUsuarioRepository : IRepositoryBase<Usuario>
     Task<bool> ExisteCpfAsync(string cpf, CancellationToken cancellationToken = default);
 }
 
+public interface IAuthRepository : IRepositoryBase<Auth>
+{
+    Task<Auth?> ObterPorUsuarioIdAsync(Guid usuarioId, CancellationToken cancellationToken = default);
+    Task<Auth?> ObterPorResetarSenhaTokenAsync(string token, CancellationToken cancellationToken = default);
+}
+
 public interface IClienteRepository : IRepositoryBase<Cliente>
 {
     Task<Cliente?> ObterPorUsuarioIdAsync(Guid usuarioId, CancellationToken cancellationToken = default);
