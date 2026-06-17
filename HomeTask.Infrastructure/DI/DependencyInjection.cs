@@ -31,9 +31,11 @@ public static class DependencyInjection
         );
 
         services.Configure<MercadoPagoOptions>(configuration.GetSection(MercadoPagoOptions.SectionName));
+        services.Configure<SmtpOptions>(configuration.GetSection(SmtpOptions.SectionName));
         services.AddHttpClient<IPagamentoGateway, MercadoPagoPaymentGateway>();
 
         services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+        services.AddScoped<IAuthRepository, AuthRepository>();
         services.AddScoped<IClienteRepository, ClienteRepository>();
         services.AddScoped<IPrestadorRepository, PrestadorRepository>();
         services.AddScoped<IAgendamentoRepository, AgendamentoRepository>();
@@ -48,6 +50,8 @@ public static class DependencyInjection
         services.AddScoped<ICidadeRepository, CidadeRepository>();
 
         services.AddScoped<IUsuarioService, UsuarioService>();
+        services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IEmailService, SmtpEmailService>();
         services.AddScoped<IClienteService, ClienteService>();
         services.AddScoped<IPrestadorService, PrestadorService>();
         services.AddScoped<IServicoPrestadorService, ServicoPrestadorService>();

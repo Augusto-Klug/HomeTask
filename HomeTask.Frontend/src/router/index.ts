@@ -35,7 +35,7 @@ const router = createRouter({
       meta: { guestOnly: true },
     },
     {
-      path: "/redefinir-senha",
+      path: "/redefinir-senha/:token?",
       name: "redefinir-senha",
       component: () => import("@/views/RedefinirSenhaView.vue"),
       meta: { guestOnly: true },

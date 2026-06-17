@@ -91,7 +91,7 @@ const inputNovaSenha = ref<InstanceType<typeof HtInput> | null>(null)
 const inputConfirmar = ref<InstanceType<typeof HtInput> | null>(null)
 
 onMounted(() => {
-  token.value = (route.query.token as string) ?? null
+  token.value = (route.params.token as string) ?? null
 })
 
 async function handleRedefinir() {
@@ -108,7 +108,7 @@ async function handleRedefinir() {
     await api.post('/api/Auth/RedefinirSenha', {
       token: token.value,
       novaSenha: novaSenha.value,
-    })
+    }, { skipAuthRedirect: true })
     concluido.value = true
   } catch (err: unknown) {
     const e = err as { response?: { status?: number } }
