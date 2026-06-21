@@ -37,6 +37,9 @@ public class AgendamentoMap : IEntityTypeConfiguration<Agendamento>
         builder.Property(a => a.Observacoes)
             .HasMaxLength(500);
 
+        builder.Property(a => a.EnderecoDescricao)
+            .HasMaxLength(300);
+
         builder.Property(a => a.ValorTotal)
             .HasColumnType("decimal(10,2)");
 

@@ -1,9 +1,9 @@
 <template>
   <div class="max-w-2xl mx-auto px-4 py-8">
     <div v-if="!servico?.id && !carregandoServico" class="text-center py-16 flex flex-col items-center gap-4">
-      <p class="text-sm text-muted">Parâmetros inválidos.</p>
+      <p class="text-sm text-muted">Parametros invalidos.</p>
       <router-link to="/servicos/buscar">
-        <HtButton variant="outline">Voltar à busca</HtButton>
+        <HtButton variant="outline">Voltar a busca</HtButton>
       </router-link>
     </div>
 
@@ -25,20 +25,34 @@
       <HtCard v-else-if="servico">
         <div class="mb-4">
           <h2 class="text-base font-semibold text-foreground">{{ servico.titulo }}</h2>
-          <p class="text-sm text-muted">
-            {{ servico.clienteNome || "Cliente" }} ·
-            {{ formatarPrecoServico(servico.precoBase, servico.unidadeCobranca) }}
-          </p>
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted">
+            <p>
+              <router-link :to="`/clientes/${servico.clienteId}`" class="font-medium text-primary hover:underline">
+                {{ servico.clienteNome || "Cliente" }}
+              </router-link>
+              · {{ formatarPrecoServico(servico.precoBase, servico.unidadeCobranca) }}
+            </p>
+            <p>{{ formatarEnderecoServico(servico) }}</p>
+          </div>
         </div>
 
         <div v-if="servico.dataDesejada" class="mb-4 rounded-lg border border-primary/10 bg-primary/5 p-3 text-sm">
-          Data desejada: {{ formatarData(servico.dataDesejada) }} às {{ formatarHora(servico.dataDesejada) }}
+          Data desejada: {{ formatarData(servico.dataDesejada) }} as {{ formatarHora(servico.dataDesejada) }}
         </div>
 
         <HtDivider />
         <HtAlert v-if="erro" :message="erro" class="mb-4" />
 
         <form class="flex flex-col gap-4" @submit.prevent="handleEnviarProposta">
+          <HtInput
+            v-if="exibirCampoValorProposta"
+            v-model="valorProposta"
+            label="Valor da proposta (R$)"
+            type="number"
+            :allowNegative="false"
+            placeholder="Ex: 180"
+          />
+
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <HtInput
               ref="inputData"
@@ -52,9 +66,9 @@
             <HtInput
               ref="inputHora"
               v-model="form.hora"
-              label="Horário"
+              label="Horario"
               type="time"
-              :mensagemErro="'Selecione um horário'"
+              :mensagemErro="'Selecione um horario'"
               required
               regra="required"
             />
@@ -62,8 +76,8 @@
 
           <HtTextarea
             v-model="form.observacoes"
-            label="Observações"
-            placeholder="Alguma informação adicional..."
+            label="Observacoes"
+            placeholder="Alguma informacao adicional..."
             :rows="3"
           />
 
@@ -77,135 +91,113 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from "vue";
-import { useRouter } from "vue-router";
-import api from "@/services/api";
-import { validarCampos } from "@/shared/validacao";
-import { formatarData, formatarHora, formatarPrecoServico } from "@/shared/utils";
-import { useAuthStore } from "@/stores/auth";
-import type { AgendamentoForm, ServicoClienteDetalhe } from "@/types";
-import HtAlert from "@/components/ui/HtAlert.vue";
-import HtButton from "@/components/ui/HtButton.vue";
-import HtCard from "@/components/ui/HtCard.vue";
-import HtDivider from "@/components/ui/HtDivider.vue";
-import HtInput from "@/components/ui/HtInput.vue";
-import HtSpinner from "@/components/ui/HtSpinner.vue";
-import HtTextarea from "@/components/ui/HtTextarea.vue";
+import { computed, onMounted, reactive, ref } from "vue"
+import { useRouter } from "vue-router"
+import api from "@/services/api"
+import { validarCampos } from "@/shared/validacao"
+import { formatarData, formatarHora, formatarPrecoServico } from "@/shared/utils"
+import { useAuthStore } from "@/stores/auth"
+import { UnidadeCobranca, type AgendamentoForm, type ServicoClienteDetalhe } from "@/types"
+import HtAlert from "@/components/ui/HtAlert.vue"
+import HtButton from "@/components/ui/HtButton.vue"
+import HtCard from "@/components/ui/HtCard.vue"
+import HtDivider from "@/components/ui/HtDivider.vue"
+import HtInput from "@/components/ui/HtInput.vue"
+import HtSpinner from "@/components/ui/HtSpinner.vue"
+import HtTextarea from "@/components/ui/HtTextarea.vue"
 
-const props = defineProps<{ servicoId: string }>();
+const props = defineProps<{ servicoId: string }>()
 
-const auth = useAuthStore();
-const router = useRouter();
+const auth = useAuthStore()
+const router = useRouter()
 
-const servico = ref<ServicoClienteDetalhe | null>(null);
-const carregandoServico = ref(true);
-const carregando = ref(false);
-const erro = ref<string | null>(null);
-const servicosPrestador = ref<ServicoPrestadorResumo[]>([]);
+const servico = ref<ServicoClienteDetalhe | null>(null)
+const carregandoServico = ref(true)
+const carregando = ref(false)
+const erro = ref<string | null>(null)
+const valorProposta = ref("")
 
 const form = reactive<AgendamentoForm>({
   data: "",
   hora: "",
   logradouro: "",
   observacoes: "",
-});
+})
 
-const inputData = ref<InstanceType<typeof HtInput> | null>(null);
-const inputHora = ref<InstanceType<typeof HtInput> | null>(null);
+const inputData = ref<InstanceType<typeof HtInput> | null>(null)
+const inputHora = ref<InstanceType<typeof HtInput> | null>(null)
+
+const exibirCampoValorProposta = computed(() => servico.value?.unidadeCobranca === UnidadeCobranca.ACombinar)
 
 onMounted(async () => {
   try {
     const { data } = await api.get<ServicoClienteDetalhe>(
       "/api/ServicoOferecido/ObterServicoPorId",
       { params: { id: props.servicoId } },
-    );
+    )
 
     if (!data || !("clienteId" in data)) {
-      servico.value = null;
-      return;
+      servico.value = null
+      return
     }
 
-    servico.value = data;
-
-    const { data: prestador } = await api.get<{ id: string }>("/api/Prestador/ObterPrestadorPorUsuarioId", {
-      params: { usuarioId: auth.user?.userId },
-    });
-
-    const { data: servicos } = await api.get<ServicoPrestadorResumo[]>("/api/ServicoOferecido/ObterServicosPorPrestador", {
-      params: { prestadorId: prestador.id },
-    });
-
-    servicosPrestador.value = servicos;
+    servico.value = data
   } catch {
-    servico.value = null;
+    servico.value = null
   } finally {
-    carregandoServico.value = false;
+    carregandoServico.value = false
   }
-});
+})
 
 async function handleEnviarProposta() {
-  if (!validarCampos([inputData.value, inputHora.value])) return;
-  if (!servico.value) return;
-  const servicoPrestadorPrincipalId = obterServicoPrestadorPrincipalId(servicosPrestador.value, servico.value);
-  if (!servicoPrestadorPrincipalId) {
-    erro.value = "Nao foi possivel identificar um servico do prestador para esta proposta.";
-    return;
+  if (!validarCampos([inputData.value, inputHora.value])) return
+  if (!servico.value) return
+
+  if (exibirCampoValorProposta.value) {
+    const valorNumerico = Number(valorProposta.value)
+    if (!Number.isFinite(valorNumerico) || valorNumerico <= 0) {
+      erro.value = "Informe um valor valido para a proposta."
+      return
+    }
   }
 
-  erro.value = null;
-  carregando.value = true;
+  erro.value = null
+  carregando.value = true
 
   try {
     const { data: prestador } = await api.get("/api/Prestador/ObterPrestadorPorUsuarioId", {
       params: { usuarioId: auth.user?.userId },
-    });
+    })
 
-    const dataHora = `${form.data}T${form.hora}:00`;
+    const dataHora = `${form.data}T${form.hora}:00`
 
     await api.post("/api/Agendamento/CriarAgendamento", {
       clienteId: servico.value.clienteId,
       prestadorId: prestador.id,
-      principalServicoPrestadorId: servicoPrestadorPrincipalId,
       servicosOferecidosIds: [props.servicoId],
       dataHoraAgendada: dataHora,
       observacoes: form.observacoes,
-    });
+      valorProposto: exibirCampoValorProposta.value ? Number(valorProposta.value) : undefined,
+    })
 
-    router.push("/agendamento/sucesso");
+    router.push("/agendamento/sucesso")
   } catch (err: unknown) {
-    const e = err as { response?: { data?: unknown } };
-    const msg = e.response?.data;
+    const e = err as { response?: { data?: unknown } }
+    const msg = e.response?.data
     erro.value =
       typeof msg === "string" && msg
         ? msg
-        : "Erro ao enviar proposta. Verifique os dados e tente novamente.";
+        : "Erro ao enviar proposta. Verifique os dados e tente novamente."
   } finally {
-    carregando.value = false;
+    carregando.value = false
   }
 }
 
-function obterServicoPrestadorPrincipalId(
-  servicosDoPrestador: ServicoPrestadorResumo[],
-  servicoClienteAtual: ServicoClienteDetalhe,
-) {
-  const categoriaPedido = obterCategoriaId(servicoClienteAtual.categoria);
-  const servicoDaMesmaCategoria = servicosDoPrestador.find((item) => item.ativo && obterCategoriaId(item.categoria) === categoriaPedido);
-  if (servicoDaMesmaCategoria) return servicoDaMesmaCategoria.id;
+function formatarEnderecoServico(servicoAtual: ServicoClienteDetalhe) {
+  const base = [servicoAtual.logradouro, servicoAtual.numero].filter(Boolean).join(", ")
+  const bairro = servicoAtual.bairro ? ` - ${servicoAtual.bairro}` : ""
+  const cidadeEstado = [servicoAtual.cidade || "N/A", servicoAtual.estado || "N/A"].join("/")
 
-  const primeiroServicoAtivo = servicosDoPrestador.find((item) => item.ativo);
-  if (primeiroServicoAtivo) return primeiroServicoAtivo.id;
-
-  return servicosDoPrestador[0]?.id ?? "";
+  return base ? `${base}${bairro} - ${cidadeEstado}` : cidadeEstado
 }
-
-function obterCategoriaId(categoria: number | { id: string }) {
-  return typeof categoria === "number" ? categoria : Number(categoria.id);
-}
-
-interface ServicoPrestadorResumo {
-  id: string
-  categoria: number | { id: string }
-  ativo: boolean
-}
-
 </script>

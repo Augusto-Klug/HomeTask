@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="container mx-auto max-w-3xl px-4 py-8">
     <router-link
       :to="rotaVolta"
@@ -57,9 +57,12 @@
           </div>
         </HtCard>
 
-        <HtCard v-if="avaliacaoEnviada" class="border-success/30 bg-success/5">
+        <HtCard v-if="clienteAvaliacaoEnviada || prestadorAvaliacaoEnviada" class="border-success/30 bg-success/5">
           <p class="font-semibold text-success">Avaliacao enviada</p>
-          <p class="mt-1 text-sm text-muted">Este agendamento ja foi avaliado e nao aceita novo envio.</p>
+          <p class="mt-1 text-sm text-muted">
+            <span v-if="clienteAvaliacaoEnviada">A avaliacao do prestador ja foi enviada.</span>
+            <span v-if="prestadorAvaliacaoEnviada">A avaliacao do cliente ja foi enviada.</span>
+          </p>
         </HtCard>
 
         <HtCard>
@@ -107,7 +110,13 @@
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
           <HtCard>
             <p class="mb-2 text-xs uppercase tracking-wider text-muted">Cliente</p>
-            <div class="flex items-center gap-3">
+            <router-link v-if="souOPrestador" :to="`/clientes/${agendamento.clienteId}`" class="flex items-center gap-3 hover:opacity-90">
+              <div class="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 font-bold text-primary">
+                {{ agendamento.clienteNome.charAt(0) }}
+              </div>
+              <p class="font-semibold">{{ agendamento.clienteNome }}</p>
+            </router-link>
+            <div v-else class="flex items-center gap-3">
               <div class="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 font-bold text-primary">
                 {{ agendamento.clienteNome.charAt(0) }}
               </div>
@@ -194,7 +203,7 @@
       </HtCard>
     </div>
 
-    <div v-if="mostrarModalAvaliacao" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+    <div v-if="mostrarModalAvaliacaoCliente" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <HtCard class="w-full max-w-xl">
         <h3 class="mb-2 text-lg font-bold">Avaliar atendimento</h3>
         <p class="mb-6 text-sm text-muted">Envie uma avaliacao unica para o servico e para o prestador.</p>
@@ -234,8 +243,39 @@
         </div>
 
         <div class="mt-6 flex gap-3">
-          <HtButton variant="outline" class="flex-1" @click="mostrarModalAvaliacao = false">Agora nao</HtButton>
-          <HtButton class="flex-1" :loading="carregandoAvaliacao" @click="enviarAvaliacao">Enviar avaliacao</HtButton>
+          <HtButton variant="outline" class="flex-1" @click="mostrarModalAvaliacaoCliente = false">Agora nao</HtButton>
+          <HtButton class="flex-1" :loading="carregandoAvaliacaoCliente" @click="enviarAvaliacaoCliente">Enviar avaliacao</HtButton>
+        </div>
+      </HtCard>
+    </div>
+
+    <div v-if="mostrarModalAvaliacaoPrestador" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <HtCard class="w-full max-w-xl">
+        <h3 class="mb-2 text-lg font-bold">Avaliar cliente</h3>
+        <p class="mb-6 text-sm text-muted">Envie uma avaliacao unica do cliente para este agendamento.</p>
+
+        <div class="space-y-5">
+          <div>
+            <p class="mb-2 text-sm font-semibold">Avalie o cliente</p>
+            <div class="flex gap-2">
+              <button
+                v-for="nota in 5"
+                :key="`cliente-${nota}`"
+                type="button"
+                class="text-2xl"
+                @click="notaCliente = nota"
+              >
+                {{ nota <= notaCliente ? "★" : "☆" }}
+              </button>
+            </div>
+          </div>
+
+          <HtTextarea v-model="comentarioAvaliacaoCliente" label="Comentario opcional" placeholder="Conte como foi a experiencia..." />
+        </div>
+
+        <div class="mt-6 flex gap-3">
+          <HtButton variant="outline" class="flex-1" @click="mostrarModalAvaliacaoPrestador = false">Agora nao</HtButton>
+          <HtButton class="flex-1" :loading="carregandoAvaliacaoPrestador" @click="enviarAvaliacaoPrestador">Enviar avaliacao</HtButton>
         </div>
       </HtCard>
     </div>
@@ -266,6 +306,7 @@ import {
   TipoUsuario,
   type AgendamentoResumo,
   type Avaliacao,
+  type AvaliacaoCliente,
   type PagamentoResumo,
 } from "@/types"
 import { formatarDataLonga, formatarHora, formatarMoeda, formatarPrecoServico } from "@/shared/utils"
@@ -282,24 +323,30 @@ const auth = useAuthStore()
 const id = route.params.id as string
 const agendamento = ref<AgendamentoResumo | null>(null)
 const pagamento = ref<PagamentoResumo | null>(null)
-const avaliacaoExistente = ref<Avaliacao | null>(null)
+const avaliacaoPrestadorExistente = ref<Avaliacao | null>(null)
+const avaliacaoClienteExistente = ref<AvaliacaoCliente | null>(null)
 const carregando = ref(true)
 const carregandoAcao = ref(false)
 const carregandoPagamento = ref(false)
-const carregandoAvaliacao = ref(false)
+const carregandoAvaliacaoCliente = ref(false)
+const carregandoAvaliacaoPrestador = ref(false)
 const erro = ref<string | null>(null)
 const motivo = ref("")
 const comentarioAvaliacao = ref("")
+const comentarioAvaliacaoCliente = ref("")
 const notaServico = ref(0)
 const notaPrestador = ref(0)
+const notaCliente = ref(0)
 const mostrarModalRecusa = ref(false)
 const mostrarModalCancelamento = ref(false)
-const mostrarModalAvaliacao = ref(false)
+const mostrarModalAvaliacaoCliente = ref(false)
+const mostrarModalAvaliacaoPrestador = ref(false)
 const clienteAtualId = ref<string | null>(null)
 const prestadorAtualId = ref<string | null>(null)
 const retornoCheckoutVisivel = ref(false)
 const statusRetornoCheckout = ref<string | null>(null)
-const avaliacaoEnviada = ref(false)
+const clienteAvaliacaoEnviada = ref(false)
+const prestadorAvaliacaoEnviada = ref(false)
 
 const rotaVolta = computed(() => {
   if (route.query.origem === "operacao") return "/perfil/agendamentos-prestador"
@@ -460,8 +507,8 @@ async function buscarDetalhes() {
   try {
     const { data } = await api.get<AgendamentoResumo>("/api/Agendamento/ObterAgendamentoPorId", { params: { id } })
     agendamento.value = data
-    await Promise.all([buscarPagamento(), buscarAvaliacao()])
-    abrirAvaliacaoAutomaticamente()
+    await Promise.all([buscarPagamento(), buscarAvaliacoes()])
+    abrirAvaliacoesAutomaticamente()
   } catch {
     erro.value = "Nao foi possivel carregar os detalhes do agendamento."
   } finally {
@@ -480,16 +527,30 @@ async function buscarPagamento() {
   }
 }
 
-async function buscarAvaliacao() {
-  try {
-    const { data } = await api.get<Avaliacao>("/api/Avaliacao/ObterAvaliacaoPorAgendamento", {
+async function buscarAvaliacoes() {
+  const [avaliacaoPrestador, avaliacaoCliente] = await Promise.allSettled([
+    api.get<Avaliacao>("/api/Avaliacao/ObterAvaliacaoPorAgendamento", {
       params: { agendamentoId: id },
-    })
-    avaliacaoExistente.value = data
-    avaliacaoEnviada.value = true
-  } catch {
-    avaliacaoExistente.value = null
-    avaliacaoEnviada.value = false
+    }),
+    api.get<AvaliacaoCliente>("/api/Avaliacao/ObterAvaliacaoClientePorAgendamento", {
+      params: { agendamentoId: id },
+    }),
+  ])
+
+  if (avaliacaoPrestador.status === "fulfilled") {
+    avaliacaoPrestadorExistente.value = avaliacaoPrestador.value.data
+    clienteAvaliacaoEnviada.value = true
+  } else {
+    avaliacaoPrestadorExistente.value = null
+    clienteAvaliacaoEnviada.value = false
+  }
+
+  if (avaliacaoCliente.status === "fulfilled") {
+    avaliacaoClienteExistente.value = avaliacaoCliente.value.data
+    prestadorAvaliacaoEnviada.value = true
+  } else {
+    avaliacaoClienteExistente.value = null
+    prestadorAvaliacaoEnviada.value = false
   }
 }
 
@@ -545,13 +606,13 @@ async function realizarPagamento() {
   }
 }
 
-async function enviarAvaliacao() {
+async function enviarAvaliacaoCliente() {
   if (!agendamento.value || notaServico.value < 1 || notaPrestador.value < 1) {
     alert("Informe as duas notas antes de enviar.")
     return
   }
 
-  carregandoAvaliacao.value = true
+  carregandoAvaliacaoCliente.value = true
   try {
     const { data } = await api.post<Avaliacao>("/api/Avaliacao/CriarAvaliacao", {
       agendamentoId: agendamento.value.id,
@@ -562,9 +623,9 @@ async function enviarAvaliacao() {
       comentario: comentarioAvaliacao.value || null,
     })
 
-    avaliacaoExistente.value = data
-    avaliacaoEnviada.value = true
-    mostrarModalAvaliacao.value = false
+    avaliacaoPrestadorExistente.value = data
+    clienteAvaliacaoEnviada.value = true
+    mostrarModalAvaliacaoCliente.value = false
     comentarioAvaliacao.value = ""
     notaServico.value = 0
     notaPrestador.value = 0
@@ -572,7 +633,7 @@ async function enviarAvaliacao() {
   } catch {
     alert("Erro ao enviar avaliacao. Tente novamente.")
   } finally {
-    carregandoAvaliacao.value = false
+    carregandoAvaliacaoCliente.value = false
   }
 }
 
@@ -586,17 +647,66 @@ function obterStatusRetornoCheckout() {
 }
 
 function formatarEndereco(endereco: AgendamentoResumo["endereco"]) {
-  return `${endereco.logradouro}, ${endereco.bairro} - ${endereco.cidade}/${endereco.estado}`
+  if (endereco.descricao) {
+    const cidadeEstado = [endereco.cidade, endereco.estado].filter(Boolean).join("/")
+    return cidadeEstado ? `${endereco.descricao} - ${cidadeEstado}` : endereco.descricao
+  }
+
+  const partes = [endereco.logradouro, endereco.bairro].filter(Boolean).join(", ")
+  const cidadeEstado = [endereco.cidade, endereco.estado].filter(Boolean).join("/")
+  return [partes, cidadeEstado].filter(Boolean).join(" - ")
 }
 
-function abrirAvaliacaoAutomaticamente() {
-  if (!agendamento.value || !souOCliente.value) return
-  if (avaliacaoExistente.value || avaliacaoEnviada.value) return
-  if (agendamento.value.status !== StatusAgendamento.Concluido) return
-  if (pagamento.value?.status !== StatusPagamento.Aprovado) return
-  if (agendamento.value.podeAvaliar === false) return
+async function enviarAvaliacaoPrestador() {
+  if (!agendamento.value || notaCliente.value < 1) {
+    alert("Informe a nota antes de enviar.")
+    return
+  }
 
-  mostrarModalAvaliacao.value = true
+  carregandoAvaliacaoPrestador.value = true
+  try {
+    const { data } = await api.post<AvaliacaoCliente>("/api/Avaliacao/CriarAvaliacaoCliente", {
+      agendamentoId: agendamento.value.id,
+      clienteId: agendamento.value.clienteId,
+      prestadorId: agendamento.value.prestadorId,
+      nota: notaCliente.value,
+      comentario: comentarioAvaliacaoCliente.value || null,
+    })
+
+    avaliacaoClienteExistente.value = data
+    prestadorAvaliacaoEnviada.value = true
+    mostrarModalAvaliacaoPrestador.value = false
+    comentarioAvaliacaoCliente.value = ""
+    notaCliente.value = 0
+    await buscarDetalhes()
+  } catch {
+    alert("Erro ao enviar avaliacao. Tente novamente.")
+  } finally {
+    carregandoAvaliacaoPrestador.value = false
+  }
+}
+
+function abrirAvaliacoesAutomaticamente() {
+  if (!agendamento.value || pagamento.value?.status !== StatusPagamento.Aprovado) return
+  if (agendamento.value.status !== StatusAgendamento.Concluido) return
+
+  if (
+    souOCliente.value &&
+    !avaliacaoPrestadorExistente.value &&
+    !clienteAvaliacaoEnviada.value &&
+    agendamento.value.podeClienteAvaliarPrestador !== false
+  ) {
+    mostrarModalAvaliacaoCliente.value = true
+  }
+
+  if (
+    souOPrestador.value &&
+    !avaliacaoClienteExistente.value &&
+    !prestadorAvaliacaoEnviada.value &&
+    agendamento.value.podePrestadorAvaliarCliente !== false
+  ) {
+    mostrarModalAvaliacaoPrestador.value = true
+  }
 }
 
 const STATUS_LABEL: Record<StatusAgendamento, string> = {
@@ -635,3 +745,4 @@ function obterVariantStatus(status: StatusAgendamento): HtBadgeVariant {
   }
 }
 </script>
+

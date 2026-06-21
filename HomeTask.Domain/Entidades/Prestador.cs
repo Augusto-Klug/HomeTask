@@ -24,6 +24,7 @@ public class Prestador
     public ICollection<ServicoPrestador> ServicosOferecidos { get; private set; } = [];
     public ICollection<Agendamento> Agendamentos { get; private set; } = [];
     public ICollection<Avaliacao> Avaliacoes { get; private set; } = [];
+    public ICollection<AvaliacaoCliente> AvaliacoesDeClientes { get; private set; } = [];
     public ICollection<Certificacao> Certificacoes { get; private set; } = [];
     public ICollection<Portfolio> Portfolios { get; private set; } = [];
     public ICollection<Disponibilidade> Disponibilidades { get; private set; } = [];

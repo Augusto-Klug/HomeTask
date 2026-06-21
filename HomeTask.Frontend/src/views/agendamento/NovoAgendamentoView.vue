@@ -157,6 +157,7 @@ async function handleAgendar() {
       principalServicoPrestadorId: props.servicoId,
       servicosOferecidosIds: [props.servicoId],
       dataHoraAgendada: dataHora,
+      enderecoDescricao: form.logradouro,
       observacoes: form.observacoes,
     });
 

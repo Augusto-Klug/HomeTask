@@ -32,7 +32,7 @@
           <div class="grid grid-cols-1 gap-3 text-sm md:min-w-72">
             <div class="rounded-xl border border-border/60 bg-muted/10 p-4">
               <p class="text-xs uppercase tracking-wider text-muted">Avaliacao do prestador</p>
-              <p class="mt-1 text-lg font-semibold text-yellow-500">{{ estrelas(perfil.mediaAvaliacoes) }}</p>
+              <p class="mt-1 text-lg font-semibold text-yellow-500">{{ formatarEstrelas(perfil.mediaAvaliacoes, "round") }}</p>
               <p class="text-sm text-foreground">{{ formatarNota(perfil.mediaAvaliacoes) }} de 5</p>
               <p class="text-xs text-muted">{{ perfil.totalAvaliacoes }} avaliacao(oes)</p>
             </div>
@@ -58,7 +58,7 @@
                 <p class="font-semibold text-foreground">{{ servico.titulo }}</p>
                 <p class="mt-1 text-sm text-muted">{{ servico.descricao }}</p>
               </div>
-              <span class="text-sm text-yellow-500">{{ estrelas(servico.mediaAvaliacoes ?? 0) }}</span>
+              <span class="text-sm text-yellow-500">{{ formatarEstrelas(servico.mediaAvaliacoes ?? 0) }}</span>
             </div>
           </router-link>
         </div>
@@ -72,12 +72,12 @@
               <div>
                 <p class="font-semibold text-foreground">{{ item.tituloServico }}</p>
                 <p class="mt-1 text-sm text-muted">
-                  {{ formatarData(item.dataHoraAgendada) }} • {{ item.cidade }}/{{ item.estado }}
+                  {{ formatarData(item.dataHoraAgendada) }} · {{ item.cidade }}/{{ item.estado }}
                 </p>
               </div>
               <div class="text-sm">
-                <p class="text-yellow-500">Servico: {{ estrelas(item.notaServico ?? 0) }}</p>
-                <p class="text-yellow-500">Prestador: {{ estrelas(item.notaPrestador ?? 0) }}</p>
+                <p class="text-yellow-500">Servico: {{ formatarEstrelas(item.notaServico ?? 0) }}</p>
+                <p class="text-yellow-500">Prestador: {{ formatarEstrelas(item.notaPrestador ?? 0) }}</p>
               </div>
             </div>
           </HtCard>
@@ -91,7 +91,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue"
 import api from "@/services/api"
-import { formatarData } from "@/shared/utils"
+import { formatarData, formatarEstrelas } from "@/shared/utils"
 import type { PrestadorPerfilPublico } from "@/types"
 import HtCard from "@/components/ui/HtCard.vue"
 import HtSpinner from "@/components/ui/HtSpinner.vue"
@@ -113,11 +113,6 @@ onMounted(async () => {
     carregando.value = false
   }
 })
-
-function estrelas(media: number): string {
-  const cheias = Math.round(media ?? 0)
-  return "★".repeat(cheias) + "☆".repeat(Math.max(0, 5 - cheias))
-}
 
 function formatarNota(nota: number): string {
   return Number(nota ?? 0).toFixed(1)

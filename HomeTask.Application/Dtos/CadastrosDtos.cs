@@ -64,6 +64,19 @@ public class ClienteDto
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public Guid UsuarioId { get; set; }
+    public decimal MediaAvaliacoes { get; set; }
+    public int TotalAvaliacoes { get; set; }
+}
+
+public class ClientePerfilPublicoDto
+{
+    public Guid Id { get; set; }
+    public string Nome { get; set; } = string.Empty;
+    public string? Cidade { get; set; }
+    public string? Estado { get; set; }
+    public decimal MediaAvaliacoes { get; set; }
+    public int TotalAvaliacoes { get; set; }
+    public int TotalServicosContratados { get; set; }
 }
 
 public class PrestadorDto

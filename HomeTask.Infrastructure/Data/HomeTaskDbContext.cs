@@ -32,6 +32,7 @@ public class HomeTaskDbContext : DbContext
     public DbSet<AgendamentoServico> AgendamentoServicos => Set<AgendamentoServico>();
     public DbSet<Pagamento> Pagamentos => Set<Pagamento>();
     public DbSet<Avaliacao> Avaliacoes => Set<Avaliacao>();
+    public DbSet<AvaliacaoCliente> AvaliacoesClientes => Set<AvaliacaoCliente>();
 
     // Comunicação
     public DbSet<Conversa> Conversas => Set<Conversa>();

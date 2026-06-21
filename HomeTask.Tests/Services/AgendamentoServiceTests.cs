@@ -13,7 +13,7 @@ public class AgendamentoServiceTests
     {
         var agendamentoRepository = new FakeAgendamentoRepository();
         var prestadorRepository = new FakePrestadorRepository();
-        var service = new AgendamentoService(agendamentoRepository, prestadorRepository);
+        var service = new AgendamentoService(agendamentoRepository, prestadorRepository, new FakeServicoPrestadorRepository());
         var clienteId = Guid.NewGuid();
         var prestadorId = Guid.NewGuid();
         var endereco = EntidadeFactory.CriarEndereco(usuarioId: Guid.NewGuid());
@@ -24,6 +24,7 @@ public class AgendamentoServiceTests
         {
             ClienteId = clienteId,
             DataHoraAgendada = DateTime.UtcNow.AddDays(1),
+            EnderecoDescricao = "Rua do cliente, 45 - Fundos",
             Observacoes = "Periodo da manha",
             ServicosOferecidosIds = [servico.Id]
         };
@@ -34,6 +35,7 @@ public class AgendamentoServiceTests
         Assert.Equal(clienteId, resultado.ClienteId);
         Assert.Equal(prestadorId, resultado.PrestadorId);
         Assert.Equal(endereco.Id, resultado.EnderecoId);
+        Assert.Equal("Rua do cliente, 45 - Fundos", resultado.EnderecoDescricao);
         Assert.Equal(250, resultado.ValorTotal);
         Assert.Equal(120, resultado.DuracaoMinutos);
         Assert.Single(resultado.ServicosOferecidosIds);
@@ -42,10 +44,55 @@ public class AgendamentoServiceTests
     }
 
     [Fact]
+    public async Task CriarAsync_QuandoPedidoClienteForACombinar_DeveUsarValorPropostoEResolverServicoPrincipalAutomaticamente()
+    {
+        var agendamentoRepository = new FakeAgendamentoRepository();
+        var servicoPrestadorRepository = new FakeServicoPrestadorRepository();
+        var service = new AgendamentoService(agendamentoRepository, new FakePrestadorRepository(), servicoPrestadorRepository);
+        var clienteId = Guid.NewGuid();
+        var prestadorId = Guid.NewGuid();
+        var endereco = EntidadeFactory.CriarEndereco(usuarioId: Guid.NewGuid());
+        var pedidoCliente = EntidadeFactory.CriarServicoCliente(clienteId: clienteId, preco: 0);
+        pedidoCliente.DefinirDados(
+            pedidoCliente.Id,
+            pedidoCliente.ClienteId,
+            pedidoCliente.Categoria,
+            pedidoCliente.Titulo,
+            pedidoCliente.Descricao,
+            pedidoCliente.PrecoBase,
+            FormatoCobranca.ACombinar,
+            pedidoCliente.DataDesejada,
+            pedidoCliente.Ativo,
+            pedidoCliente.DataCriacao);
+        var servicoPrestador = EntidadeFactory.CriarServicoPrestador(prestadorId: prestadorId, preco: 180);
+
+        agendamentoRepository.EnderecoPrincipal = endereco;
+        agendamentoRepository.Servicos.Add(pedidoCliente);
+        servicoPrestadorRepository.Seed(servicoPrestador);
+
+        var dto = new AgendamentoDto
+        {
+            ClienteId = clienteId,
+            PrestadorId = prestadorId,
+            DataHoraAgendada = DateTime.UtcNow.AddDays(1),
+            ServicosOferecidosIds = [pedidoCliente.Id],
+            ValorProposto = 180
+        };
+
+        var resultado = await service.CriarAsync(dto);
+
+        Assert.Equal(180, resultado.ValorTotal);
+        Assert.Equal(servicoPrestador.Id, resultado.PrincipalServicoPrestadorId);
+        Assert.Equal(120, resultado.DuracaoMinutos);
+        Assert.Single(((Agendamento)agendamentoRepository.UltimoAdicionado!).AgendamentoServicos);
+        Assert.Equal(180, ((Agendamento)agendamentoRepository.UltimoAdicionado!).AgendamentoServicos.Single().ValorUnitario);
+    }
+
+    [Fact]
     public async Task CriarAsync_QuandoNaoEncontrarServico_DeveLancarErroENaoSalvar()
     {
         var agendamentoRepository = new FakeAgendamentoRepository();
-        var service = new AgendamentoService(agendamentoRepository, new FakePrestadorRepository());
+        var service = new AgendamentoService(agendamentoRepository, new FakePrestadorRepository(), new FakeServicoPrestadorRepository());
         var dto = new AgendamentoDto { ClienteId = Guid.NewGuid(), ServicosOferecidosIds = [Guid.NewGuid()] };
 
         var excecao = await Assert.ThrowsAsync<InvalidOperationException>(() => service.CriarAsync(dto));
@@ -61,7 +108,7 @@ public class AgendamentoServiceTests
         var agendamentoRepository = new FakeAgendamentoRepository();
         var agendamento = EntidadeFactory.CriarAgendamento(status: StatusAgendamento.Solicitado);
         agendamentoRepository.Seed(agendamento);
-        var service = new AgendamentoService(agendamentoRepository, new FakePrestadorRepository());
+        var service = new AgendamentoService(agendamentoRepository, new FakePrestadorRepository(), new FakeServicoPrestadorRepository());
 
         var resultado = await service.AceitarAsync(agendamento.Id);
 
@@ -77,7 +124,7 @@ public class AgendamentoServiceTests
         var agendamentoRepository = new FakeAgendamentoRepository();
         var agendamento = EntidadeFactory.CriarAgendamento(status: StatusAgendamento.Solicitado);
         agendamentoRepository.Seed(agendamento);
-        var service = new AgendamentoService(agendamentoRepository, new FakePrestadorRepository());
+        var service = new AgendamentoService(agendamentoRepository, new FakePrestadorRepository(), new FakeServicoPrestadorRepository());
 
         var excecao = await Assert.ThrowsAsync<InvalidOperationException>(() => service.IniciarAsync(agendamento.Id));
 
@@ -95,7 +142,7 @@ public class AgendamentoServiceTests
         var agendamento = EntidadeFactory.CriarAgendamento(prestadorId: prestador.Id, status: StatusAgendamento.EmAndamento);
         agendamentoRepository.Seed(agendamento);
         prestadorRepository.Seed(prestador);
-        var service = new AgendamentoService(agendamentoRepository, prestadorRepository);
+        var service = new AgendamentoService(agendamentoRepository, prestadorRepository, new FakeServicoPrestadorRepository());
 
         var resultado = await service.ConcluirAsync(agendamento.Id);
 
@@ -111,7 +158,7 @@ public class AgendamentoServiceTests
     {
         var agendamentoRepository = new FakeAgendamentoRepository();
         var prestadorRepository = new FakePrestadorRepository();
-        var service = new AgendamentoService(agendamentoRepository, prestadorRepository);
+        var service = new AgendamentoService(agendamentoRepository, prestadorRepository, new FakeServicoPrestadorRepository());
 
         var prestador = EntidadeFactory.CriarPrestador();
         var servico = new ServicoPrestador();

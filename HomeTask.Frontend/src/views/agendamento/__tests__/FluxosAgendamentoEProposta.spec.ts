@@ -1,30 +1,31 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { mount, flushPromises } from "@vue/test-utils";
-import { createPinia, setActivePinia } from "pinia";
-import { createRouter, createMemoryHistory } from "vue-router";
-import DetalhesServicoView from "@/views/servicos/DetalhesServicoView.vue";
-import * as apiModule from "@/services/api";
-import { useAuthStore } from "@/stores/auth";
-import { UnidadeCobranca } from "@/types";
+import { describe, it, expect, vi, beforeEach } from "vitest"
+import { mount, flushPromises } from "@vue/test-utils"
+import { createPinia, setActivePinia } from "pinia"
+import { createRouter, createMemoryHistory } from "vue-router"
+import DetalhesServicoView from "@/views/servicos/DetalhesServicoView.vue"
+import * as apiModule from "@/services/api"
+import { useAuthStore } from "@/stores/auth"
+import { UnidadeCobranca } from "@/types"
 
-vi.mock("@/services/api", () => ({ default: { get: vi.fn() } }));
+vi.mock("@/services/api", () => ({ default: { get: vi.fn() } }))
 
 const router = createRouter({
   history: createMemoryHistory(),
   routes: [
     { path: "/servicos/buscar", component: { template: "<div>Busca</div>" } },
     { path: "/servicos/detalhes/:id", component: DetalhesServicoView, props: true },
+    { path: "/clientes/:id", component: { template: "<div>Cliente</div>" } },
     { path: "/agendamento/novo/:servicoId", name: "agendamento-novo", component: { template: "<div>Agendamento</div>" } },
     { path: "/proposta/nova/:servicoId", name: "proposta-nova", component: { template: "<div>Proposta</div>" } },
   ],
-});
+})
 
 describe("FluxosAgendamentoEProposta", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-    setActivePinia(createPinia());
-    useAuthStore().setUser({ userId: "1", nome: "Demo", email: "d@d.com", tipo: 3 });
-  });
+    vi.clearAllMocks()
+    setActivePinia(createPinia())
+    useAuthStore().setUser({ userId: "1", nome: "Demo", email: "d@d.com", tipo: 3 })
+  })
 
   it("mostra CTA de agendamento quando o servico e de prestador", async () => {
     vi.mocked(apiModule.default.get)
@@ -44,10 +45,10 @@ describe("FluxosAgendamentoEProposta", () => {
           mediaAvaliacoes: 4,
         },
       })
-      .mockResolvedValueOnce({ data: [] });
+      .mockResolvedValueOnce({ data: [] })
 
-    router.push("/servicos/detalhes/1");
-    await router.isReady();
+    router.push("/servicos/detalhes/1")
+    await router.isReady()
 
     const wrapper = mount(DetalhesServicoView, {
       props: { id: "1" },
@@ -61,9 +62,52 @@ describe("FluxosAgendamentoEProposta", () => {
           HtDivider: true,
         },
       },
-    });
+    })
 
-    await flushPromises();
-    expect(wrapper.text()).toContain("Agendar agora");
-  });
-});
+    await flushPromises()
+    expect(wrapper.text()).toContain("Agendar agora")
+  })
+
+  it("destaca acesso ao perfil do cliente e o endereco no detalhe do pedido", async () => {
+    vi.mocked(apiModule.default.get).mockResolvedValueOnce({
+      data: {
+        id: "11",
+        titulo: "Limpeza Pos-obra",
+        descricao: "desc",
+        precoBase: 0,
+        unidadeCobranca: UnidadeCobranca.ACombinar,
+        tipoAnuncio: 2,
+        clienteId: "20",
+        clienteNome: "Pedro",
+        categoria: 1,
+        logradouro: "Rua XV de Novembro",
+        numero: "320",
+        bairro: "Centro",
+        cidade: "Blumenau",
+        estado: "SC",
+        mediaAvaliacoes: 4.4,
+      },
+    })
+
+    router.push("/servicos/detalhes/11")
+    await router.isReady()
+
+    const wrapper = mount(DetalhesServicoView, {
+      props: { id: "11" },
+      global: {
+        plugins: [router],
+        stubs: {
+          HtButton: { template: "<button @click=\"$emit('click')\"><slot /></button>", emits: ["click"] },
+          HtCard: { template: "<div><slot /></div>" },
+          HtBadge: { template: "<span><slot /></span>" },
+          HtSpinner: true,
+          HtDivider: true,
+        },
+      },
+    })
+
+    await flushPromises()
+    expect(wrapper.text()).toContain("Ver perfil do cliente")
+    expect(wrapper.text()).toContain("Rua XV de Novembro, 320 - Centro - Blumenau/SC")
+  })
+})

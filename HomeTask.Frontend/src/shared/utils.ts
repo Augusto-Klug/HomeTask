@@ -61,6 +61,12 @@ export function formatarPrecoServico(valor: number, unidadeCobranca: UnidadeCobr
   return `${formatarMoeda(valor)} ${obterDescricaoCobranca(unidadeCobranca)}`;
 }
 
+export function formatarEstrelas(nota: number, arredondamento: "floor" | "round" = "floor"): string {
+  const numero = Math.max(0, Math.min(5, Number(nota ?? 0)))
+  const preenchidas = arredondamento === "round" ? Math.round(numero) : Math.floor(numero)
+  return "\u2605".repeat(preenchidas) + "\u2606".repeat(Math.max(0, 5 - preenchidas))
+}
+
 export async function logoutHandler(
   logout: () => Promise<void>,
   redirect: () => Promise<unknown> | unknown,

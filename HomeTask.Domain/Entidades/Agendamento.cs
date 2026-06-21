@@ -43,6 +43,7 @@ public class Agendamento
     /// </summary>
     public Guid EnderecoId { get; private set; }
     public Endereco Endereco { get; private set; } = null!;
+    public string? EnderecoDescricao { get; private set; }
 
     public string? Observacoes { get; private set; }
 
@@ -64,6 +65,7 @@ public class Agendamento
     // Navegação
     public Pagamento? Pagamento { get; private set; }
     public Avaliacao? Avaliacao { get; private set; }
+    public AvaliacaoCliente? AvaliacaoCliente { get; private set; }
     public ICollection<AgendamentoServico> AgendamentoServicos { get; private set; } = [];
 
     public void AdicionarServico(AgendamentoServico servico)
@@ -108,6 +110,13 @@ public class Agendamento
     public void DefinirPrincipalServicoPrestador(Guid? principalServicoPrestadorId)
     {
         PrincipalServicoPrestadorId = principalServicoPrestadorId;
+    }
+
+    public void DefinirEnderecoDescricao(string? enderecoDescricao)
+    {
+        EnderecoDescricao = string.IsNullOrWhiteSpace(enderecoDescricao)
+            ? null
+            : enderecoDescricao.Trim();
     }
 
     public void DefinirComoSolicitado(DateTime dataSolicitacao)
