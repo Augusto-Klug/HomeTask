@@ -5,7 +5,7 @@ namespace HomeTask.Domain.Entidades
         public Endereco() { }
 
         public Guid Id { get; private set; } = Guid.NewGuid();
-        public Guid UsuarioId { get; private set; }
+        public Guid? UsuarioId { get; private set; }
 
         public Guid CidadeId { get; private set; }
 
@@ -19,7 +19,7 @@ namespace HomeTask.Domain.Entidades
 
         public string Cep { get; private set; } = null!;
 
-        public Usuario Usuario { get; private set; } = null!;
+        public Usuario? Usuario { get; private set; }
         public Cidade Cidade { get; private set; } = null!;
         public ICollection<Agendamento> Agendamentos { get; private set; } = [];
 
@@ -39,7 +39,7 @@ namespace HomeTask.Domain.Entidades
             Cep = cep;
         }
 
-        public void DefinirUsuarioId(Guid usuarioId)
+        public void DefinirUsuarioId(Guid? usuarioId)
         {
             UsuarioId = usuarioId;
         }

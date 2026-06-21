@@ -22,8 +22,7 @@ public class ServicoPrestadorServiceTests
             Descricao = "Limpeza residencial",
             PrecoBase = 180,
             UnidadeCobranca = FormatoCobranca.Total,
-            DuracaoEstimadaMinutos = 180,
-            AceitaPagamentoAposFinalizacao = true
+            DuracaoEstimadaMinutos = 180
         };
 
         // Act

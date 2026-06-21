@@ -178,6 +178,8 @@ public class AgendamentoChatHubTests
         public Task<ClienteDto> CriarAsync(ClienteDto cliente, CancellationToken cancellationToken = default) => throw new NotImplementedException();
         public Task<ClienteDto> AtualizarAsync(ClienteDto cliente, CancellationToken cancellationToken = default) => throw new NotImplementedException();
         public Task<IEnumerable<AgendamentoResumoDto>> ObterHistoricoAgendamentosAsync(Guid clienteId, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+        public Task AtualizarMediaAvaliacoesAsync(Guid clienteId, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+        public Task<ClientePerfilPublicoDto?> ObterPerfilPublicoAsync(Guid clienteId, CancellationToken cancellationToken = default) => throw new NotImplementedException();
     }
 
     private sealed class FakePrestadorService : IPrestadorService
@@ -190,6 +192,7 @@ public class AgendamentoChatHubTests
         public Task<PrestadorDto> AtualizarAsync(PrestadorDto prestador, CancellationToken cancellationToken = default) => throw new NotImplementedException();
         public Task<IEnumerable<PrestadorDto>> BuscarAsync(CategoriaServico? categoria, string? cidade, DateTime? dataDisponivel, CancellationToken cancellationToken = default) => throw new NotImplementedException();
         public Task<IEnumerable<AgendamentoResumoDto>> ObterHistoricoServicosAsync(Guid prestadorId, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+        public Task<PrestadorRecebimentosResumoDto> ObterRecebimentosAsync(Guid prestadorId, CancellationToken cancellationToken = default) => throw new NotImplementedException();
         public Task AtualizarMediaAvaliacoesAsync(Guid prestadorId, CancellationToken cancellationToken = default) => throw new NotImplementedException();
         public Task AtualizarStatusAsync(Guid prestadorId, StatusPrestador status, CancellationToken cancellationToken = default) => throw new NotImplementedException();
         public Task<PrestadorPerfilPublicoDto?> ObterPerfilPublicoAsync(Guid prestadorId, CancellationToken cancellationToken = default) => throw new NotImplementedException();

@@ -1,6 +1,5 @@
 <template>
   <div class="max-w-2xl mx-auto px-4 py-8">
-    <!-- Voltar -->
     <router-link
       to="/servicos/buscar"
       class="inline-flex items-center gap-1.5 text-sm text-muted hover:text-primary mb-6 transition-colors"
@@ -9,7 +8,6 @@
       Voltar à busca
     </router-link>
 
-    <!-- Sucesso -->
     <HtCard v-if="sucesso" class="text-center py-8">
       <span class="material-symbols-rounded text-5xl text-success mb-4 block">check_circle</span>
       <h2 class="text-title font-semibold text-foreground mb-2">Serviço publicado!</h2>
@@ -35,7 +33,6 @@
         <HtAlert v-if="erro" :message="erro" class="mb-4" />
 
         <form class="flex flex-col gap-4" @submit.prevent="handleSubmit">
-          <!-- Título -->
           <HtInput
             ref="refTitulo"
             v-model="form.titulo"
@@ -45,7 +42,6 @@
             regra="required"
           />
 
-          <!-- Descrição -->
           <HtTextarea
             v-model="form.descricao"
             label="Descrição"
@@ -53,7 +49,6 @@
             :rows="3"
           />
 
-          <!-- Categoria -->
           <HtSelect
             ref="refCategoria"
             v-model="form.categoria"
@@ -63,7 +58,6 @@
             required
           />
 
-          <!-- Modalidade de cobrança -->
           <HtSelect
             ref="refTipoValor"
             v-model="form.unidadeCobranca"
@@ -73,7 +67,6 @@
             required
           />
 
-          <!-- Valor -->
           <HtInput
             ref="refValor"
             v-model="form.precoBase"
@@ -84,31 +77,6 @@
             :hint="form.unidadeCobranca === String(UnidadeCobranca.Total) ? 'Valor total pelo serviço' : 'Valor cobrado por hora de trabalho'"
             required
             regra="required"
-          />
-
-          <HtDivider />
-
-          <!-- Pagamento após finalização -->
-          <label class="flex items-start gap-3 cursor-pointer group">
-            <input
-              v-model="form.aceitaPagamentoAposFinalizacao"
-              type="checkbox"
-              class="mt-0.5 h-4 w-4 rounded border-border text-primary focus:ring-primary cursor-pointer"
-            />
-            <div>
-              <span class="text-sm font-medium text-foreground">
-                Aceito pagamento após a finalização do serviço
-              </span>
-              <p class="text-xs text-muted mt-0.5">
-                Ao marcar esta opção, o cliente saberá que você aceita receber após concluir o trabalho.
-              </p>
-            </div>
-          </label>
-
-          <HtAlert
-            v-if="!form.aceitaPagamentoAposFinalizacao"
-            variant="info"
-            message="Por padrão, o pagamento é realizado antes da execução do serviço, após o prestador enviar a confirmação de horas previstas."
           />
 
           <HtButton type="submit" :loading="carregando" class="w-full">
@@ -122,7 +90,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import api from '@/services/api'
 import { validarCampos, type CampoValidavel } from '@/shared/validacao'
 import { CATEGORIAS_SERVICO, UnidadeCobranca, type ServicoPrestadorForm } from '@/types'
@@ -132,13 +100,12 @@ import HtSelect from '@/components/ui/HtSelect.vue'
 import HtButton from '@/components/ui/HtButton.vue'
 import HtCard from '@/components/ui/HtCard.vue'
 import HtAlert from '@/components/ui/HtAlert.vue'
-import HtDivider from '@/components/ui/HtDivider.vue'
 
 const categoriasOpcoes = CATEGORIAS_SERVICO.map(c => ({ value: c.value, label: c.label }))
 
 const tiposValorOpcoes = [
   { value: UnidadeCobranca.PorHora, label: 'Por hora' },
-  { value: UnidadeCobranca.Total,   label: 'Valor total fixo' },
+  { value: UnidadeCobranca.Total, label: 'Valor total fixo' },
 ]
 
 const form = reactive<ServicoPrestadorForm>({
@@ -147,18 +114,17 @@ const form = reactive<ServicoPrestadorForm>({
   categoria: '',
   unidadeCobranca: '',
   precoBase: '',
-  aceitaPagamentoAposFinalizacao: false,
   tipo: 1,
 })
 
-const refTitulo    = ref<InstanceType<typeof HtInput>   | null>(null)
-const refCategoria = ref<InstanceType<typeof HtSelect>  | null>(null)
-const refTipoValor = ref<InstanceType<typeof HtSelect>  | null>(null)
-const refValor     = ref<InstanceType<typeof HtInput>   | null>(null)
+const refTitulo = ref<InstanceType<typeof HtInput> | null>(null)
+const refCategoria = ref<InstanceType<typeof HtSelect> | null>(null)
+const refTipoValor = ref<InstanceType<typeof HtSelect> | null>(null)
+const refValor = ref<InstanceType<typeof HtInput> | null>(null)
 
 const carregando = ref(false)
-const erro       = ref<string | null>(null)
-const sucesso    = ref(false)
+const erro = ref<string | null>(null)
+const sucesso = ref(false)
 
 async function handleSubmit() {
   const campos: Array<CampoValidavel | null> = [refTitulo.value, refCategoria.value, refTipoValor.value, refValor.value]
@@ -166,6 +132,7 @@ async function handleSubmit() {
 
   erro.value = null
   carregando.value = true
+
   try {
     const categoriaSelecionada = Number(form.categoria)
     if (!categoriaSelecionada) {
@@ -173,13 +140,13 @@ async function handleSubmit() {
     }
 
     await api.post('/api/ServicoOferecido/CriarServicoPrestador', {
-      titulo:                          form.titulo,
-      descricao:                       form.descricao,
-      categoria:                       categoriaSelecionada,
-      unidadeCobranca:                 Number(form.unidadeCobranca),
-      precoBase:                       Number(form.precoBase.toString().replace(',', '.')),
-      aceitaPagamentoAposFinalizacao:  form.aceitaPagamentoAposFinalizacao,
+      titulo: form.titulo,
+      descricao: form.descricao,
+      categoria: categoriaSelecionada,
+      unidadeCobranca: Number(form.unidadeCobranca),
+      precoBase: Number(form.precoBase.toString().replace(',', '.')),
     })
+
     sucesso.value = true
   } catch (err: unknown) {
     const e = err as { response?: { data?: unknown } }
@@ -198,7 +165,6 @@ function reiniciar() {
   form.categoria = ''
   form.unidadeCobranca = ''
   form.precoBase = ''
-  form.aceitaPagamentoAposFinalizacao = false
   form.tipo = 1
   erro.value = null
   sucesso.value = false

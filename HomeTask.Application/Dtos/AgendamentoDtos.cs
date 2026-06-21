@@ -12,6 +12,7 @@ public class AgendamentoDto
     public DateTime DataHoraAgendada { get; set; }
     public int DuracaoMinutos { get; set; }
     public Guid EnderecoId { get; set; }
+    public Guid CidadeId { get; set; }
     public string? EnderecoDescricao { get; set; }
     public StatusAgendamento Status { get; set; }
 

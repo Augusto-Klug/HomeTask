@@ -41,6 +41,7 @@ public interface IAgendamentoRepository : IRepositoryBase<Agendamento>
     Task<IEnumerable<Agendamento>> ObterPorStatusAsync(StatusAgendamento status, CancellationToken cancellationToken = default);
     Task<List<ServicoBase>> ObterServicosPorIdsAsync(IEnumerable<Guid> servicosIds, CancellationToken cancellationToken = default);
     Task<Endereco?> ObterEnderecoPrincipalDoClienteAsync(Guid clienteId, CancellationToken cancellationToken = default);
+    Task AdicionarEnderecoAsync(Endereco endereco, CancellationToken cancellationToken = default);
 }
 
 public interface IAvaliacaoRepository : IRepositoryBase<Avaliacao>

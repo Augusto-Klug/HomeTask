@@ -121,6 +121,8 @@ const form = reactive<AgendamentoForm>({
   data: "",
   hora: "",
   logradouro: "",
+  cidadeId: "",
+  estado: "",
   observacoes: "",
 })
 
@@ -196,5 +198,14 @@ function formatarEnderecoServico(servicoAtual: ServicoClienteDetalhe) {
   const cidadeEstado = [servicoAtual.cidade || "N/A", servicoAtual.estado || "N/A"].join("/")
 
   return base ? `${base}${bairro} - ${cidadeEstado}` : cidadeEstado
+}
+
+const servicosPrestador = ref<Array<{ id: string }>>([])
+
+function obterServicoPrestadorPrincipalId(
+  _servicosPrestador: Array<{ id: string }>,
+  servicoAtual: ServicoClienteDetalhe,
+): string {
+  return servicoAtual.id
 }
 </script>

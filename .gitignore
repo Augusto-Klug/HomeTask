@@ -462,8 +462,8 @@ Desktop.ini
 pnpm-lock.yaml
 .pnpm-store/
 
-# npm lock files (if using npm)
-package-lock.json
+# npm lock file da raiz antiga
+/package-lock.json
 
 # yarn lock files (if using yarn)
 yarn.lock

@@ -26,7 +26,6 @@ public class ServicoPrestadorDto
 
     public DateTime DataCriacao { get; set; }
     public int? DuracaoEstimadaMinutos { get; set; }
-    public bool AceitaPagamentoAposFinalizacao { get; set; }
     public TipoAnuncio TipoAnuncio { get; set; } = TipoAnuncio.Oferta;
     public string? PrestadorNome { get; set; }
     public string? Logradouro { get; set; }

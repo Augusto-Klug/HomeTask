@@ -4,6 +4,7 @@ using HomeTask.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HomeTask.Infrastructure.Migrations
 {
     [DbContext(typeof(HomeTaskDbContext))]
-    partial class HomeTaskDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260621215550_AddOptionalEnderecoUsuarioForAgendamentoCidade")]
+    partial class AddOptionalEnderecoUsuarioForAgendamentoCidade
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -709,6 +712,9 @@ namespace HomeTask.Infrastructure.Migrations
             modelBuilder.Entity("HomeTask.Domain.Entidades.ServicoPrestador", b =>
                 {
                     b.HasBaseType("HomeTask.Domain.Entidades.ServicoBase");
+
+                    b.Property<bool>("AceitaPagamentoAposFinalizacao")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<int?>("DuracaoEstimadaMinutos")
                         .HasColumnType("int");

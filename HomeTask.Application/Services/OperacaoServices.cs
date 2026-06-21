@@ -106,13 +106,12 @@ public class AgendamentoService : IAgendamentoService
             }
         }
 
-        var enderecoId = agendamento.EnderecoId;
-        if (enderecoId == Guid.Empty)
-        {
-            var endereco = await _agendamentoRepository.ObterEnderecoPrincipalDoClienteAsync(clienteId, cancellationToken);
-            if (endereco != null)
-                enderecoId = endereco.Id;
-        }
+        var enderecoPrincipal = await _agendamentoRepository.ObterEnderecoPrincipalDoClienteAsync(clienteId, cancellationToken);
+        var enderecoId = await ResolverEnderecoAgendamentoAsync(
+            dto,
+            agendamento.EnderecoId,
+            enderecoPrincipal,
+            cancellationToken);
 
         if (enderecoId == Guid.Empty)
             throw new InvalidOperationException("Cliente nao possui endereco cadastrado para o agendamento.");
@@ -150,6 +149,31 @@ public class AgendamentoService : IAgendamentoService
         await _agendamentoRepository.AdicionarAsync(agendamento, cancellationToken);
         await _agendamentoRepository.SalvarAlteracoesAsync(cancellationToken);
         return agendamento.ParaDto();
+    }
+
+    private async Task<Guid> ResolverEnderecoAgendamentoAsync(
+        AgendamentoDto dto,
+        Guid enderecoIdAtual,
+        Domain.Entidades.Endereco? enderecoPrincipal,
+        CancellationToken cancellationToken)
+    {
+        if (dto.CidadeId == Guid.Empty)
+            return enderecoIdAtual != Guid.Empty ? enderecoIdAtual : enderecoPrincipal?.Id ?? Guid.Empty;
+
+        if (enderecoPrincipal != null && enderecoPrincipal.CidadeId == dto.CidadeId)
+            return enderecoPrincipal.Id;
+
+        var endereco = new Domain.Entidades.Endereco();
+        endereco.DefinirDados(
+            dto.CidadeId,
+            string.IsNullOrWhiteSpace(dto.EnderecoDescricao) ? enderecoPrincipal?.Logradouro ?? string.Empty : dto.EnderecoDescricao.Trim(),
+            enderecoPrincipal?.Numero,
+            enderecoPrincipal?.Complemento,
+            enderecoPrincipal?.Bairro ?? string.Empty,
+            enderecoPrincipal?.Cep ?? string.Empty);
+
+        await _agendamentoRepository.AdicionarEnderecoAsync(endereco, cancellationToken);
+        return endereco.Id;
     }
 
     public async Task<AgendamentoDto> AceitarAsync(Guid agendamentoId, CancellationToken cancellationToken = default)
