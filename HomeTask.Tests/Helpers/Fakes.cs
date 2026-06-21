@@ -254,3 +254,101 @@ internal sealed class FakeAvaliacaoClienteRepository : FakeRepositoryBase<Avalia
         return Task.FromResult(agendamento);
     }
 }
+
+internal sealed class FakeUsuarioRepository : FakeRepositoryBase<Usuario>, IUsuarioRepository
+{
+    public Task<Usuario?> ObterPorEmailAsync(string email, CancellationToken cancellationToken = default) =>
+        Task.FromResult(Itens.Values.FirstOrDefault(u => u.Email == email));
+
+    public Task<bool> ExisteEmailAsync(string email, CancellationToken cancellationToken = default) =>
+        Task.FromResult(Itens.Values.Any(u => u.Email == email));
+
+    public Task<bool> ExisteCpfAsync(string cpf, CancellationToken cancellationToken = default) =>
+        Task.FromResult(Itens.Values.Any(u => u.Documento == cpf));
+}
+
+internal sealed class FakeAuthRepository : FakeRepositoryBase<Auth>, IAuthRepository
+{
+    public Task<Auth?> ObterPorUsuarioIdAsync(Guid usuarioId, CancellationToken cancellationToken = default) =>
+        Task.FromResult(Itens.Values.FirstOrDefault(a => a.UsuarioId == usuarioId));
+
+    public Task<Auth?> ObterPorResetarSenhaTokenAsync(string token, CancellationToken cancellationToken = default) =>
+        Task.FromResult(Itens.Values.FirstOrDefault(a => a.ResetarSenhaToken == token));
+}
+
+internal sealed class FakeEmailService : IEmailService
+{
+    public int ResetSenhaChamadas { get; private set; }
+    public string? UltimoEmail { get; private set; }
+    public string? UltimoNome { get; private set; }
+    public string? UltimoToken { get; private set; }
+    public bool FalharEnvio { get; set; }
+
+    public Task EnviarResetSenhaAsync(string email, string nome, string token, int validadeMinutos, CancellationToken cancellationToken = default)
+    {
+        ResetSenhaChamadas++;
+        UltimoEmail = email;
+        UltimoNome = nome;
+        UltimoToken = token;
+
+        if (FalharEnvio)
+            throw new InvalidOperationException("Falha simulada no envio.");
+
+        return Task.CompletedTask;
+    }
+}
+
+internal sealed class FakeCidadeRepository : FakeRepositoryBase<Cidade>, ICidadeRepository
+{
+    public Task<IEnumerable<Cidade>> ListarAsync(CancellationToken cancellationToken = default) =>
+        Task.FromResult(Itens.Values.OrderBy(c => c.Estado).ThenBy(c => c.Nome).AsEnumerable());
+
+    public Task<IEnumerable<Cidade>> BuscarAsync(string termo, CancellationToken cancellationToken = default) =>
+        Task.FromResult(Itens.Values.Where(c => c.Nome.Contains(termo) || c.Estado.Contains(termo)).OrderBy(c => c.Estado).ThenBy(c => c.Nome).AsEnumerable());
+}
+
+internal sealed class FakeConversaRepository : FakeRepositoryBase<Conversa>, IConversaRepository
+{
+    public Task<IEnumerable<Conversa>> ListarPorUsuarioAsync(Guid usuarioId, CancellationToken cancellationToken = default) =>
+        Task.FromResult(Itens.Values.Where(c => c.Cliente.UsuarioId == usuarioId || c.Prestador.UsuarioId == usuarioId).AsEnumerable());
+
+    public Task<Conversa?> ObterPorClientePrestadorAsync(Guid clienteId, Guid prestadorId, CancellationToken cancellationToken = default) =>
+        Task.FromResult(Itens.Values.FirstOrDefault(c => c.ClienteId == clienteId && c.PrestadorId == prestadorId));
+}
+
+internal sealed class FakeArquivoService : IArquivoService
+{
+    public int SalvarChamadas { get; private set; }
+    public int ExcluirChamadas { get; private set; }
+    public string? UltimoNomeArquivo { get; private set; }
+    public string? UltimaSubpasta { get; private set; }
+    public string? UltimaUrlExcluida { get; private set; }
+    public string UrlRetornada { get; set; } = "/uploads/teste/arquivo.png";
+
+    public Task<string> SalvarAsync(Stream conteudo, string nomeArquivo, string subpasta, CancellationToken cancellationToken = default)
+    {
+        SalvarChamadas++;
+        UltimoNomeArquivo = nomeArquivo;
+        UltimaSubpasta = subpasta;
+        return Task.FromResult(UrlRetornada);
+    }
+
+    public Task ExcluirAsync(string url, CancellationToken cancellationToken = default)
+    {
+        ExcluirChamadas++;
+        UltimaUrlExcluida = url;
+        return Task.CompletedTask;
+    }
+}
+
+internal sealed class FakePortfolioRepository : FakeRepositoryBase<Portfolio>, IPortfolioRepository
+{
+    public Task<IEnumerable<Portfolio>> ObterPorPrestadorAsync(Guid prestadorId, CancellationToken cancellationToken = default) =>
+        Task.FromResult(Itens.Values.Where(p => p.PrestadorId == prestadorId).OrderBy(p => p.Ordem).AsEnumerable());
+}
+
+internal sealed class FakeCertificacaoRepository : FakeRepositoryBase<Certificacao>, ICertificacaoRepository
+{
+    public Task<IEnumerable<Certificacao>> ObterPorPrestadorAsync(Guid prestadorId, CancellationToken cancellationToken = default) =>
+        Task.FromResult(Itens.Values.Where(c => c.PrestadorId == prestadorId).OrderByDescending(c => c.DataCadastro).AsEnumerable());
+}

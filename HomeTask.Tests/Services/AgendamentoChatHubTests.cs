@@ -178,6 +178,8 @@ public class AgendamentoChatHubTests
         public Task<ClienteDto> CriarAsync(ClienteDto cliente, CancellationToken cancellationToken = default) => throw new NotImplementedException();
         public Task<ClienteDto> AtualizarAsync(ClienteDto cliente, CancellationToken cancellationToken = default) => throw new NotImplementedException();
         public Task<IEnumerable<AgendamentoResumoDto>> ObterHistoricoAgendamentosAsync(Guid clienteId, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+        public Task AtualizarMediaAvaliacoesAsync(Guid clienteId, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+        public Task<ClientePerfilPublicoDto?> ObterPerfilPublicoAsync(Guid clienteId, CancellationToken cancellationToken = default) => throw new NotImplementedException();
     }
 
     private sealed class FakePrestadorService : IPrestadorService
