@@ -153,7 +153,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { onMounted, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/services/api'
 import { validarCampos } from '@/shared/validacao'
@@ -167,6 +167,7 @@ import HtCard from '@/components/ui/HtCard.vue'
 import HtAlert from '@/components/ui/HtAlert.vue'
 import HtDivider from '@/components/ui/HtDivider.vue'
 import { UF_OPTIONS } from '@/statics/selects'
+import { useCidadeEstadoOptions } from '@/composables/useCidadeEstadoOptions'
 
 const router = useRouter()
 
@@ -193,8 +194,12 @@ const form = reactive<CadastroForm>({
 
 const carregando = ref(false)
 const erro = ref<string | null>(null)
-const carregandoCidades = ref(false)
-const todasCidades = ref<Array<{ label: string; value: string; estado: string }>>([])
+const {
+  carregandoCidades,
+  cidadesDisponiveis,
+  cidadeHint,
+  carregarCidades,
+} = useCidadeEstadoOptions(() => form.estado)
 
 // Refs dos campos
 const inputNome      = ref<InstanceType<typeof HtInput> | null>(null)
@@ -208,75 +213,6 @@ const inputBairro    = ref<InstanceType<typeof HtInput> | null>(null)
 const inputCidade    = ref<InstanceType<typeof HtSelect> | null>(null)
 const inputEstado    = ref<InstanceType<typeof HtSearchSelect> | null>(null)
 const inputDescricao = ref<InstanceType<typeof HtInput> | null>(null)
-
-type CidadeApi = {
-  id?: string
-  Id?: string
-  cidadeId?: string
-  CidadeId?: string
-  nome?: string
-  Nome?: string
-  descricao?: string
-  Descricao?: string
-  estado?: string
-  Estado?: string
-  uf?: string
-  Uf?: string
-  UF?: string
-}
-
-function mapearCidade(cidade: CidadeApi) {
-  const value = cidade.id ?? cidade.Id ?? cidade.cidadeId ?? cidade.CidadeId ?? ''
-  const nome = cidade.nome ?? cidade.Nome ?? cidade.descricao ?? cidade.Descricao ?? ''
-  const uf = cidade.uf ?? cidade.Uf ?? cidade.UF ?? cidade.estado ?? cidade.Estado ?? ''
-  return {
-    value: String(value),
-    label: nome || String(value),
-    estado: String(uf).toUpperCase(),
-  }
-}
-
-const cidadesDisponiveis = computed(() =>
-  todasCidades.value
-    .filter(cidade => cidade.estado === form.estado)
-    .map(({ value, label }) => ({ value, label })),
-)
-
-const cidadeHint = computed(() => {
-  if (carregandoCidades.value) return 'Carregando cidades...'
-  if (!form.estado) return 'Selecione um estado para listar as cidades.'
-  if (cidadesDisponiveis.value.length === 0) return 'Nenhuma cidade encontrada para o estado selecionado.'
-  return undefined
-})
-
-async function carregarCidades() {
-  carregandoCidades.value = true
-  try {
-    const response = await api.get('/api/Cidade/Listar')
-    const lista = (Array.isArray(response.data)
-      ? response.data
-      : response.data?.cidades ?? response.data?.data ?? response.data?.value ?? []) as CidadeApi[]
-    todasCidades.value = lista.map(mapearCidade).filter(cidade => cidade.value && cidade.estado)
-  } catch (err: unknown) {
-    const e = err as { response?: { status?: number } }
-    if (e.response?.status === 404) {
-      try {
-        const response = await api.get('/api/Cidades/Listar')
-        const lista = (Array.isArray(response.data)
-          ? response.data
-          : response.data?.cidades ?? response.data?.data ?? response.data?.value ?? []) as CidadeApi[]
-        todasCidades.value = lista.map(mapearCidade).filter(cidade => cidade.value && cidade.estado)
-        return
-      } catch {
-        todasCidades.value = []
-      }
-    } else {
-      todasCidades.value = []
-    }
-  } finally {
-    carregandoCidades.value = false
-  }
-}
 
 watch(
   () => form.estado,

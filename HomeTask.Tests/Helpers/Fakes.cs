@@ -96,6 +96,7 @@ internal sealed class FakeAgendamentoRepository : FakeRepositoryBase<Agendamento
 {
     public List<ServicoBase> Servicos { get; } = [];
     public Endereco? EnderecoPrincipal { get; set; }
+    public Endereco? EnderecoAdicionado { get; private set; }
 
     public Task<IEnumerable<Agendamento>> ObterPorClienteAsync(Guid clienteId, CancellationToken cancellationToken = default) =>
         Task.FromResult(Itens.Values.Where(a => a.ClienteId == clienteId).AsEnumerable());
@@ -113,6 +114,12 @@ internal sealed class FakeAgendamentoRepository : FakeRepositoryBase<Agendamento
         Task.FromResult(Servicos.Where(s => servicosIds.Contains(s.Id)).ToList());
 
     public Task<Endereco?> ObterEnderecoPrincipalDoClienteAsync(Guid clienteId, CancellationToken cancellationToken = default) => Task.FromResult(EnderecoPrincipal);
+
+    public Task AdicionarEnderecoAsync(Endereco endereco, CancellationToken cancellationToken = default)
+    {
+        EnderecoAdicionado = endereco;
+        return Task.CompletedTask;
+    }
 }
 
 internal sealed class FakePrestadorRepository : FakeRepositoryBase<Prestador>, IPrestadorRepository

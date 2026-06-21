@@ -89,6 +89,39 @@ public class AgendamentoServiceTests
     }
 
     [Fact]
+    public async Task CriarAsync_QuandoCidadeDoServicoForDiferente_DoCadastroDeveCriarEnderecoAvulsoParaOAgendamento()
+    {
+        var agendamentoRepository = new FakeAgendamentoRepository();
+        var prestadorRepository = new FakePrestadorRepository();
+        var service = new AgendamentoService(agendamentoRepository, prestadorRepository, new FakeServicoPrestadorRepository());
+        var clienteId = Guid.NewGuid();
+        var prestadorId = Guid.NewGuid();
+        var enderecoCadastro = EntidadeFactory.CriarEndereco(usuarioId: Guid.NewGuid());
+        var novaCidadeId = Guid.NewGuid();
+        var servico = EntidadeFactory.CriarServicoPrestador(prestadorId: prestadorId, preco: 250);
+
+        agendamentoRepository.EnderecoPrincipal = enderecoCadastro;
+        agendamentoRepository.Servicos.Add(servico);
+
+        var dto = new AgendamentoDto
+        {
+            ClienteId = clienteId,
+            DataHoraAgendada = DateTime.UtcNow.AddDays(1),
+            CidadeId = novaCidadeId,
+            EnderecoDescricao = "Avenida Beira Rio, 500",
+            ServicosOferecidosIds = [servico.Id]
+        };
+
+        var resultado = await service.CriarAsync(dto);
+
+        Assert.NotEqual(enderecoCadastro.Id, resultado.EnderecoId);
+        Assert.NotNull(agendamentoRepository.EnderecoAdicionado);
+        Assert.Equal(novaCidadeId, agendamentoRepository.EnderecoAdicionado!.CidadeId);
+        Assert.Null(agendamentoRepository.EnderecoAdicionado.UsuarioId);
+        Assert.Equal("Avenida Beira Rio, 500", agendamentoRepository.EnderecoAdicionado.Logradouro);
+    }
+
+    [Fact]
     public async Task CriarAsync_QuandoNaoEncontrarServico_DeveLancarErroENaoSalvar()
     {
         var agendamentoRepository = new FakeAgendamentoRepository();
@@ -162,7 +195,7 @@ public class AgendamentoServiceTests
 
         var prestador = EntidadeFactory.CriarPrestador();
         var servico = new ServicoPrestador();
-        servico.DefinirDados(Guid.NewGuid(), prestador.Id, CategoriaServico.Faxina, "Limpeza", "Limpeza por hora", 100, FormatoCobranca.PorHora, 60, true, 0, 0, true, DateTime.UtcNow);
+        servico.DefinirDados(Guid.NewGuid(), prestador.Id, CategoriaServico.Faxina, "Limpeza", "Limpeza por hora", 100, FormatoCobranca.PorHora, 60, 0, 0, true, DateTime.UtcNow);
 
         var agendamento = EntidadeFactory.CriarAgendamento(prestadorId: prestador.Id, status: StatusAgendamento.EmAndamento);
         var inicio = DateTime.UtcNow.AddHours(-2).AddMinutes(-1);

@@ -65,7 +65,6 @@ export interface Servico {
   mediaAvaliacoesPrestador?: number | null
   totalAvaliacoesPrestador?: number | null
   dataDesejada?: string | null
-  aceitaPagamentoAposFinalizacao?: boolean
 }
 
 export interface Avaliacao {
@@ -101,6 +100,8 @@ export interface AgendamentoForm {
   data: string
   hora: string
   logradouro: string
+  cidadeId: string
+  estado: string
   observacoes: string
 }
 
@@ -164,7 +165,6 @@ export interface ServicoOferecido {
   tipoAnuncio: TipoAnuncioCliente | TipoAnuncioPrestador
   categoria: number | { id: string; nome: string; icone: string }
   dataDesejada?: string | null
-  aceitaPagamentoAposFinalizacao?: boolean
 }
 
 export interface AgendamentoEndereco {
@@ -285,6 +285,22 @@ export interface PrestadorPerfilPublico {
   historicoConcluido: PrestadorHistoricoPublico[]
 }
 
+export interface PrestadorRecebimentoItem {
+  agendamentoId: string
+  tituloServico: string
+  clienteNome: string
+  dataConclusao?: string | null
+  valorRecebido: number
+  cidade: string
+  estado: string
+}
+
+export interface PrestadorRecebimentosResumo {
+  saldoRecebidoTotal: number
+  totalServicosRecebidos: number
+  servicosRecebidos: PrestadorRecebimentoItem[]
+}
+
 export interface ClientePerfilPublico {
   id: string
   nome: string
@@ -327,6 +343,5 @@ export interface ServicoPrestadorForm {
   unidadeCobranca: TipoValorPrestadorForm
   precoBase: string
   valor?: string
-  aceitaPagamentoAposFinalizacao: boolean
   tipo?: TipoAnuncioPrestador
 }

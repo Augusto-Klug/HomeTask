@@ -117,4 +117,8 @@ onMounted(async () => {
 function formatarNota(nota: number): string {
   return Number(nota ?? 0).toFixed(1)
 }
+
+function estrelas(nota: number): string {
+  return formatarEstrelas(nota, "round")
+}
 </script>

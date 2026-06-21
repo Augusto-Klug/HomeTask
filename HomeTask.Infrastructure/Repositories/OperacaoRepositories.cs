@@ -102,6 +102,9 @@ public class AgendamentoRepository : RepositoryBase<Agendamento>, IAgendamentoRe
     public Task<Endereco?> ObterEnderecoPrincipalDoClienteAsync(Guid clienteId, CancellationToken cancellationToken = default) =>
         Context.Enderecos
             .FirstOrDefaultAsync(e => e.Usuario.Cliente != null && e.Usuario.Cliente.Id == clienteId, cancellationToken);
+
+    public Task AdicionarEnderecoAsync(Endereco endereco, CancellationToken cancellationToken = default) =>
+        Context.Enderecos.AddAsync(endereco, cancellationToken).AsTask();
 }
 
 public class AvaliacaoRepository : RepositoryBase<Avaliacao>, IAvaliacaoRepository

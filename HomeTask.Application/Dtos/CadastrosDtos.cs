@@ -121,6 +121,24 @@ public class PrestadorHistoricoPublicoDto
     public decimal? NotaPrestador { get; set; }
 }
 
+public class PrestadorRecebimentosResumoDto
+{
+    public decimal SaldoRecebidoTotal { get; set; }
+    public int TotalServicosRecebidos { get; set; }
+    public List<PrestadorRecebimentoItemDto> ServicosRecebidos { get; set; } = [];
+}
+
+public class PrestadorRecebimentoItemDto
+{
+    public Guid AgendamentoId { get; set; }
+    public string TituloServico { get; set; } = string.Empty;
+    public string ClienteNome { get; set; } = string.Empty;
+    public DateTime? DataConclusao { get; set; }
+    public decimal ValorRecebido { get; set; }
+    public string Cidade { get; set; } = string.Empty;
+    public string Estado { get; set; } = string.Empty;
+}
+
 public class CidadeDto
 {
     public Guid Id { get; set; }

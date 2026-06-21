@@ -10,6 +10,7 @@ public interface IPrestadorService
     Task<PrestadorDto> AtualizarAsync(PrestadorDto prestador, CancellationToken cancellationToken = default);
     Task<IEnumerable<PrestadorDto>> BuscarAsync(CategoriaServico? categoria, string? cidade, DateTime? dataDisponivel, CancellationToken cancellationToken = default);
     Task<IEnumerable<AgendamentoResumoDto>> ObterHistoricoServicosAsync(Guid prestadorId, CancellationToken cancellationToken = default);
+    Task<PrestadorRecebimentosResumoDto> ObterRecebimentosAsync(Guid prestadorId, CancellationToken cancellationToken = default);
     Task AtualizarMediaAvaliacoesAsync(Guid prestadorId, CancellationToken cancellationToken = default);
     Task AtualizarStatusAsync(Guid prestadorId, StatusPrestador status, CancellationToken cancellationToken = default);
     Task<PrestadorPerfilPublicoDto?> ObterPerfilPublicoAsync(Guid prestadorId, CancellationToken cancellationToken = default);

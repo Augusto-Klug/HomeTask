@@ -55,6 +55,14 @@ namespace HomeTask.WebApi.Controllers
             return perfil;
         }
 
+        [HttpGet]
+        [Authorize]
+        public async Task<ActionResult<PrestadorRecebimentosResumoDto>> ObterRecebimentos([FromQuery] Guid prestadorId, CancellationToken cancellationToken)
+        {
+            var recebimentos = await _prestadorService.ObterRecebimentosAsync(prestadorId, cancellationToken);
+            return recebimentos;
+        }
+
         [HttpPost]
         public async Task<ActionResult<PrestadorDto>> CriarPrestador(PrestadorDto dto, CancellationToken cancellationToken)
         {

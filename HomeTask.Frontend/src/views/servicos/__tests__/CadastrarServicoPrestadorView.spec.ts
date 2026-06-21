@@ -1,11 +1,11 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { shallowMount, flushPromises } from '@vue/test-utils'
-import { setActivePinia, createPinia } from 'pinia'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { flushPromises, shallowMount } from '@vue/test-utils'
+import { createPinia, setActivePinia } from 'pinia'
 import { createRouter, createWebHistory } from 'vue-router'
 import CadastrarServicoPrestadorView from '../CadastrarServicoPrestadorView.vue'
+import HtAlert from '@/components/ui/HtAlert.vue'
 import HtInput from '@/components/ui/HtInput.vue'
 import HtSelect from '@/components/ui/HtSelect.vue'
-import HtAlert from '@/components/ui/HtAlert.vue'
 import { UnidadeCobranca, type ServicoPrestadorForm } from '@/types'
 
 vi.mock('@/services/api', () => ({
@@ -22,9 +22,9 @@ vi.mock('@/stores/auth', () => ({
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    { path: '/', component: { template: '<div/>' } },
-    { path: '/servicos/buscar', component: { template: '<div/>' } },
-    { path: '/servicos/novo-prestador', component: { template: '<div/>' } },
+    { path: '/', component: { template: '<div />' } },
+    { path: '/servicos/buscar', component: { template: '<div />' } },
+    { path: '/servicos/novo-prestador', component: { template: '<div />' } },
   ],
 })
 
@@ -39,22 +39,20 @@ function mountView() {
   return shallowMount(CadastrarServicoPrestadorView, {
     global: {
       plugins: [createPinia(), router],
-      // Não stubar HtCard para que o conteúdo dos slots seja renderizado
       stubs: { HtCard: false },
     },
   })
 }
 
 function preencherFormPrestador(vm: ExposedVm, overrides: Partial<ServicoPrestadorForm> = {}) {
-    Object.assign(vm.form, {
-      titulo: 'Corte de árvore',
-      descricao: 'Serviço de poda e corte',
-      categoria: '2',
-      unidadeCobranca: String(UnidadeCobranca.PorHora),
-      precoBase: '80',
-      aceitaPagamentoAposFinalizacao: false,
-      ...overrides,
-    })
+  Object.assign(vm.form, {
+    titulo: 'Corte de árvore',
+    descricao: 'Serviço de poda e corte',
+    categoria: '2',
+    unidadeCobranca: String(UnidadeCobranca.PorHora),
+    precoBase: '80',
+    ...overrides,
+  })
 }
 
 describe('CadastrarServicoPrestadorView', () => {
@@ -87,10 +85,9 @@ describe('CadastrarServicoPrestadorView', () => {
     expect(wrapper.findAllComponents(HtSelect).length).toBeGreaterThanOrEqual(2)
   })
 
-  it('exibe checkbox de aceitar pagamento após finalização', () => {
+  it('não exibe checkbox de pagamento após finalização', () => {
     const wrapper = mountView()
-    const checkbox = wrapper.find('input[type="checkbox"]')
-    expect(checkbox.exists()).toBe(true)
+    expect(wrapper.find('input[type="checkbox"]').exists()).toBe(false)
   })
 
   it('chama a API ao submeter o formulário com dados válidos', async () => {
@@ -105,6 +102,13 @@ describe('CadastrarServicoPrestadorView', () => {
     await flushPromises()
 
     expect(api.default.post).toHaveBeenCalledOnce()
+    expect(api.default.post).toHaveBeenCalledWith('/api/ServicoOferecido/CriarServicoPrestador', {
+      titulo: 'Corte de árvore',
+      descricao: 'Serviço de poda e corte',
+      categoria: 2,
+      unidadeCobranca: UnidadeCobranca.PorHora,
+      precoBase: 80,
+    })
   })
 
   it('define sucesso como true após submissão bem-sucedida', async () => {
@@ -135,5 +139,4 @@ describe('CadastrarServicoPrestadorView', () => {
 
     expect(wrapper.findAllComponents(HtAlert).length).toBeGreaterThanOrEqual(1)
   })
-
 })

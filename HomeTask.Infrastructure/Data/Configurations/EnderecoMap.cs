@@ -13,6 +13,9 @@ public class EnderecoMap : IEntityTypeConfiguration<Endereco>
         builder.HasIndex(e => e.UsuarioId)
             .IsUnique();
 
+        builder.Property(e => e.UsuarioId)
+            .IsRequired(false);
+
         builder.Property(e => e.Logradouro)
             .IsRequired()
             .HasMaxLength(200);

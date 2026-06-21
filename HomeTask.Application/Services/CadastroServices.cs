@@ -143,6 +143,25 @@ public class PrestadorService : IPrestadorService
         return historico.Select(a => a.ParaResumoDto());
     }
 
+    public async Task<PrestadorRecebimentosResumoDto> ObterRecebimentosAsync(Guid prestadorId, CancellationToken cancellationToken = default)
+    {
+        var historico = await _prestadorRepository.ObterHistoricoServicosAsync(prestadorId, cancellationToken);
+        var servicosRecebidos = historico
+            .Where(a => a.Status == StatusAgendamento.Concluido)
+            .Select(MapearRecebimento)
+            .Where(item => item != null)
+            .Cast<PrestadorRecebimentoItemDto>()
+            .OrderByDescending(item => item.DataConclusao ?? DateTime.MinValue)
+            .ToList();
+
+        return new PrestadorRecebimentosResumoDto
+        {
+            SaldoRecebidoTotal = servicosRecebidos.Sum(item => item.ValorRecebido),
+            TotalServicosRecebidos = servicosRecebidos.Count,
+            ServicosRecebidos = servicosRecebidos
+        };
+    }
+
     public async Task AtualizarMediaAvaliacoesAsync(Guid prestadorId, CancellationToken cancellationToken = default)
     {
         var prestador = await _prestadorRepository.ObterComAvaliacoesAsync(prestadorId, cancellationToken);
@@ -238,6 +257,28 @@ public class PrestadorService : IPrestadorService
             Estado = agendamento.Endereco?.Cidade?.Estado ?? string.Empty,
             NotaServico = agendamento.Avaliacao?.NotaServico,
             NotaPrestador = agendamento.Avaliacao?.NotaPrestador
+        };
+    }
+
+    private static PrestadorRecebimentoItemDto? MapearRecebimento(Agendamento agendamento)
+    {
+        var servicoPrestador = agendamento.AgendamentoServicos
+            .Select(item => item.ServicoBase)
+            .OfType<ServicoPrestador>()
+            .FirstOrDefault();
+
+        if (servicoPrestador == null)
+            return null;
+
+        return new PrestadorRecebimentoItemDto
+        {
+            AgendamentoId = agendamento.Id,
+            TituloServico = servicoPrestador.Titulo,
+            ClienteNome = agendamento.Cliente?.Usuario?.Nome ?? string.Empty,
+            DataConclusao = agendamento.DataConclusao,
+            ValorRecebido = agendamento.ValorTotal,
+            Cidade = agendamento.Endereco?.Cidade?.Nome ?? string.Empty,
+            Estado = agendamento.Endereco?.Cidade?.Estado ?? string.Empty
         };
     }
 }

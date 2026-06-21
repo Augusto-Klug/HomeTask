@@ -265,6 +265,43 @@
       </HtCard>
     </div>
 
+    <div v-if="mostrarModalAvaliacaoPrestador" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <HtCard class="w-full max-w-xl">
+        <h3 class="mb-2 text-lg font-bold">Avaliar cliente</h3>
+        <p class="mb-6 text-sm text-muted">Envie uma avaliação única para o cliente deste atendimento.</p>
+
+        <div class="space-y-5">
+          <div>
+            <p class="mb-2 text-sm font-semibold">Avalie o cliente</p>
+            <div class="flex gap-2">
+              <button
+                v-for="nota in 5"
+                :key="`cliente-${nota}`"
+                type="button"
+                class="text-2xl"
+                @click="notaCliente = nota"
+              >
+                {{ nota <= notaCliente ? "★" : "☆" }}
+              </button>
+            </div>
+          </div>
+
+          <HtTextarea
+            v-model="comentarioAvaliacaoCliente"
+            label="Comentário opcional"
+            placeholder="Conte como foi a experiência com o cliente..."
+          />
+        </div>
+
+        <div class="mt-6 flex gap-3">
+          <HtButton variant="outline" class="flex-1" @click="mostrarModalAvaliacaoPrestador = false">Agora não</HtButton>
+          <HtButton class="flex-1" :loading="carregandoAvaliacaoPrestador" @click="enviarAvaliacaoPrestador">
+            Enviar avaliação
+          </HtButton>
+        </div>
+      </HtCard>
+    </div>
+
     <div v-if="mostrarModalCancelamento" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <HtCard class="w-full max-w-md">
         <h3 class="mb-4 text-lg font-bold">Cancelar agendamento</h3>
@@ -326,6 +363,7 @@ const notaCliente = ref(0)
 const mostrarModalRecusa = ref(false)
 const mostrarModalCancelamento = ref(false)
 const mostrarModalAvaliacao = ref(false)
+const mostrarModalAvaliacaoPrestador = ref(false)
 const chatAberto = ref(false)
 const clienteAtualId = ref<string | null>(null)
 const prestadorAtualId = ref<string | null>(null)
@@ -333,6 +371,8 @@ const retornoCheckoutVisivel = ref(false)
 const statusRetornoCheckout = ref<string | null>(null)
 const clienteAvaliacaoEnviada = ref(false)
 const prestadorAvaliacaoEnviada = ref(false)
+const mostrarModalAvaliacaoCliente = mostrarModalAvaliacao
+const carregandoAvaliacao = carregandoAvaliacaoCliente
 
 const rotaVolta = computed(() => {
   if (route.query.origem === "operacao") return "/perfil/agendamentos-prestador"
@@ -353,6 +393,12 @@ const souOPrestador = computed(() =>
 const souOCliente = computed(() =>
   !!agendamento.value && clienteAtualId.value === String(agendamento.value.clienteId),
 )
+
+const avaliacaoEnviada = computed(() => {
+  if (souOCliente.value) return clienteAvaliacaoEnviada.value
+  if (souOPrestador.value) return prestadorAvaliacaoEnviada.value
+  return false
+})
 
 const podeAceitar = computed(() => {
   if (!agendamento.value || agendamento.value.status !== StatusAgendamento.Solicitado) return false

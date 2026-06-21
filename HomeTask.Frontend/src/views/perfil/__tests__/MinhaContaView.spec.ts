@@ -1,11 +1,16 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { mount, flushPromises } from '@vue/test-utils'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { flushPromises, mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
-import { createRouter, createMemoryHistory } from 'vue-router'
+import { createMemoryHistory, createRouter } from 'vue-router'
 import MinhaContaView from '../MinhaContaView.vue'
 import * as apiModule from '@/services/api'
 
 vi.mock('@/services/api', () => ({ default: { get: vi.fn(), put: vi.fn() } }))
+vi.mock('@/stores/auth', () => ({
+  useAuthStore: vi.fn(() => ({
+    user: { userId: 'user-1', tipo: 2 },
+  })),
+}))
 
 const mockPerfil = {
   nome: 'João Silva',
@@ -21,12 +26,30 @@ const mockPerfil = {
   raioAtendimentoKm: null,
 }
 
+const mockRecebimentos = {
+  saldoRecebidoTotal: 420,
+  totalServicosRecebidos: 2,
+  servicosRecebidos: [
+    {
+      agendamentoId: 'ag-1',
+      tituloServico: 'Faxina completa',
+      clienteNome: 'Maria',
+      dataConclusao: '2026-06-20T00:00:00Z',
+      valorRecebido: 220,
+      cidade: 'Blumenau',
+      estado: 'SC',
+    },
+  ],
+}
+
 const router = createRouter({
   history: createMemoryHistory(),
-  routes: [{ path: '/', component: { template: '<div />' } }],
+  routes: [
+    { path: '/', component: { template: '<div />' } },
+    { path: '/agendamento/detalhes/:id', component: { template: '<div />' } },
+  ],
 })
 
-// Stub que expõe o valor via texto para facilitar asserções
 const HtInputStub = {
   template: '<div><span class="input-value">{{ modelValue }}</span><input :disabled="disabled || undefined" /></div>',
   props: ['modelValue', 'disabled', 'label', 'regra', 'type'],
@@ -37,16 +60,33 @@ const HtSearchSelectStub = {
   props: ['modelValue', 'disabled', 'label', 'options', 'required'],
 }
 
-// Stub que preserva data-testid e type
 const HtButtonStub = {
   template: '<button :type="type || \'button\'" v-bind="$attrs"><slot /></button>',
   inheritAttrs: true,
   props: ['loading', 'variant', 'type'],
 }
 
+function mockApi() {
+  vi.mocked(apiModule.default.get).mockImplementation((url: string) => {
+    if (url === '/api/Usuario/ObterPerfilUsuario') {
+      return Promise.resolve({ data: mockPerfil })
+    }
+
+    if (url === '/api/Prestador/ObterPrestadorPorUsuarioId') {
+      return Promise.resolve({ data: { id: 'prest-1' } })
+    }
+
+    if (url === '/api/Prestador/ObterRecebimentos') {
+      return Promise.resolve({ data: mockRecebimentos })
+    }
+
+    return Promise.resolve({ data: {} })
+  })
+}
+
 function mountView() {
   setActivePinia(createPinia())
-  vi.mocked(apiModule.default.get).mockResolvedValue({ data: mockPerfil })
+  mockApi()
 
   return mount(MinhaContaView, {
     global: {
@@ -56,14 +96,20 @@ function mountView() {
         HtSearchSelect: HtSearchSelectStub,
         HtButton: HtButtonStub,
         HtSpinner: true,
+        HtCard: { template: '<div><slot /></div>' },
         HtAlert: { template: '<div><slot /></div>', props: ['variant', 'message', 'title'] },
+        HtCertificacaoForm: true,
+        HtPortfolioGaleria: true,
+        HtCertificacaoDetail: true,
       },
     },
   })
 }
 
 describe('MinhaContaView', () => {
-  beforeEach(() => vi.clearAllMocks())
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
 
   it('carrega e exibe os dados do perfil', async () => {
     const wrapper = mountView()
@@ -74,7 +120,7 @@ describe('MinhaContaView', () => {
   it('campos estão desabilitados no modo de visualização', async () => {
     const wrapper = mountView()
     await flushPromises()
-    const inputs = wrapper.findAll('input')
+    const inputs = wrapper.findAll('.input-value + input, .search-select input')
     expect(inputs.length).toBeGreaterThan(0)
     inputs.forEach(input => expect(input.attributes('disabled')).toBeDefined())
   })
@@ -83,7 +129,7 @@ describe('MinhaContaView', () => {
     const wrapper = mountView()
     await flushPromises()
     await wrapper.find('[data-testid="btn-editar"]').trigger('click')
-    const inputs = wrapper.findAll('input')
+    const inputs = wrapper.findAll('.input-value + input, .search-select input')
     inputs.forEach(input => expect(input.attributes('disabled')).toBeUndefined())
   })
 
@@ -111,5 +157,20 @@ describe('MinhaContaView', () => {
 
     expect(wrapper.findAll('.search-select').length).toBeGreaterThanOrEqual(1)
     expect(wrapper.text()).toContain('SC')
+  })
+
+  it('carrega recebimentos ao abrir a aba do prestador', async () => {
+    const wrapper = mountView()
+    await flushPromises()
+
+    const abaRecebimentos = wrapper.find('input[aria-label="Recebimentos"]')
+    await abaRecebimentos.trigger('change')
+    await flushPromises()
+
+    expect(apiModule.default.get).toHaveBeenCalledWith('/api/Prestador/ObterRecebimentos', {
+      params: { prestadorId: 'prest-1' },
+    })
+    expect(wrapper.text()).toContain('Faxina completa')
+    expect(wrapper.text()).toContain('Maria')
   })
 })

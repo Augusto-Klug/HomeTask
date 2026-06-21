@@ -340,6 +340,8 @@ function estrelas(media: number): string {
   return "★".repeat(cheias) + "☆".repeat(5 - cheias)
 }
 
+const formatarEstrelas = estrelas
+
 function obterNomeCategoria(categoria: number | { id: string; nome: string; icone: string }): string {
   if (typeof categoria === "object" && categoria !== null) {
     return categoria.nome
