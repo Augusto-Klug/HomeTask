@@ -28,5 +28,8 @@ public class MensagemMap : IEntityTypeConfiguration<Mensagem>
         builder.Property(m => m.Conteudo)
             .IsRequired()
             .HasMaxLength(2000);
+
+        builder.HasIndex(m => new { m.AgendamentoId, m.DataEnvio });
+        builder.HasIndex(m => m.DataEnvio);
     }
 }

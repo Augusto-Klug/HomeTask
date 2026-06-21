@@ -148,7 +148,7 @@ async function handleEnviarProposta() {
   if (!servico.value) return;
   const servicoPrestadorPrincipalId = obterServicoPrestadorPrincipalId(servicosPrestador.value, servico.value);
   if (!servicoPrestadorPrincipalId) {
-    erro.value = "Nao foi possivel identificar um servico do prestador para esta proposta.";
+    erro.value = "Não foi possível identificar um serviço do prestador para esta proposta.";
     return;
   }
 

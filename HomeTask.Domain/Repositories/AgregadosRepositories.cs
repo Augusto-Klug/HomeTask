@@ -58,8 +58,11 @@ public interface IPagamentoRepository : IRepositoryBase<Pagamento>
 public interface IMensagemRepository : IRepositoryBase<Mensagem>
 {
     Task<IEnumerable<Mensagem>> ObterConversaAsync(Guid conversaId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Mensagem>> ObterPorAgendamentoAsync(Guid agendamentoId, DateTime desde, CancellationToken cancellationToken = default);
+    Task<List<Mensagem>> ObterUltimasPorAgendamentoAsync(Guid agendamentoId, int quantidade, CancellationToken cancellationToken = default);
     Task<IEnumerable<Mensagem>> ObterConversasPorUsuarioAsync(Guid usuarioId, CancellationToken cancellationToken = default);
     Task<int> ObterNaoLidasAsync(Guid usuarioId, CancellationToken cancellationToken = default);
+    Task<int> RemoverEnviadasAntesDeAsync(DateTime dataLimite, CancellationToken cancellationToken = default);
 }
 
 public interface IConversaRepository : IRepositoryBase<Conversa>
@@ -77,6 +80,7 @@ public interface IServicoPrestadorRepository : IRepositoryBase<ServicoPrestador>
         CategoriaServico? categoria,
         string? cidade,
         decimal? precoMaximo,
+        TipoAnuncio? tipoAnuncio,
         Guid? usuarioId,
         int pagina,
         int tamanhoPagina,

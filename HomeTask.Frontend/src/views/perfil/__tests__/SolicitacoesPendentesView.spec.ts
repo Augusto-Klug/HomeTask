@@ -13,6 +13,6 @@ describe("SolicitacoesPendentesView", () => {
       },
     });
 
-    expect(wrapper.text()).toContain("Ver minha operacao");
+    expect(wrapper.text()).toContain("Ver minha operação");
   });
 });

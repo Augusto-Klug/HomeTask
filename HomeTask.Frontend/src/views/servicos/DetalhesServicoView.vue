@@ -6,9 +6,9 @@
 
     <div v-else-if="!servico" class="flex flex-col items-center gap-4 py-16 text-center">
       <span class="material-symbols-rounded text-5xl text-error">error</span>
-      <p class="text-sm text-muted">Servico nao encontrado.</p>
+      <p class="text-sm text-muted">Serviço não encontrado.</p>
       <router-link to="/servicos/buscar">
-        <HtButton variant="outline">Voltar a busca</HtButton>
+        <HtButton variant="outline">Voltar à busca</HtButton>
       </router-link>
     </div>
 
@@ -18,7 +18,7 @@
         class="mb-6 inline-flex items-center gap-1.5 text-sm text-muted transition-colors hover:text-primary"
       >
         <span class="material-symbols-rounded text-base">arrow_back</span>
-        Voltar a busca
+        Voltar à busca
       </router-link>
 
       <HtCard class="mb-6">
@@ -49,7 +49,7 @@
           </span>
           <div v-if="ehServicoPrestador" class="text-right text-sm">
             <p v-if="typeof servico.mediaAvaliacoes === 'number'" class="text-yellow-500">
-              Servico {{ estrelas(servico.mediaAvaliacoes) }}
+              Serviço {{ estrelas(servico.mediaAvaliacoes) }}
             </p>
             <p v-if="typeof servico.mediaAvaliacoesPrestador === 'number'" class="text-yellow-500">
               Prestador {{ estrelas(servico.mediaAvaliacoesPrestador) }}
@@ -61,10 +61,10 @@
           v-if="!ehServicoPrestador && servico.dataDesejada"
           class="mb-4 rounded-lg border border-primary/10 bg-primary/5 p-3"
         >
-          <p class="mb-1 text-xs font-semibold uppercase text-primary">Data desejada para execucao</p>
+          <p class="mb-1 text-xs font-semibold uppercase text-primary">Data desejada para execução</p>
           <p class="flex items-center gap-2 text-sm text-foreground">
             <span class="material-symbols-rounded text-base">event</span>
-            {{ formatarData(servico.dataDesejada) }} as {{ formatarHora(servico.dataDesejada) }}
+            {{ formatarData(servico.dataDesejada) }} às {{ formatarHora(servico.dataDesejada) }}
           </p>
         </div>
 
@@ -79,19 +79,19 @@
         <router-link v-else :to="`/login?redirect=/servicos/detalhes/${props.id}`">
           <HtButton variant="outline">
             <span class="material-symbols-rounded text-base">login</span>
-            Faca login para prosseguir
+            Faça login para prosseguir
           </HtButton>
         </router-link>
       </HtCard>
 
       <div v-if="avaliacoes.length">
-        <h2 class="mb-4 text-title font-semibold text-foreground">Avaliacoes</h2>
+        <h2 class="mb-4 text-title font-semibold text-foreground">Avaliações</h2>
         <div class="flex flex-col gap-3">
           <HtCard v-for="avaliacao in avaliacoes" :key="avaliacao.id">
             <div class="mb-1 flex items-center justify-between">
               <span class="text-sm font-semibold text-foreground">{{ avaliacao.clienteNome }}</span>
               <div class="text-right text-xs text-yellow-500">
-                <p>Servico {{ estrelas(avaliacao.notaServico) }}</p>
+                <p>Serviço {{ estrelas(avaliacao.notaServico) }}</p>
                 <p>Prestador {{ estrelas(avaliacao.notaPrestador) }}</p>
               </div>
             </div>

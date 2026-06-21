@@ -6,19 +6,19 @@ const MOCK_DELAY = 200;
 
 const MOCK_USER: AuthResponse = {
   userId: "1",
-  nome: "Usuario Demo",
+  nome: "Usuário Demo",
   email: "demo@hometask.com",
   tipo: 2,
 };
 
-const MOCK_CLIENTE = { id: "1", usuarioId: "1", nome: "Usuario Demo" };
-const MOCK_PRESTADOR = { id: "1", usuarioId: "1", nome: "Usuario Demo" };
+const MOCK_CLIENTE = { id: "1", usuarioId: "1", nome: "Usuário Demo" };
+const MOCK_PRESTADOR = { id: "1", usuarioId: "1", nome: "Usuário Demo" };
 
 const MOCK_SERVICOS: Servico[] = [
   {
     id: "1",
     titulo: "Faxina Residencial Completa",
-    descricao: "Limpeza completa de residencias com produtos de qualidade.",
+    descricao: "Limpeza completa de residências com produtos de qualidade.",
     precoBase: 80,
     unidadeCobranca: UnidadeCobranca.Total,
     tipoAnuncio: 1,
@@ -47,7 +47,7 @@ const MOCK_SERVICOS: Servico[] = [
   },
   {
     id: "11",
-    titulo: "Limpeza Pos-obra",
+    titulo: "Limpeza Pós-obra",
     descricao: "Preciso de uma limpeza completa depois da reforma.",
     precoBase: 160,
     unidadeCobranca: UnidadeCobranca.Total,
@@ -104,14 +104,14 @@ const MOCK_AGENDAMENTOS_CLIENTE: AgendamentoResumo[] = [
   {
     id: "ag-c-001",
     clienteId: "1",
-    clienteNome: "Usuario Demo",
+    clienteNome: "Usuário Demo",
     prestadorId: "10",
     prestadorNome: "Maria Silva",
     dataHoraAgendada: diasAPartirDeHoje(2, "09:00"),
     duracaoMinutos: 120,
     status: StatusAgendamento.Aceito,
     endereco: { logradouro: "Rua XV, 320", bairro: "Centro", cidade: "Blumenau", estado: "SC" },
-    observacoes: "Dar atencao especial a cozinha.",
+    observacoes: "Dar atenção especial à cozinha.",
     valorTotal: 160,
     dataSolicitacao: diasAPartirDeHoje(-3),
     dataResposta: diasAPartirDeHoje(-2),
@@ -134,9 +134,9 @@ const MOCK_AGENDAMENTOS_CLIENTE: AgendamentoResumo[] = [
   {
     id: "ag-c-002",
     clienteId: "1",
-    clienteNome: "Usuario Demo",
+    clienteNome: "Usuário Demo",
     prestadorId: "1",
-    prestadorNome: "Usuario Demo",
+    prestadorNome: "Usuário Demo",
     dataHoraAgendada: diasAPartirDeHoje(5, "14:30"),
     duracaoMinutos: 180,
     status: StatusAgendamento.Solicitado,
@@ -151,7 +151,7 @@ const MOCK_AGENDAMENTOS_CLIENTE: AgendamentoResumo[] = [
     servicos: [
       {
         id: "11",
-        titulo: "Limpeza Pos-obra",
+        titulo: "Limpeza Pós-obra",
         descricao: "Pedido do cliente",
         precoBase: 150,
         duracaoEstimadaMinutos: 180,
@@ -169,7 +169,7 @@ const MOCK_AGENDAMENTOS_PRESTADOR: AgendamentoResumo[] = [
     clienteId: "3",
     clienteNome: "Luisa Ferreira",
     prestadorId: "1",
-    prestadorNome: "Usuario Demo",
+    prestadorNome: "Usuário Demo",
     dataHoraAgendada: diasAPartirDeHoje(1, "10:00"),
     duracaoMinutos: 120,
     status: StatusAgendamento.Solicitado,
@@ -184,7 +184,7 @@ const MOCK_AGENDAMENTOS_PRESTADOR: AgendamentoResumo[] = [
     servicos: [
       {
         id: "srv-012",
-        titulo: "Faxina Rapida",
+        titulo: "Faxina Rápida",
         descricao: "Serviço de prestador",
         precoBase: 80,
         duracaoEstimadaMinutos: 60,
@@ -199,7 +199,7 @@ const MOCK_AGENDAMENTOS_PRESTADOR: AgendamentoResumo[] = [
     clienteId: "2",
     clienteNome: "Pedro Martins",
     prestadorId: "1",
-    prestadorNome: "Usuario Demo",
+    prestadorNome: "Usuário Demo",
     dataHoraAgendada: diasAPartirDeHoje(3, "15:00"),
     duracaoMinutos: 180,
     status: StatusAgendamento.Aceito,
@@ -214,7 +214,7 @@ const MOCK_AGENDAMENTOS_PRESTADOR: AgendamentoResumo[] = [
     servicos: [
       {
         id: "11",
-        titulo: "Limpeza Pos-obra",
+        titulo: "Limpeza Pós-obra",
         descricao: "Pedido do cliente",
         precoBase: 160,
         duracaoEstimadaMinutos: 180,
@@ -229,7 +229,7 @@ const MOCK_AGENDAMENTOS_PRESTADOR: AgendamentoResumo[] = [
 const MOCK_PAGAMENTOS: PagamentoResumo[] = [];
 
 const MOCK_PERFIL: PerfilForm = {
-  nome: "Usuario Demo",
+  nome: "Usuário Demo",
   email: "demo@hometask.com",
   telefone: "(47) 99123-4567",
   documento: "123.456.789-00",
@@ -238,14 +238,14 @@ const MOCK_PERFIL: PerfilForm = {
   bairro: "Centro",
   cidade: "Blumenau",
   estado: "SC",
-  descricao: "Profissional com experiencia.",
+  descricao: "Profissional com experiência.",
   raioAtendimentoKm: 15,
 };
 
 const MOCK_PERFIL_PUBLICO: PrestadorPerfilPublico = {
   id: "10",
   nome: "Maria Silva",
-  descricao: "Profissional com experiencia.",
+  descricao: "Profissional com experiência.",
   cidade: "Blumenau",
   estado: "SC",
   mediaAvaliacoes: 4.7,
@@ -283,7 +283,7 @@ export const handlers = [
   http.get("*/api/ServicoOferecido/BuscarServicos", async ({ request }) => {
     await delay(MOCK_DELAY);
     const url = new URL(request.url);
-    let result = [...MOCK_SERVICOS].filter((s) => !!s.prestadorId);
+    let result = [...MOCK_SERVICOS];
     const pagina = Math.max(Number(url.searchParams.get("pagina") ?? "1"), 1);
     const tamanhoPagina = Number(url.searchParams.get("tamanhoPagina") ?? "30");
 
@@ -301,6 +301,11 @@ export const handlers = [
     const precoMaximo = url.searchParams.get("precoMaximo");
     if (precoMaximo) {
       result = result.filter((s) => s.precoBase <= Number(precoMaximo));
+    }
+
+    const tipoAnuncio = url.searchParams.get("tipoAnuncio");
+    if (tipoAnuncio) {
+      result = result.filter((s) => s.tipoAnuncio === Number(tipoAnuncio));
     }
 
     const totalRegistros = result.length;
@@ -349,12 +354,12 @@ export const handlers = [
       clienteId: String(body.clienteId ?? ""),
       prestadorId: String(body.prestadorId ?? ""),
       servicoPrestadorId: String(body.servicoPrestadorId ?? ""),
-      servicoTitulo: "Servico avaliado",
+      servicoTitulo: "Serviço avaliado",
       notaServico: Number(body.notaServico ?? 0),
       notaPrestador: Number(body.notaPrestador ?? 0),
       comentario: body.comentario ?? null,
       dataAvaliacao: new Date().toISOString(),
-      clienteNome: "Usuario Demo",
+      clienteNome: "Usuário Demo",
     };
 
     MOCK_AVALIACOES_POR_AGENDAMENTO[avaliacao.agendamentoId] = avaliacao;

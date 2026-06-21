@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
+import { createPinia } from "pinia";
 import { createRouter, createMemoryHistory } from "vue-router";
 import BuscarServicosView from "../BuscarServicosView.vue";
 import * as apiModule from "@/services/api";
@@ -41,7 +42,7 @@ describe("BuscarServicosConsumo", () => {
     await router.isReady();
 
     const wrapper = mount(BuscarServicosView, {
-      global: { plugins: [router] },
+      global: { plugins: [router, createPinia()] },
     });
 
     await flushPromises();

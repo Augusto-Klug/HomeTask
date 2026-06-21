@@ -6,7 +6,7 @@
       <li>
         <router-link to="/" class="ht-sidenav-link" @click="open = false">
           <span class="material-symbols-rounded text-xl">home</span>
-          Inicio
+          Início
         </router-link>
       </li>
 

@@ -63,6 +63,7 @@ namespace HomeTask.WebApi.Controllers
             CategoriaServico? categoria,
             string? cidade,
             decimal? precoMaximo,
+            TipoAnuncio? tipoAnuncio,
             int pagina = 1,
             int tamanhoPagina = 30,
             CancellationToken cancellationToken = default)
@@ -72,6 +73,7 @@ namespace HomeTask.WebApi.Controllers
                 categoria,
                 cidade,
                 precoMaximo,
+                tipoAnuncio,
                 usuarioId,
                 pagina,
                 tamanhoPagina,

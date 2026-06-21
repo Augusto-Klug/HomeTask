@@ -520,6 +520,8 @@ public class PagamentoService : IPagamentoService
 
 public class MensagemService : IMensagemService
 {
+    private const int LimiteMensagensConsecutivas = 3;
+    private static readonly TimeSpan RetencaoMensagens = TimeSpan.FromDays(30);
     private readonly IMensagemRepository _mensagemRepository;
 
     public MensagemService(IMensagemRepository mensagemRepository)
@@ -542,9 +544,41 @@ public class MensagemService : IMensagemService
         return mensagem.ParaDto();
     }
 
+    public async Task<MensagemDto> EnviarPorAgendamentoAsync(Guid agendamentoId, Guid remetenteId, string conteudo, CancellationToken cancellationToken = default)
+    {
+        var texto = conteudo.Trim();
+        if (string.IsNullOrWhiteSpace(texto))
+            throw new InvalidOperationException("A mensagem nao pode estar vazia.");
+
+        if (texto.Length > 2000)
+            throw new InvalidOperationException("A mensagem deve ter no maximo 2000 caracteres.");
+
+        var ultimasMensagens = await _mensagemRepository.ObterUltimasPorAgendamentoAsync(
+            agendamentoId,
+            LimiteMensagensConsecutivas,
+            cancellationToken);
+
+        if (ultimasMensagens.Count == LimiteMensagensConsecutivas && ultimasMensagens.All(m => m.RemetenteId == remetenteId))
+            throw new InvalidOperationException("Aguarde a resposta do outro participante antes de enviar novas mensagens.");
+
+        return await EnviarAsync(new MensagemDto
+        {
+            RemetenteId = remetenteId,
+            AgendamentoId = agendamentoId,
+            Conteudo = texto
+        }, cancellationToken);
+    }
+
     public async Task<IEnumerable<MensagemDto>> ObterConversaAsync(Guid conversaId, CancellationToken cancellationToken = default)
     {
         var mensagens = await _mensagemRepository.ObterConversaAsync(conversaId, cancellationToken);
+        return mensagens.Select(m => m.ParaDto());
+    }
+
+    public async Task<IEnumerable<MensagemDto>> ObterPorAgendamentoAsync(Guid agendamentoId, CancellationToken cancellationToken = default)
+    {
+        var desde = DateTime.UtcNow.Subtract(RetencaoMensagens);
+        var mensagens = await _mensagemRepository.ObterPorAgendamentoAsync(agendamentoId, desde, cancellationToken);
         return mensagens.Select(m => m.ParaDto());
     }
 
@@ -567,4 +601,7 @@ public class MensagemService : IMensagemService
 
     public Task<int> ObterNaoLidasAsync(Guid usuarioId, CancellationToken cancellationToken = default) =>
         _mensagemRepository.ObterNaoLidasAsync(usuarioId, cancellationToken);
+
+    public Task<int> RemoverExpiradasAsync(CancellationToken cancellationToken = default) =>
+        _mensagemRepository.RemoverEnviadasAntesDeAsync(DateTime.UtcNow.Subtract(RetencaoMensagens), cancellationToken);
 }

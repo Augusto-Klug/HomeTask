@@ -18,6 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\HomeTask.Application\HomeTask.Application.csproj" />
     <ProjectReference Include="..\HomeTask.Infrastructure\HomeTask.Infrastructure.csproj" />
+    <ProjectReference Include="..\HomeTask.WebApi\HomeTask.WebApi.csproj" />
   </ItemGroup>
 
   <ItemGroup>
