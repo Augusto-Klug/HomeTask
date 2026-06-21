@@ -61,7 +61,7 @@ public class AvaliacaoServiceTests
             NotaPrestador = 5
         }));
 
-        Assert.Equal("Somente servicos concluidos podem ser avaliados", ex.Message);
+        Assert.Equal("Somente servicos concluidos com pagamento aprovado podem ser avaliados", ex.Message);
     }
 
     [Fact]

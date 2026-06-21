@@ -25,6 +25,7 @@ public class AgendamentoRepository : RepositoryBase<Agendamento>, IAgendamentoRe
                 .ThenInclude(s => s.ServicoBase)
             .Include(a => a.Pagamento)
             .Include(a => a.Avaliacao)
+            .Include(a => a.AvaliacaoCliente)
             .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
 
     public async Task<IEnumerable<Agendamento>> ObterPorClienteAsync(Guid clienteId, CancellationToken cancellationToken = default) =>
@@ -37,6 +38,9 @@ public class AgendamentoRepository : RepositoryBase<Agendamento>, IAgendamentoRe
                 .ThenInclude(e => e.Cidade)
             .Include(a => a.AgendamentoServicos)
                 .ThenInclude(s => s.ServicoBase)
+            .Include(a => a.Pagamento)
+            .Include(a => a.Avaliacao)
+            .Include(a => a.AvaliacaoCliente)
             .Where(a => a.ClienteId == clienteId)
             .OrderByDescending(a => a.DataHoraAgendada)
             .ToListAsync(cancellationToken);
@@ -51,6 +55,9 @@ public class AgendamentoRepository : RepositoryBase<Agendamento>, IAgendamentoRe
                 .ThenInclude(e => e.Cidade)
             .Include(a => a.AgendamentoServicos)
                 .ThenInclude(s => s.ServicoBase)
+            .Include(a => a.Pagamento)
+            .Include(a => a.Avaliacao)
+            .Include(a => a.AvaliacaoCliente)
             .Where(a => a.PrestadorId == prestadorId)
             .OrderByDescending(a => a.DataHoraAgendada)
             .ToListAsync(cancellationToken);
@@ -65,6 +72,9 @@ public class AgendamentoRepository : RepositoryBase<Agendamento>, IAgendamentoRe
                 .ThenInclude(e => e.Cidade)
             .Include(a => a.AgendamentoServicos)
                 .ThenInclude(s => s.ServicoBase)
+            .Include(a => a.Pagamento)
+            .Include(a => a.Avaliacao)
+            .Include(a => a.AvaliacaoCliente)
             .Where(a => a.PrestadorId == prestadorId && a.Status == StatusAgendamento.Solicitado)
             .OrderByDescending(a => a.DataSolicitacao)
             .ToListAsync(cancellationToken);
@@ -79,6 +89,9 @@ public class AgendamentoRepository : RepositoryBase<Agendamento>, IAgendamentoRe
                 .ThenInclude(e => e.Cidade)
             .Include(a => a.AgendamentoServicos)
                 .ThenInclude(s => s.ServicoBase)
+            .Include(a => a.Pagamento)
+            .Include(a => a.Avaliacao)
+            .Include(a => a.AvaliacaoCliente)
             .Where(a => a.Status == status)
             .OrderByDescending(a => a.DataSolicitacao)
             .ToListAsync(cancellationToken);
@@ -150,12 +163,78 @@ public class AvaliacaoRepository : RepositoryBase<Avaliacao>, IAvaliacaoReposito
 
     public Task<Agendamento?> ObterAgendamentoElegivelParaAvaliacaoAsync(Guid clienteId, Guid agendamentoId, CancellationToken cancellationToken = default) =>
         Context.Agendamentos
+            .Include(a => a.Pagamento)
             .Include(a => a.AgendamentoServicos)
                 .ThenInclude(item => item.ServicoBase)
             .FirstOrDefaultAsync(
                 a => a.Id == agendamentoId
                     && a.ClienteId == clienteId
-                    && a.Status == StatusAgendamento.Concluido,
+                    && a.Status == StatusAgendamento.Concluido
+                    && a.Pagamento != null
+                    && a.Pagamento.Status == StatusPagamento.Aprovado,
+                cancellationToken);
+}
+
+public class AvaliacaoClienteRepository : RepositoryBase<AvaliacaoCliente>, IAvaliacaoClienteRepository
+{
+    public AvaliacaoClienteRepository(HomeTaskDbContext context) : base(context)
+    {
+    }
+
+    public override Task<AvaliacaoCliente?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken = default) =>
+        Context.AvaliacoesClientes
+            .Include(a => a.Cliente)
+                .ThenInclude(c => c.Usuario)
+            .Include(a => a.Prestador)
+                .ThenInclude(p => p.Usuario)
+            .Include(a => a.Agendamento)
+            .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
+
+    public Task<AvaliacaoCliente?> ObterPorAgendamentoAsync(Guid agendamentoId, CancellationToken cancellationToken = default) =>
+        Context.AvaliacoesClientes
+            .Include(a => a.Cliente)
+                .ThenInclude(c => c.Usuario)
+            .Include(a => a.Prestador)
+                .ThenInclude(p => p.Usuario)
+            .FirstOrDefaultAsync(a => a.AgendamentoId == agendamentoId, cancellationToken);
+
+    public async Task<IEnumerable<AvaliacaoCliente>> ObterPorClienteAsync(Guid clienteId, CancellationToken cancellationToken = default) =>
+        await Context.AvaliacoesClientes
+            .Include(a => a.Prestador)
+                .ThenInclude(p => p.Usuario)
+            .Include(a => a.Agendamento)
+            .Where(a => a.ClienteId == clienteId && a.Visivel)
+            .OrderByDescending(a => a.DataAvaliacao)
+            .ToListAsync(cancellationToken);
+
+    public async Task<IEnumerable<AvaliacaoCliente>> ObterPorPrestadorAsync(Guid prestadorId, CancellationToken cancellationToken = default) =>
+        await Context.AvaliacoesClientes
+            .Include(a => a.Cliente)
+                .ThenInclude(c => c.Usuario)
+            .Include(a => a.Agendamento)
+            .Where(a => a.PrestadorId == prestadorId)
+            .OrderByDescending(a => a.DataAvaliacao)
+            .ToListAsync(cancellationToken);
+
+    public async Task<bool> PodeAvaliarAsync(Guid prestadorId, Guid agendamentoId, CancellationToken cancellationToken = default)
+    {
+        var agendamento = await Context.Agendamentos
+            .Include(a => a.Pagamento)
+            .FirstOrDefaultAsync(a => a.Id == agendamentoId && a.PrestadorId == prestadorId, cancellationToken);
+
+        return agendamento?.Status == StatusAgendamento.Concluido
+            && agendamento.Pagamento?.Status == StatusPagamento.Aprovado;
+    }
+
+    public Task<Agendamento?> ObterAgendamentoElegivelParaAvaliacaoAsync(Guid prestadorId, Guid agendamentoId, CancellationToken cancellationToken = default) =>
+        Context.Agendamentos
+            .Include(a => a.Pagamento)
+            .FirstOrDefaultAsync(
+                a => a.Id == agendamentoId
+                    && a.PrestadorId == prestadorId
+                    && a.Status == StatusAgendamento.Concluido
+                    && a.Pagamento != null
+                    && a.Pagamento.Status == StatusPagamento.Aprovado,
                 cancellationToken);
 }
 

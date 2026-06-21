@@ -49,6 +49,48 @@ public class ClienteService : IClienteService
         var historico = await _clienteRepository.ObterHistoricoAgendamentosAsync(clienteId, cancellationToken);
         return historico.Select(a => a.ParaResumoDto());
     }
+
+    public async Task AtualizarMediaAvaliacoesAsync(Guid clienteId, CancellationToken cancellationToken = default)
+    {
+        var cliente = await _clienteRepository.ObterComAvaliacoesAsync(clienteId, cancellationToken);
+        if (cliente == null)
+            return;
+
+        var avaliacoesVisiveis = cliente.AvaliacoesRecebidas.Where(a => a.Visivel).ToList();
+        if (avaliacoesVisiveis.Count == 0)
+        {
+            cliente.AtualizarMetricasAvaliacao(0, 0);
+        }
+        else
+        {
+            cliente.AtualizarMetricasAvaliacao(
+                (decimal)avaliacoesVisiveis.Average(a => a.Nota),
+                avaliacoesVisiveis.Count);
+        }
+
+        _clienteRepository.Atualizar(cliente);
+        await _clienteRepository.SalvarAlteracoesAsync(cancellationToken);
+    }
+
+    public async Task<ClientePerfilPublicoDto?> ObterPerfilPublicoAsync(Guid clienteId, CancellationToken cancellationToken = default)
+    {
+        var cliente = await _clienteRepository.ObterPorIdAsync(clienteId, cancellationToken);
+        if (cliente == null)
+            return null;
+
+        var totalServicosContratados = await _clienteRepository.ObterTotalServicosContratadosConcluidosAsync(clienteId, cancellationToken);
+
+        return new ClientePerfilPublicoDto
+        {
+            Id = cliente.Id,
+            Nome = cliente.Usuario.Nome,
+            Cidade = cliente.Usuario.Endereco?.Cidade?.Nome,
+            Estado = cliente.Usuario.Endereco?.Cidade?.Estado,
+            MediaAvaliacoes = cliente.MediaAvaliacoes,
+            TotalAvaliacoes = cliente.TotalAvaliacoes,
+            TotalServicosContratados = totalServicosContratados
+        };
+    }
 }
 
 public class PrestadorService : IPrestadorService

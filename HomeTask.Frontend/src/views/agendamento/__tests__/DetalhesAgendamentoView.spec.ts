@@ -26,8 +26,10 @@ const makeAgendamento = (overrides: Partial<AgendamentoResumo> = {}): Agendament
   dataConclusao: new Date().toISOString(),
   motivoRecusa: null,
   aguardandoRespostaDe: TipoUsuario.Cliente,
-  podeAvaliar: true,
-  avaliado: false,
+  podeClienteAvaliarPrestador: true,
+  clienteJaAvaliouPrestador: false,
+  podePrestadorAvaliarCliente: true,
+  prestadorJaAvaliouCliente: false,
   servicos: [
     {
       id: "srv-1",
@@ -56,7 +58,7 @@ describe("DetalhesAgendamentoView", () => {
     auth.setUser({ userId: "1", nome: "Cliente", email: "c@c.com", tipo: 1 })
   })
 
-  it("abre a avaliacao automaticamente quando o pagamento foi aprovado e o agendamento foi concluido", async () => {
+  it("abre a avaliacao do cliente automaticamente quando o pagamento foi aprovado e o agendamento foi concluido", async () => {
     vi.mocked(apiModule.default.get)
       .mockResolvedValueOnce({ data: { id: "cli-1" } })
       .mockRejectedValueOnce(new Error("sem prestador"))
@@ -71,6 +73,7 @@ describe("DetalhesAgendamentoView", () => {
         },
       })
       .mockRejectedValueOnce(new Error("sem avaliacao"))
+      .mockRejectedValueOnce(new Error("sem avaliacao cliente"))
 
     router.push("/agendamento/detalhes/ag-1")
     await router.isReady()
@@ -95,5 +98,48 @@ describe("DetalhesAgendamentoView", () => {
     expect(wrapper.text()).toContain("Avaliar atendimento")
     expect(wrapper.text()).toContain("Avalie o serviço")
     expect(wrapper.text()).toContain("Avalie o prestador")
+  })
+
+  it("abre a avaliacao do prestador automaticamente quando o usuario logado e o prestador", async () => {
+    const auth = useAuthStore()
+    auth.setUser({ userId: "2", nome: "Prestador", email: "p@p.com", tipo: 2 })
+
+    vi.mocked(apiModule.default.get)
+      .mockRejectedValueOnce(new Error("sem cliente"))
+      .mockResolvedValueOnce({ data: { id: "prest-1" } })
+      .mockResolvedValueOnce({ data: makeAgendamento() })
+      .mockResolvedValueOnce({
+        data: {
+          id: "pag-1",
+          agendamentoId: "ag-1",
+          valor: 120,
+          status: StatusPagamento.Aprovado,
+          dataCriacao: new Date().toISOString(),
+        },
+      })
+      .mockRejectedValueOnce(new Error("sem avaliacao"))
+      .mockRejectedValueOnce(new Error("sem avaliacao cliente"))
+
+    router.push("/agendamento/detalhes/ag-1")
+    await router.isReady()
+
+    const wrapper = mount(DetalhesAgendamentoView, {
+      global: {
+        plugins: [router],
+        stubs: {
+          HtSpinner: true,
+          HtAlert: { template: "<div><slot /></div>", props: ["variant", "title"] },
+          HtCard: { template: "<div><slot /></div>" },
+          HtBadge: { template: "<span><slot /></span>", props: ["variant"] },
+          HtButton: { template: "<button><slot /></button>", props: ["loading", "variant"] },
+          HtTextarea: { template: "<textarea />", props: ["modelValue"] },
+        },
+      },
+    })
+
+    await flushPromises()
+
+    expect(wrapper.text()).toContain("Avaliar cliente")
+    expect(wrapper.text()).toContain("Avalie o cliente")
   })
 })

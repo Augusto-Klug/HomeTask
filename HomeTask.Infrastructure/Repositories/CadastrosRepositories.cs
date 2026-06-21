@@ -64,11 +64,15 @@ public class ClienteRepository : RepositoryBase<Cliente>, IClienteRepository
     public override Task<Cliente?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken = default) =>
         Context.Clientes
             .Include(c => c.Usuario)
+                .ThenInclude(u => u.Endereco)
+                    .ThenInclude(e => e.Cidade)
             .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
 
     public Task<Cliente?> ObterPorUsuarioIdAsync(Guid usuarioId, CancellationToken cancellationToken = default) =>
         Context.Clientes
             .Include(c => c.Usuario)
+                .ThenInclude(u => u.Endereco)
+                    .ThenInclude(e => e.Cidade)
             .FirstOrDefaultAsync(c => c.UsuarioId == usuarioId, cancellationToken);
 
     public async Task<IEnumerable<Agendamento>> ObterHistoricoAgendamentosAsync(Guid clienteId, CancellationToken cancellationToken = default) =>
@@ -80,10 +84,21 @@ public class ClienteRepository : RepositoryBase<Cliente>, IClienteRepository
             .Include(a => a.AgendamentoServicos)
                 .ThenInclude(s => s.ServicoBase)
             .Include(a => a.Avaliacao)
+            .Include(a => a.AvaliacaoCliente)
             .Include(a => a.Pagamento)
             .Where(a => a.ClienteId == clienteId)
             .OrderByDescending(a => a.DataHoraAgendada)
             .ToListAsync(cancellationToken);
+
+    public Task<Cliente?> ObterComAvaliacoesAsync(Guid clienteId, CancellationToken cancellationToken = default) =>
+        Context.Clientes
+            .Include(c => c.AvaliacoesRecebidas)
+            .FirstOrDefaultAsync(c => c.Id == clienteId, cancellationToken);
+
+    public Task<int> ObterTotalServicosContratadosConcluidosAsync(Guid clienteId, CancellationToken cancellationToken = default) =>
+        Context.Agendamentos.CountAsync(
+            a => a.ClienteId == clienteId && a.Status == StatusAgendamento.Concluido,
+            cancellationToken);
 }
 
 public class PrestadorRepository : RepositoryBase<Prestador>, IPrestadorRepository
@@ -159,6 +174,7 @@ public class PrestadorRepository : RepositoryBase<Prestador>, IPrestadorReposito
             .Include(a => a.AgendamentoServicos)
                 .ThenInclude(s => s.ServicoBase)
             .Include(a => a.Avaliacao)
+            .Include(a => a.AvaliacaoCliente)
             .Where(a => a.PrestadorId == prestadorId)
             .OrderByDescending(a => a.DataHoraAgendada)
             .ToListAsync(cancellationToken);

@@ -21,6 +21,8 @@ public interface IClienteRepository : IRepositoryBase<Cliente>
 {
     Task<Cliente?> ObterPorUsuarioIdAsync(Guid usuarioId, CancellationToken cancellationToken = default);
     Task<IEnumerable<Agendamento>> ObterHistoricoAgendamentosAsync(Guid clienteId, CancellationToken cancellationToken = default);
+    Task<Cliente?> ObterComAvaliacoesAsync(Guid clienteId, CancellationToken cancellationToken = default);
+    Task<int> ObterTotalServicosContratadosConcluidosAsync(Guid clienteId, CancellationToken cancellationToken = default);
 }
 
 public interface IPrestadorRepository : IRepositoryBase<Prestador>
@@ -48,6 +50,15 @@ public interface IAvaliacaoRepository : IRepositoryBase<Avaliacao>
     Task<IEnumerable<Avaliacao>> ObterPorClienteAsync(Guid clienteId, CancellationToken cancellationToken = default);
     Task<bool> PodeAvaliarAsync(Guid clienteId, Guid agendamentoId, CancellationToken cancellationToken = default);
     Task<Agendamento?> ObterAgendamentoElegivelParaAvaliacaoAsync(Guid clienteId, Guid agendamentoId, CancellationToken cancellationToken = default);
+}
+
+public interface IAvaliacaoClienteRepository : IRepositoryBase<AvaliacaoCliente>
+{
+    Task<AvaliacaoCliente?> ObterPorAgendamentoAsync(Guid agendamentoId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<AvaliacaoCliente>> ObterPorClienteAsync(Guid clienteId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<AvaliacaoCliente>> ObterPorPrestadorAsync(Guid prestadorId, CancellationToken cancellationToken = default);
+    Task<bool> PodeAvaliarAsync(Guid prestadorId, Guid agendamentoId, CancellationToken cancellationToken = default);
+    Task<Agendamento?> ObterAgendamentoElegivelParaAvaliacaoAsync(Guid prestadorId, Guid agendamentoId, CancellationToken cancellationToken = default);
 }
 
 public interface IPagamentoRepository : IRepositoryBase<Pagamento>

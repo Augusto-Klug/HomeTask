@@ -9,10 +9,12 @@ namespace HomeTask.WebApi.Controllers
     public class AvaliacaoController : ControllerBase
     {
         private readonly IAvaliacaoService _avaliacaoService;
+        private readonly IAvaliacaoClienteService _avaliacaoClienteService;
 
-        public AvaliacaoController(IAvaliacaoService avaliacaoService)
+        public AvaliacaoController(IAvaliacaoService avaliacaoService, IAvaliacaoClienteService avaliacaoClienteService)
         {
             _avaliacaoService = avaliacaoService;
+            _avaliacaoClienteService = avaliacaoClienteService;
         }
 
         [HttpGet]
@@ -53,6 +55,23 @@ namespace HomeTask.WebApi.Controllers
         public async Task<ActionResult<AvaliacaoDto>> CriarAvaliacao(AvaliacaoDto dto, CancellationToken cancellationToken)
         {
             var avaliacao = await _avaliacaoService.CriarAsync(dto, cancellationToken);
+            return avaliacao;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<AvaliacaoClienteDto>> ObterAvaliacaoClientePorAgendamento([FromQuery] Guid agendamentoId, CancellationToken cancellationToken)
+        {
+            var avaliacao = await _avaliacaoClienteService.ObterPorAgendamentoAsync(agendamentoId, cancellationToken);
+            if (avaliacao == null)
+                return NotFound();
+
+            return avaliacao;
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<AvaliacaoClienteDto>> CriarAvaliacaoCliente(AvaliacaoClienteDto dto, CancellationToken cancellationToken)
+        {
+            var avaliacao = await _avaliacaoClienteService.CriarAsync(dto, cancellationToken);
             return avaliacao;
         }
     }

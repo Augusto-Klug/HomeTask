@@ -4,6 +4,7 @@ using HomeTask.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HomeTask.Infrastructure.Migrations
 {
     [DbContext(typeof(HomeTaskDbContext))]
-    partial class HomeTaskDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260619223505_AddCustomerRatingsAndPublicCustomerProfile")]
+    partial class AddCustomerRatingsAndPublicCustomerProfile
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,10 +51,6 @@ namespace HomeTask.Infrastructure.Migrations
 
                     b.Property<int>("DuracaoMinutos")
                         .HasColumnType("int");
-
-                    b.Property<string>("EnderecoDescricao")
-                        .HasMaxLength(300)
-                        .HasColumnType("varchar(300)");
 
                     b.Property<Guid>("EnderecoId")
                         .HasColumnType("char(36)");
@@ -435,7 +434,7 @@ namespace HomeTask.Infrastructure.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("varchar(2000)");
 
-                    b.Property<Guid?>("ConversaId")
+                    b.Property<Guid>("ConversaId")
                         .HasColumnType("char(36)");
 
                     b.Property<DateTime>("DataEnvio")
@@ -452,13 +451,11 @@ namespace HomeTask.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AgendamentoId");
+
                     b.HasIndex("ConversaId");
 
-                    b.HasIndex("DataEnvio");
-
                     b.HasIndex("RemetenteId");
-
-                    b.HasIndex("AgendamentoId", "DataEnvio");
 
                     b.ToTable("Mensagens");
                 });
@@ -937,7 +934,8 @@ namespace HomeTask.Infrastructure.Migrations
                     b.HasOne("HomeTask.Domain.Entidades.Conversa", "Conversa")
                         .WithMany("Mensagens")
                         .HasForeignKey("ConversaId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("HomeTask.Domain.Entidades.Usuario", "Remetente")
                         .WithMany()

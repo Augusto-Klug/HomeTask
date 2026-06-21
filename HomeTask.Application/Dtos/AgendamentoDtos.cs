@@ -12,12 +12,14 @@ public class AgendamentoDto
     public DateTime DataHoraAgendada { get; set; }
     public int DuracaoMinutos { get; set; }
     public Guid EnderecoId { get; set; }
+    public string? EnderecoDescricao { get; set; }
     public StatusAgendamento Status { get; set; }
 
     [MaxLength(500)]
     public string? Observacoes { get; set; }
 
     public decimal ValorTotal { get; set; }
+    public decimal? ValorProposto { get; set; }
     public DateTime DataSolicitacao { get; set; }
     public DateTime? DataResposta { get; set; }
     public DateTime? DataInicio { get; set; }
@@ -48,8 +50,10 @@ public class AgendamentoResumoDto
     public DateTime? DataConclusao { get; set; }
     public string? MotivoRecusa { get; set; }
     public TipoUsuario? AguardandoRespostaDe { get; set; }
-    public bool PodeAvaliar { get; set; }
-    public bool Avaliado { get; set; }
+    public bool PodeClienteAvaliarPrestador { get; set; }
+    public bool ClienteJaAvaliouPrestador { get; set; }
+    public bool PodePrestadorAvaliarCliente { get; set; }
+    public bool PrestadorJaAvaliouCliente { get; set; }
     public EnderecoResumoDto Endereco { get; set; } = new();
     public List<ServicoResumoDto> Servicos { get; set; } = [];
 }
@@ -60,6 +64,7 @@ public class EnderecoResumoDto
     public string Bairro { get; set; } = string.Empty;
     public string Cidade { get; set; } = string.Empty;
     public string Estado { get; set; } = string.Empty;
+    public string? Descricao { get; set; }
 }
 
 public class ServicoResumoDto

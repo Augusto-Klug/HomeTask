@@ -93,13 +93,15 @@ internal static class EntityDtoMapper
         new()
         {
             Id = cliente.Id,
-            UsuarioId = cliente.UsuarioId
+            UsuarioId = cliente.UsuarioId,
+            MediaAvaliacoes = cliente.MediaAvaliacoes,
+            TotalAvaliacoes = cliente.TotalAvaliacoes
         };
 
     public static Cliente ParaEntidade(this ClienteDto dto)
     {
         var cliente = new Cliente();
-        cliente.DefinirDados(dto.Id, dto.UsuarioId);
+        cliente.DefinirDados(dto.Id, dto.UsuarioId, dto.MediaAvaliacoes, dto.TotalAvaliacoes);
         return cliente;
     }
 
@@ -154,6 +156,7 @@ internal static class EntityDtoMapper
             DuracaoMinutos = agendamento.DuracaoMinutos,
             Status = agendamento.Status,
             EnderecoId = agendamento.EnderecoId,
+            EnderecoDescricao = agendamento.EnderecoDescricao,
             Observacoes = agendamento.Observacoes,
             ValorTotal = agendamento.ValorTotal,
             DataSolicitacao = agendamento.DataSolicitacao,
@@ -182,6 +185,7 @@ internal static class EntityDtoMapper
             dto.DataInicio,
             dto.DataConclusao,
             dto.MotivoRecusa);
+        agendamento.DefinirEnderecoDescricao(dto.EnderecoDescricao);
         return agendamento;
     }
 
@@ -205,14 +209,21 @@ internal static class EntityDtoMapper
             DataConclusao = agendamento.DataConclusao,
             MotivoRecusa = agendamento.MotivoRecusa,
             AguardandoRespostaDe = Agendamento.ObterResponsavelPelaResposta(agendamento),
-            PodeAvaliar = agendamento.Status == StatusAgendamento.Concluido && agendamento.Avaliacao == null,
-            Avaliado = agendamento.Avaliacao != null,
+            PodeClienteAvaliarPrestador = agendamento.Status == StatusAgendamento.Concluido
+                && agendamento.Pagamento?.Status == StatusPagamento.Aprovado
+                && agendamento.Avaliacao == null,
+            ClienteJaAvaliouPrestador = agendamento.Avaliacao != null,
+            PodePrestadorAvaliarCliente = agendamento.Status == StatusAgendamento.Concluido
+                && agendamento.Pagamento?.Status == StatusPagamento.Aprovado
+                && agendamento.AvaliacaoCliente == null,
+            PrestadorJaAvaliouCliente = agendamento.AvaliacaoCliente != null,
             Endereco = new EnderecoResumoDto
             {
                 Logradouro = agendamento.Endereco?.Logradouro ?? string.Empty,
                 Bairro = agendamento.Endereco?.Bairro ?? string.Empty,
                 Cidade = agendamento.Endereco?.Cidade?.Nome ?? string.Empty,
-                Estado = agendamento.Endereco?.Cidade?.Estado ?? string.Empty
+                Estado = agendamento.Endereco?.Cidade?.Estado ?? string.Empty,
+                Descricao = agendamento.EnderecoDescricao
             },
             Servicos = agendamento.AgendamentoServicos.Select(s => new ServicoResumoDto
             {
@@ -242,6 +253,36 @@ internal static class EntityDtoMapper
             PrestadorNome = avaliacao.Prestador?.Usuario?.Nome,
             ServicoTitulo = avaliacao.ServicoPrestador?.Titulo
         };
+
+    public static AvaliacaoClienteDto ParaDto(this AvaliacaoCliente avaliacao) =>
+        new()
+        {
+            Id = avaliacao.Id,
+            AgendamentoId = avaliacao.AgendamentoId,
+            ClienteId = avaliacao.ClienteId,
+            PrestadorId = avaliacao.PrestadorId,
+            Nota = avaliacao.Nota,
+            Comentario = avaliacao.Comentario,
+            DataAvaliacao = avaliacao.DataAvaliacao,
+            Visivel = avaliacao.Visivel,
+            ClienteNome = avaliacao.Cliente?.Usuario?.Nome,
+            PrestadorNome = avaliacao.Prestador?.Usuario?.Nome
+        };
+
+    public static AvaliacaoCliente ParaEntidade(this AvaliacaoClienteDto dto)
+    {
+        var avaliacao = new AvaliacaoCliente();
+        avaliacao.DefinirDados(
+            dto.Id,
+            dto.AgendamentoId,
+            dto.ClienteId,
+            dto.PrestadorId,
+            dto.Nota,
+            dto.Comentario,
+            dto.DataAvaliacao,
+            dto.Visivel);
+        return avaliacao;
+    }
 
     public static Avaliacao ParaEntidade(this AvaliacaoDto dto)
     {
@@ -357,6 +398,9 @@ internal static class EntityDtoMapper
             DataCriacao = servico.DataCriacao,
             TipoAnuncio = servico.TipoAnuncio,
             PrestadorNome = servico.Prestador?.Usuario?.Nome,
+            Logradouro = endereco?.Logradouro,
+            Numero = endereco?.Numero,
+            Bairro = endereco?.Bairro,
             Cidade = endereco?.Cidade?.Nome,
             Estado = endereco?.Cidade?.Estado,
             MediaAvaliacoes = servico.MediaAvaliacoes,
@@ -404,8 +448,13 @@ internal static class EntityDtoMapper
             DataCriacao = servico.DataCriacao,
             TipoAnuncio = servico.TipoAnuncio,
             ClienteNome = servico.Cliente?.Usuario?.Nome,
+            Logradouro = endereco?.Logradouro,
+            Numero = endereco?.Numero,
+            Bairro = endereco?.Bairro,
             Cidade = endereco?.Cidade?.Nome,
-            Estado = endereco?.Cidade?.Estado
+            Estado = endereco?.Cidade?.Estado,
+            MediaAvaliacoes = servico.Cliente?.MediaAvaliacoes,
+            TotalAvaliacoes = servico.Cliente?.TotalAvaliacoes ?? 0
         };
     }
 
