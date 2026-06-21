@@ -150,15 +150,12 @@ onMounted(async () => {
 })
 
 async function handleEnviarProposta() {
-  if (!validarCampos([inputData.value, inputHora.value])) return
-  if (!servico.value) return
-
-  if (exibirCampoValorProposta.value) {
-    const valorNumerico = Number(valorProposta.value)
-    if (!Number.isFinite(valorNumerico) || valorNumerico <= 0) {
-      erro.value = "Informe um valor valido para a proposta."
-      return
-    }
+  if (!validarCampos([inputData.value, inputHora.value])) return;
+  if (!servico.value) return;
+  const servicoPrestadorPrincipalId = obterServicoPrestadorPrincipalId(servicosPrestador.value, servico.value);
+  if (!servicoPrestadorPrincipalId) {
+    erro.value = "Não foi possível identificar um serviço do prestador para esta proposta.";
+    return;
   }
 
   erro.value = null

@@ -1,19 +1,10 @@
 <template>
-  <header
-    class="sticky top-0 z-30 h-14 border-b border-base-300 bg-base-100/95 backdrop-blur-sm"
-  >
+  <header class="sticky top-0 z-30 h-14 border-b border-base-300 bg-base-100/95 backdrop-blur-sm">
     <div class="flex items-center h-full px-3 gap-2">
-      <router-link to="/" class="text-title font-bold text-primary"
-        >HomeTask</router-link
-      >
+      <router-link to="/" class="text-title font-bold text-primary">HomeTask</router-link>
 
-      <nav
-        v-if="auth.isLoggedIn"
-        class="flex flex-1 justify-center overflow-x-auto px-4"
-      >
-        <div
-          class="flex min-w-max items-center gap-1 rounded-full border border-base-300 bg-base-200/70 p-1"
-        >
+      <nav v-if="auth.isLoggedIn" class="flex flex-1 justify-center overflow-x-auto px-4">
+        <div class="flex min-w-max items-center gap-1 rounded-full border border-base-300 bg-base-200/70 p-1">
           <router-link
             v-for="item in navItems"
             :key="item.to"
@@ -35,7 +26,7 @@
           <button
             type="button"
             class="flex h-9 w-9 items-center justify-center rounded-full border border-base-300 bg-base-200 text-sm font-semibold text-base-content transition-colors hover:border-primary hover:text-primary"
-            :aria-label="`Abrir menu do usuario ${auth.user?.nome ?? ''}`"
+            :aria-label="`Abrir menu do usuário ${auth.user?.nome ?? ''}`"
             @click="userMenuOpen = !userMenuOpen"
           >
             {{ inicialUsuario }}
@@ -56,21 +47,8 @@
               class="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-base-content hover:bg-base-200 transition-colors"
               @click="userMenuOpen = false"
             >
-              <span class="material-symbols-rounded text-base"
-                >manage_accounts</span
-              >
+              <span class="material-symbols-rounded text-base">manage_accounts</span>
               Minha conta
-            </router-link>
-            <router-link
-              v-if="auth.user?.tipo === 2 || auth.user?.tipo === 3"
-              to="/perfil/agendamentos-prestador"
-              class="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-base-content hover:bg-base-200 transition-colors"
-              @click="userMenuOpen = false"
-            >
-              <span class="material-symbols-rounded text-base"
-                >work_history</span
-              >
-              Minha operacao
             </router-link>
             <div class="border-t border-base-300 my-1" />
             <button
@@ -86,11 +64,7 @@
       </template>
 
       <template v-else>
-        <router-link
-          to="/login"
-          class="btn btn-ghost btn-sm btn-square"
-          title="Entrar"
-        >
+        <router-link to="/login" class="btn btn-ghost btn-sm btn-square" title="Entrar">
           <span class="material-symbols-rounded text-xl">person</span>
         </router-link>
       </template>
@@ -129,10 +103,7 @@ const navItems = computed(() => {
 });
 
 function handleClickOutside(e: MouseEvent) {
-  if (
-    userMenuContainer.value &&
-    !userMenuContainer.value.contains(e.target as Node)
-  ) {
+  if (userMenuContainer.value && !userMenuContainer.value.contains(e.target as Node)) {
     userMenuOpen.value = false;
   }
 }
@@ -141,8 +112,12 @@ onMounted(() => document.addEventListener("click", handleClickOutside));
 onUnmounted(() => document.removeEventListener("click", handleClickOutside));
 
 async function handleLogout() {
-  await logoutHandler(auth.logout, () => router.replace("/"), () => {
-    userMenuOpen.value = false;
-  });
+  await logoutHandler(
+    auth.logout,
+    () => router.replace("/"),
+    () => {
+      userMenuOpen.value = false;
+    },
+  );
 }
 </script>

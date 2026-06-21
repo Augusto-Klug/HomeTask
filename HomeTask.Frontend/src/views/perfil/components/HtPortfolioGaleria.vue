@@ -106,7 +106,7 @@
           <img
             v-else
             :src="obterUrlImagem(item.urlImagem)"
-            :alt="item.titulo || 'Portfolio'"
+            :alt="item.titulo || 'Portfólio'"
             class="w-full h-full object-cover"
             @error="marcarErroImagem(item.id)"
           />

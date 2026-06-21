@@ -57,16 +57,13 @@
           </div>
         </HtCard>
 
-        <HtCard v-if="clienteAvaliacaoEnviada || prestadorAvaliacaoEnviada" class="border-success/30 bg-success/5">
-          <p class="font-semibold text-success">Avaliacao enviada</p>
-          <p class="mt-1 text-sm text-muted">
-            <span v-if="clienteAvaliacaoEnviada">A avaliacao do prestador ja foi enviada.</span>
-            <span v-if="prestadorAvaliacaoEnviada">A avaliacao do cliente ja foi enviada.</span>
-          </p>
+        <HtCard v-if="avaliacaoEnviada" class="border-success/30 bg-success/5">
+          <p class="font-semibold text-success">Avaliação enviada</p>
+          <p class="mt-1 text-sm text-muted">Este agendamento já foi avaliado e não aceita novo envio.</p>
         </HtCard>
 
         <HtCard>
-          <h2 class="mb-4 text-lg font-bold">Servicos agendados</h2>
+          <h2 class="mb-4 text-lg font-bold">Serviços agendados</h2>
           <div
             v-for="servico in agendamento.servicos"
             :key="servico.id"
@@ -85,24 +82,24 @@
             <div class="flex items-start gap-3">
               <span class="material-symbols-rounded mt-0.5 text-primary">calendar_today</span>
               <div>
-                <p class="text-sm font-semibold">Data e horario</p>
+                <p class="text-sm font-semibold">Data e horário</p>
                 <p class="text-sm text-muted">
-                  {{ formatarDataLonga(agendamento.dataHoraAgendada) }} as
+                  {{ formatarDataLonga(agendamento.dataHoraAgendada) }} às
                   {{ formatarHora(agendamento.dataHoraAgendada) }}
                 </p>
-                <p class="mt-1 text-xs text-muted">Duracao estimada: {{ agendamento.duracaoMinutos }} min</p>
+                <p class="mt-1 text-xs text-muted">Duração estimada: {{ agendamento.duracaoMinutos }} min</p>
               </div>
             </div>
             <div class="flex items-start gap-3">
               <span class="material-symbols-rounded mt-0.5 text-primary">location_on</span>
               <div>
-                <p class="text-sm font-semibold">Local de realizacao</p>
+                <p class="text-sm font-semibold">Local de realização</p>
                 <p class="text-sm text-muted">{{ formatarEndereco(agendamento.endereco) }}</p>
               </div>
             </div>
           </div>
           <div v-if="agendamento.observacoes" class="mt-4 rounded-lg bg-muted/20 p-3">
-            <p class="mb-1 text-sm font-semibold">Observacoes:</p>
+            <p class="mb-1 text-sm font-semibold">Observações:</p>
             <p class="text-sm text-muted">{{ agendamento.observacoes }}</p>
           </div>
         </HtCard>
@@ -155,7 +152,7 @@
               :loading="carregandoAcao"
               @click="acaoAgendamento('Iniciar')"
             >
-              Iniciar servico
+              Iniciar serviço
             </HtButton>
             <HtButton
               v-if="agendamento.status === StatusAgendamento.EmAndamento"
@@ -164,7 +161,7 @@
               :loading="carregandoAcao"
               @click="acaoAgendamento('Concluir')"
             >
-              Concluir servico
+              Concluir serviço
             </HtButton>
           </template>
 
@@ -186,8 +183,27 @@
           >
             Cancelar agendamento
           </HtButton>
+
+          <HtButton
+            v-if="podeAbrirChat"
+            class="flex-1"
+            variant="outline"
+            @click="abrirChat"
+          >
+            <span class="material-symbols-rounded text-base">chat</span>
+            Abrir chat
+          </HtButton>
         </div>
       </div>
+
+      <AgendamentoChat
+        v-if="podeAbrirChat"
+        v-model:aberto="chatAberto"
+        :agendamento-id="agendamento.id"
+        :usuario-atual-id="auth.user?.userId ?? ''"
+        :nome-participante="nomeParticipanteChat"
+        :titulo-servico="tituloServicoChat"
+      />
     </template>
 
     <div v-if="mostrarModalRecusa" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
@@ -206,11 +222,11 @@
     <div v-if="mostrarModalAvaliacaoCliente" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <HtCard class="w-full max-w-xl">
         <h3 class="mb-2 text-lg font-bold">Avaliar atendimento</h3>
-        <p class="mb-6 text-sm text-muted">Envie uma avaliacao unica para o servico e para o prestador.</p>
+        <p class="mb-6 text-sm text-muted">Envie uma avaliação única para o serviço e para o prestador.</p>
 
         <div class="space-y-5">
           <div>
-            <p class="mb-2 text-sm font-semibold">Avalie o servico</p>
+            <p class="mb-2 text-sm font-semibold">Avalie o serviço</p>
             <div class="flex gap-2">
               <button
                 v-for="nota in 5"
@@ -239,43 +255,12 @@
             </div>
           </div>
 
-          <HtTextarea v-model="comentarioAvaliacao" label="Comentario opcional" placeholder="Conte como foi a experiencia..." />
+          <HtTextarea v-model="comentarioAvaliacao" label="Comentário opcional" placeholder="Conte como foi a experiência..." />
         </div>
 
         <div class="mt-6 flex gap-3">
-          <HtButton variant="outline" class="flex-1" @click="mostrarModalAvaliacaoCliente = false">Agora nao</HtButton>
-          <HtButton class="flex-1" :loading="carregandoAvaliacaoCliente" @click="enviarAvaliacaoCliente">Enviar avaliacao</HtButton>
-        </div>
-      </HtCard>
-    </div>
-
-    <div v-if="mostrarModalAvaliacaoPrestador" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <HtCard class="w-full max-w-xl">
-        <h3 class="mb-2 text-lg font-bold">Avaliar cliente</h3>
-        <p class="mb-6 text-sm text-muted">Envie uma avaliacao unica do cliente para este agendamento.</p>
-
-        <div class="space-y-5">
-          <div>
-            <p class="mb-2 text-sm font-semibold">Avalie o cliente</p>
-            <div class="flex gap-2">
-              <button
-                v-for="nota in 5"
-                :key="`cliente-${nota}`"
-                type="button"
-                class="text-2xl"
-                @click="notaCliente = nota"
-              >
-                {{ nota <= notaCliente ? "★" : "☆" }}
-              </button>
-            </div>
-          </div>
-
-          <HtTextarea v-model="comentarioAvaliacaoCliente" label="Comentario opcional" placeholder="Conte como foi a experiencia..." />
-        </div>
-
-        <div class="mt-6 flex gap-3">
-          <HtButton variant="outline" class="flex-1" @click="mostrarModalAvaliacaoPrestador = false">Agora nao</HtButton>
-          <HtButton class="flex-1" :loading="carregandoAvaliacaoPrestador" @click="enviarAvaliacaoPrestador">Enviar avaliacao</HtButton>
+          <HtButton variant="outline" class="flex-1" @click="mostrarModalAvaliacao = false">Agora não</HtButton>
+          <HtButton class="flex-1" :loading="carregandoAvaliacao" @click="enviarAvaliacao">Enviar avaliação</HtButton>
         </div>
       </HtCard>
     </div>
@@ -316,6 +301,7 @@ import HtBadge, { HtBadgeVariant } from "@/components/ui/HtBadge.vue"
 import HtSpinner from "@/components/ui/HtSpinner.vue"
 import HtButton from "@/components/ui/HtButton.vue"
 import HtTextarea from "@/components/ui/HtTextarea.vue"
+import AgendamentoChat from "./components/AgendamentoChat.vue"
 
 const route = useRoute()
 const auth = useAuthStore()
@@ -339,8 +325,8 @@ const notaPrestador = ref(0)
 const notaCliente = ref(0)
 const mostrarModalRecusa = ref(false)
 const mostrarModalCancelamento = ref(false)
-const mostrarModalAvaliacaoCliente = ref(false)
-const mostrarModalAvaliacaoPrestador = ref(false)
+const mostrarModalAvaliacao = ref(false)
+const chatAberto = ref(false)
 const clienteAtualId = ref<string | null>(null)
 const prestadorAtualId = ref<string | null>(null)
 const retornoCheckoutVisivel = ref(false)
@@ -355,8 +341,8 @@ const rotaVolta = computed(() => {
 })
 
 const textoVolta = computed(() => {
-  if (route.query.origem === "operacao") return "Voltar para minha operacao"
-  if (route.query.origem === "pendentes") return "Voltar para minha operacao"
+  if (route.query.origem === "operacao") return "Voltar para minha operação"
+  if (route.query.origem === "pendentes") return "Voltar para minha operação"
   return "Voltar para meus agendamentos"
 })
 
@@ -386,6 +372,27 @@ const podePagar = computed(() =>
   pagamento.value?.status !== StatusPagamento.Aprovado,
 )
 
+const podeAbrirChat = computed(() => {
+  if (!agendamento.value) return false
+
+  return [
+    StatusAgendamento.Aceito,
+    StatusAgendamento.EmAndamento,
+    StatusAgendamento.AguardandoPagamento,
+    StatusAgendamento.Concluido,
+  ].includes(agendamento.value.status)
+})
+
+const nomeParticipanteChat = computed(() => {
+  if (!agendamento.value) return ""
+  return souOPrestador.value ? agendamento.value.clienteNome : agendamento.value.prestadorNome
+})
+
+const tituloServicoChat = computed(() => {
+  if (!agendamento.value) return "Serviço agendado"
+  return agendamento.value.servicos[0]?.titulo ?? "Serviço agendado"
+})
+
 const checkoutRetorno = computed(() => {
   if (!retornoCheckoutVisivel.value) return null
 
@@ -393,7 +400,7 @@ const checkoutRetorno = computed(() => {
     return {
       variant: "success",
       title: "Pagamento aprovado",
-      message: "Pagamento confirmado com sucesso. O agendamento foi concluido.",
+      message: "Pagamento confirmado com sucesso. O agendamento foi concluído.",
     } as const
   }
 
@@ -403,21 +410,21 @@ const checkoutRetorno = computed(() => {
     case "failure":
       return {
         variant: "error",
-        title: "Pagamento nao concluido",
-        message: "O Mercado Pago informou que o pagamento nao foi concluido. Voce pode tentar novamente abaixo.",
+        title: "Pagamento não concluído",
+        message: "O Mercado Pago informou que o pagamento não foi concluído. Você pode tentar novamente abaixo.",
       } as const
     case "pending":
     case "in_process":
       return {
         variant: "info",
         title: "Pagamento em processamento",
-        message: "O pagamento foi iniciado, mas a confirmacao oficial ainda depende do gateway.",
+        message: "O pagamento foi iniciado, mas a confirmação oficial ainda depende do gateway.",
       } as const
     default:
       return {
         variant: "info",
         title: "Retorno do checkout recebido",
-        message: "O retorno do checkout nao confirma o pagamento sozinho. A conclusao oficial depende do gateway.",
+        message: "O retorno do checkout não confirma o pagamento sozinho. A conclusão oficial depende do gateway.",
       } as const
   }
 })
@@ -425,7 +432,7 @@ const checkoutRetorno = computed(() => {
 const statusLabel = computed(() => {
   if (!agendamento.value) return ""
   if (agendamento.value.status === StatusAgendamento.Solicitado && agendamento.value.aguardandoRespostaDe === TipoUsuario.Cliente) {
-    return "Pendente de aprovacao do cliente"
+    return "Pendente de aprovação do cliente"
   }
   if (agendamento.value.status === StatusAgendamento.Solicitado && agendamento.value.aguardandoRespostaDe === TipoUsuario.Prestador) {
     return "Pendente de resposta do prestador"
@@ -440,7 +447,7 @@ const labelPagamento = computed(() => {
 
 const descricaoPagamento = computed(() => {
   if (pagamento.value?.status === StatusPagamento.Aprovado) {
-    return "Pagamento confirmado. O servico foi concluido com sucesso."
+    return "Pagamento confirmado. O serviço foi concluído com sucesso."
   }
 
   if (pagamento.value?.status === StatusPagamento.Recusado || statusRetornoCheckout.value === "rejected") {
@@ -448,10 +455,10 @@ const descricaoPagamento = computed(() => {
   }
 
   if (pagamento.value?.status === StatusPagamento.Processando) {
-    return "O servico foi concluido pelo prestador e aguarda confirmacao oficial do gateway."
+    return "O serviço foi concluído pelo prestador e aguarda confirmação oficial do gateway."
   }
 
-  return "O servico foi concluido pelo prestador e aguarda pagamento do cliente."
+  return "O serviço foi concluído pelo prestador e aguarda pagamento do cliente."
 })
 
 const textoBotaoPagamento = computed(() => {
@@ -510,7 +517,7 @@ async function buscarDetalhes() {
     await Promise.all([buscarPagamento(), buscarAvaliacoes()])
     abrirAvaliacoesAutomaticamente()
   } catch {
-    erro.value = "Nao foi possivel carregar os detalhes do agendamento."
+    erro.value = "Não foi possível carregar os detalhes do agendamento."
   } finally {
     carregando.value = false
   }
@@ -583,7 +590,7 @@ async function acaoAgendamento(acao: string) {
     motivo.value = ""
     await buscarDetalhes()
   } catch {
-    alert("Erro ao realizar a acao. Tente novamente.")
+    alert("Erro ao realizar a ação. Tente novamente.")
   } finally {
     carregandoAcao.value = false
   }
@@ -598,7 +605,7 @@ async function realizarPagamento() {
       window.location.href = data.checkoutUrl
       return
     }
-    alert("Nao foi possivel iniciar o checkout.")
+    alert("Não foi possível iniciar o checkout.")
   } catch {
     alert("Erro ao iniciar pagamento. Tente novamente.")
   } finally {
@@ -606,7 +613,11 @@ async function realizarPagamento() {
   }
 }
 
-async function enviarAvaliacaoCliente() {
+function abrirChat() {
+  chatAberto.value = true
+}
+
+async function enviarAvaliacao() {
   if (!agendamento.value || notaServico.value < 1 || notaPrestador.value < 1) {
     alert("Informe as duas notas antes de enviar.")
     return
@@ -631,7 +642,7 @@ async function enviarAvaliacaoCliente() {
     notaPrestador.value = 0
     await buscarDetalhes()
   } catch {
-    alert("Erro ao enviar avaliacao. Tente novamente.")
+    alert("Erro ao enviar avaliação. Tente novamente.")
   } finally {
     carregandoAvaliacaoCliente.value = false
   }
@@ -713,7 +724,7 @@ const STATUS_LABEL: Record<StatusAgendamento, string> = {
   [StatusAgendamento.Aceito]: "Aceito",
   [StatusAgendamento.Solicitado]: "Solicitado",
   [StatusAgendamento.EmAndamento]: "Em andamento",
-  [StatusAgendamento.Concluido]: "Concluido",
+  [StatusAgendamento.Concluido]: "Concluído",
   [StatusAgendamento.Cancelado]: "Cancelado",
   [StatusAgendamento.Recusado]: "Recusado",
   [StatusAgendamento.AguardandoPagamento]: "Aguardando pagamento",

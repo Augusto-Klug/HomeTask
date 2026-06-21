@@ -1,7 +1,7 @@
 <template>
   <div class="mx-auto max-w-6xl px-4 py-8">
     <div class="mb-6">
-      <h1 class="text-title font-semibold text-foreground">Buscar Servicos</h1>
+      <h1 class="text-title font-semibold text-foreground">Buscar Serviços</h1>
       <p class="mt-1 text-sm text-muted">{{ totalLabel }}</p>
     </div>
 
@@ -18,7 +18,7 @@
 
         <HtInput
           v-model="filtroPrecoStr"
-          label="Preco maximo (R$)"
+          label="Preço máximo (R$)"
           type="number"
           :allowNegative="false"
           placeholder="Ex: 150"
@@ -27,7 +27,7 @@
         <HtSelect
           v-model="tamanhoPaginaSelecionado"
           :options="opcoesTamanhoPagina"
-          label="Registros por pagina"
+          label="Registros por página"
         />
 
         <div class="flex items-end gap-2">
@@ -48,7 +48,7 @@
 
     <template v-else>
       <p v-if="resultado.itens.length === 0" class="py-12 text-center text-sm text-muted">
-        Nenhum servico encontrado com os filtros selecionados.
+        Nenhum serviço encontrado com os filtros selecionados.
       </p>
 
       <div v-else class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -86,7 +86,7 @@
             </span>
             <div class="text-right text-xs">
               <p v-if="typeof servico.mediaAvaliacoes === 'number'" class="text-yellow-500">
-                {{ servico.prestadorId ? "Servico" : "Cliente" }} {{ formatarEstrelas(servico.mediaAvaliacoes) }}
+                Serviço {{ estrelas(servico.mediaAvaliacoes) }}
               </p>
               <p v-if="servico.prestadorId && typeof servico.mediaAvaliacoesPrestador === 'number'" class="text-yellow-500">
                 Prestador {{ formatarEstrelas(servico.mediaAvaliacoesPrestador) }}
@@ -103,13 +103,13 @@
       <HtCard class="mt-6">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <p class="text-sm text-muted">
-            Pagina {{ resultado.paginaAtual }} de {{ Math.max(resultado.totalPaginas, 1) }}
+            Página {{ resultado.paginaAtual }} de {{ Math.max(resultado.totalPaginas, 1) }}
           </p>
 
           <div class="flex flex-col gap-3 sm:flex-row sm:items-end">
             <HtInput
               v-model="paginaDigitada"
-              label="Ir para a pagina"
+              label="Ir para a página"
               type="number"
               :allowNegative="false"
               placeholder="Ex: 3"
@@ -134,7 +134,7 @@
                 :disabled="resultado.paginaAtual >= resultado.totalPaginas || carregando"
                 @click="irParaPagina(resultado.paginaAtual + 1)"
               >
-                Proxima
+                Próxima
               </HtButton>
             </div>
           </div>
@@ -147,9 +147,10 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
+import { useAuthStore } from "@/stores/auth"
 import api from "@/services/api"
-import { formatarEstrelas, formatarPrecoServico } from "@/shared/utils"
-import { CATEGORIAS_SERVICO, type BuscarFiltro, type ResultadoPaginado, type ServicoBuscaResumo } from "@/types"
+import { formatarPrecoServico } from "@/shared/utils"
+import { CATEGORIAS_SERVICO, TipoAnuncio, TipoUsuario, type BuscarFiltro, type ResultadoPaginado, type ServicoBuscaResumo } from "@/types"
 import HtInput from "@/components/ui/HtInput.vue"
 import HtSelect from "@/components/ui/HtSelect.vue"
 import HtButton from "@/components/ui/HtButton.vue"
@@ -159,6 +160,7 @@ import HtSpinner from "@/components/ui/HtSpinner.vue"
 
 const route = useRoute()
 const router = useRouter()
+const auth = useAuthStore()
 
 const categoriasOpcoes = [
   { value: "", label: "Todas as categorias" },
@@ -196,12 +198,18 @@ const totalLabel = computed(() => {
     return "Nenhum resultado para esta consulta."
   }
 
-  return `${resultado.totalRegistros} servico(s) encontrados nesta consulta.`
+  return `${resultado.totalRegistros} serviço(s) encontrados nesta consulta.`
+})
+
+const tipoAnuncioBusca = computed(() => {
+  if (auth.user?.tipo === TipoUsuario.Prestador) return TipoAnuncio.Pedido
+  if (auth.user?.tipo === TipoUsuario.Cliente) return TipoAnuncio.Oferta
+  return null
 })
 
 watch(
-  () => route.query,
-  async (query) => {
+  () => [route.query, tipoAnuncioBusca.value] as const,
+  async ([query]) => {
     filtro.categoria = typeof query.categoria === "string" ? query.categoria : ""
     filtro.cidade = typeof query.cidade === "string" ? query.cidade : ""
     filtroPrecoStr.value = typeof query.precoMaximo === "string" ? query.precoMaximo : ""
@@ -229,6 +237,7 @@ async function buscar(pagina: number) {
     if (filtro.categoria) params.categoria = filtro.categoria
     if (filtro.cidade) params.cidade = filtro.cidade
     if (filtroPrecoStr.value) params.precoMaximo = Number(filtroPrecoStr.value)
+    if (tipoAnuncioBusca.value !== null) params.tipoAnuncio = tipoAnuncioBusca.value
 
     const { data } = await api.get<ResultadoPaginado<ServicoBuscaResumo> | ServicoBuscaResumo[]>(
       "/api/ServicoOferecido/BuscarServicos",

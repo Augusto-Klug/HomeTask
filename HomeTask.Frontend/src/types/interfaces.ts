@@ -214,6 +214,17 @@ export interface PagamentoResumo {
   motivoRecusa?: string | null
 }
 
+export interface MensagemChat {
+  id: string
+  remetenteId: string
+  agendamentoId?: string | null
+  conversaId?: string | null
+  conteudo: string
+  dataEnvio: string
+  dataLeitura?: string | null
+  lida: boolean
+}
+
 export interface ServicoPrestadorDetalhe extends Servico {
   prestadorId: string
   prestadorNome?: string

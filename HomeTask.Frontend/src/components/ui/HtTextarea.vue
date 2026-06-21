@@ -5,7 +5,8 @@
       :for="fieldId"
       class="inline-flex w-fit items-center text-sm font-medium"
       :class="{ 'text-error': hasError }"
-    >{{ label }}<span v-if="required" class="text-error ml-0.5">*</span></label>
+      >{{ label }}<span v-if="required" class="text-error ml-0.5">*</span></label
+    >
 
     <textarea
       :id="fieldId"
@@ -14,10 +15,11 @@
       :disabled="disabled"
       :placeholder="placeholder"
       :rows="rows"
-      class="textarea textarea-bordered w-full resize-y"
+      class="textarea textarea-bordered rounded-md w-full resize-y"
       :class="{
         'textarea-error': hasError,
-        'bg-base-200/60 border-base-300/70 text-base-content opacity-100 cursor-not-allowed disabled:[-webkit-text-fill-color:var(--color-base-content)]': disabled,
+        'bg-base-200/60 border-base-300/70 text-base-content opacity-100 cursor-not-allowed disabled:[-webkit-text-fill-color:var(--color-base-content)]':
+          disabled,
       }"
       @input="emit('update:modelValue', ($event.target as HTMLTextAreaElement).value)"
       @blur="required && validar()"
@@ -32,48 +34,48 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from "vue";
 
-defineOptions({ inheritAttrs: false })
+defineOptions({ inheritAttrs: false });
 
 const props = withDefaults(
   defineProps<{
-    modelValue: string
-    label?: string
-    placeholder?: string
-    hint?: string
-    regra?: string
-    mensagemErro?: string
-    disabled?: boolean
-    required?: boolean
-    rows?: number
+    modelValue: string;
+    label?: string;
+    placeholder?: string;
+    hint?: string;
+    regra?: string;
+    mensagemErro?: string;
+    disabled?: boolean;
+    required?: boolean;
+    rows?: number;
   }>(),
   { rows: 3, disabled: false, required: false },
-)
+);
 
-const emit = defineEmits<{ 'update:modelValue': [value: string] }>()
+const emit = defineEmits<{ "update:modelValue": [value: string] }>();
 
-let counter = 0
-const fieldId = `ht-textarea-${++counter}`
+let counter = 0;
+const fieldId = `ht-textarea-${++counter}`;
 
-const hasError = ref(false)
-const erroAtual = ref('')
+const hasError = ref(false);
+const erroAtual = ref("");
 
 function validar(): boolean {
   if (props.required && !props.modelValue?.trim()) {
-    hasError.value = true
-    erroAtual.value = props.mensagemErro ?? 'Campo obrigatório'
-    return false
+    hasError.value = true;
+    erroAtual.value = props.mensagemErro ?? "Campo obrigatório";
+    return false;
   }
-  hasError.value = false
-  erroAtual.value = ''
-  return true
+  hasError.value = false;
+  erroAtual.value = "";
+  return true;
 }
 
 function clearError() {
-  hasError.value = false
-  erroAtual.value = ''
+  hasError.value = false;
+  erroAtual.value = "";
 }
 
-defineExpose({ validar, clearError })
+defineExpose({ validar, clearError });
 </script>

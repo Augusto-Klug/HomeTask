@@ -16,6 +16,7 @@ public interface IServicoPrestadorService
         CategoriaServico? categoria,
         string? cidade,
         decimal? precoMaximo,
+        TipoAnuncio? tipoAnuncio,
         Guid? usuarioId,
         int pagina,
         int tamanhoPagina,

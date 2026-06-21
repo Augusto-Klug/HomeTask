@@ -32,7 +32,7 @@ public class ServicoRepositoryIntegrationTests
         await sqlite.Db.SaveChangesAsync();
 
         // Act
-        var resultado = await repository.BuscarTodosPaginadoAsync(CategoriaServico.Faxina, "Blumenau", 100, null, 1, 10);
+        var resultado = await repository.BuscarTodosPaginadoAsync(CategoriaServico.Faxina, "Blumenau", 100, null, null, 1, 10);
 
         // Assert
         Assert.Equal(2, resultado.TotalRegistros);
@@ -94,8 +94,8 @@ public class ServicoRepositoryIntegrationTests
         sqlite.Db.AddRange(cidade, usuarioAtual, usuarioOutro, usuarioCliente, enderecoAtual, enderecoOutro, enderecoCliente, prestadorAtual, prestadorOutro, clienteAtual, servicoProprio, servicoOutro, pedidoProprio);
         await sqlite.Db.SaveChangesAsync();
 
-        var resultadoPrestador = await repository.BuscarTodosPaginadoAsync(CategoriaServico.Jardinagem, "Blumenau", null, usuarioAtual.Id, 1, 10);
-        var resultadoCliente = await repository.BuscarTodosPaginadoAsync(CategoriaServico.Jardinagem, "Blumenau", null, usuarioCliente.Id, 1, 10);
+        var resultadoPrestador = await repository.BuscarTodosPaginadoAsync(CategoriaServico.Jardinagem, "Blumenau", null, null, usuarioAtual.Id, 1, 10);
+        var resultadoCliente = await repository.BuscarTodosPaginadoAsync(CategoriaServico.Jardinagem, "Blumenau", null, null, usuarioCliente.Id, 1, 10);
 
         Assert.DoesNotContain(resultadoPrestador.Itens, item => item.Id == servicoProprio.Id);
         Assert.Contains(resultadoPrestador.Itens, item => item.Id == servicoOutro.Id);
@@ -104,6 +104,34 @@ public class ServicoRepositoryIntegrationTests
         Assert.DoesNotContain(resultadoCliente.Itens, item => item.Id == pedidoProprio.Id);
         Assert.Contains(resultadoCliente.Itens, item => item.Id == servicoProprio.Id);
         Assert.Contains(resultadoCliente.Itens, item => item.Id == servicoOutro.Id);
+    }
+
+    [Fact]
+    [Trait("categoria", "integracao")]
+    public async Task BuscarTodosPaginadoAsync_QuandoTipoAnuncioInformado_DeveFiltrarOrigemDoAnuncio()
+    {
+        using var sqlite = new SqliteTestContext();
+        var repository = new ServicoPrestadorRepository(sqlite.Db);
+        var cidade = EntidadeFactory.CriarCidade();
+        var usuarioPrestador = EntidadeFactory.CriarUsuario(tipo: TipoUsuario.Prestador, documento: "88888888881");
+        var usuarioCliente = EntidadeFactory.CriarUsuario(tipo: TipoUsuario.Cliente, documento: "88888888882");
+        var enderecoPrestador = EntidadeFactory.CriarEndereco(usuarioId: usuarioPrestador.Id, cidadeId: cidade.Id);
+        var enderecoCliente = EntidadeFactory.CriarEndereco(usuarioId: usuarioCliente.Id, cidadeId: cidade.Id);
+        var prestador = EntidadeFactory.CriarPrestador(usuarioId: usuarioPrestador.Id);
+        var cliente = EntidadeFactory.CriarCliente(usuarioId: usuarioCliente.Id);
+        var oferta = EntidadeFactory.CriarServicoPrestador(prestadorId: prestador.Id, categoria: CategoriaServico.Faxina, preco: 120);
+        var pedido = EntidadeFactory.CriarServicoCliente(clienteId: cliente.Id, categoria: CategoriaServico.Faxina, preco: 80);
+
+        sqlite.Db.AddRange(cidade, usuarioPrestador, usuarioCliente, enderecoPrestador, enderecoCliente, prestador, cliente, oferta, pedido);
+        await sqlite.Db.SaveChangesAsync();
+
+        var ofertas = await repository.BuscarTodosPaginadoAsync(CategoriaServico.Faxina, "Blumenau", null, TipoAnuncio.Oferta, null, 1, 10);
+        var pedidos = await repository.BuscarTodosPaginadoAsync(CategoriaServico.Faxina, "Blumenau", null, TipoAnuncio.Pedido, null, 1, 10);
+
+        Assert.Single(ofertas.Itens);
+        Assert.Equal(oferta.Id, ofertas.Itens.Single().Id);
+        Assert.Single(pedidos.Itens);
+        Assert.Equal(pedido.Id, pedidos.Itens.Single().Id);
     }
 
     [Fact]

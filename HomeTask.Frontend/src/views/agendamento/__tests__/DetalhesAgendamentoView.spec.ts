@@ -7,7 +7,7 @@ import { useAuthStore } from "@/stores/auth"
 import * as apiModule from "@/services/api"
 import { StatusAgendamento, StatusPagamento, TipoUsuario, UnidadeCobranca, type AgendamentoResumo } from "@/types"
 
-vi.mock("@/services/api", () => ({ default: { get: vi.fn(), post: vi.fn() } }))
+vi.mock("@/services/api", () => ({ default: { get: vi.fn(), post: vi.fn() }, API_BASE_URL: "http://localhost:5000" }))
 
 const makeAgendamento = (overrides: Partial<AgendamentoResumo> = {}): AgendamentoResumo => ({
   id: "ag-1",
@@ -88,6 +88,7 @@ describe("DetalhesAgendamentoView", () => {
           HtBadge: { template: "<span><slot /></span>", props: ["variant"] },
           HtButton: { template: "<button><slot /></button>", props: ["loading", "variant"] },
           HtTextarea: { template: "<textarea />", props: ["modelValue"] },
+          AgendamentoChat: true,
         },
       },
     })
@@ -95,7 +96,7 @@ describe("DetalhesAgendamentoView", () => {
     await flushPromises()
 
     expect(wrapper.text()).toContain("Avaliar atendimento")
-    expect(wrapper.text()).toContain("Avalie o servico")
+    expect(wrapper.text()).toContain("Avalie o serviço")
     expect(wrapper.text()).toContain("Avalie o prestador")
   })
 

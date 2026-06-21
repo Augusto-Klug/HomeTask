@@ -5,7 +5,7 @@
     </div>
 
     <div v-else-if="!perfil" class="py-16 text-center">
-      <p class="text-sm text-muted">Prestador nao encontrado.</p>
+      <p class="text-sm text-muted">Prestador não encontrado.</p>
     </div>
 
     <template v-else>
@@ -31,13 +31,13 @@
 
           <div class="grid grid-cols-1 gap-3 text-sm md:min-w-72">
             <div class="rounded-xl border border-border/60 bg-muted/10 p-4">
-              <p class="text-xs uppercase tracking-wider text-muted">Avaliacao do prestador</p>
-              <p class="mt-1 text-lg font-semibold text-yellow-500">{{ formatarEstrelas(perfil.mediaAvaliacoes, "round") }}</p>
+              <p class="text-xs uppercase tracking-wider text-muted">Avaliação do prestador</p>
+              <p class="mt-1 text-lg font-semibold text-yellow-500">{{ estrelas(perfil.mediaAvaliacoes) }}</p>
               <p class="text-sm text-foreground">{{ formatarNota(perfil.mediaAvaliacoes) }} de 5</p>
-              <p class="text-xs text-muted">{{ perfil.totalAvaliacoes }} avaliacao(oes)</p>
+              <p class="text-xs text-muted">{{ perfil.totalAvaliacoes }} avaliação(ões)</p>
             </div>
             <div class="rounded-xl border border-border/60 bg-muted/10 p-4">
-              <p class="text-xs uppercase tracking-wider text-muted">Servicos concluidos</p>
+              <p class="text-xs uppercase tracking-wider text-muted">Serviços concluídos</p>
               <p class="mt-1 text-2xl font-bold text-foreground">{{ perfil.totalServicosConcluidos }}</p>
             </div>
           </div>
@@ -45,7 +45,7 @@
       </HtCard>
 
       <HtCard v-if="perfil.servicosOferecidos.length" class="mb-6">
-        <h2 class="mb-4 text-lg font-bold">Servicos ofertados</h2>
+        <h2 class="mb-4 text-lg font-bold">Serviços ofertados</h2>
         <div class="grid gap-3 md:grid-cols-2">
           <router-link
             v-for="servico in perfil.servicosOferecidos"
@@ -65,7 +65,7 @@
       </HtCard>
 
       <div>
-        <h2 class="mb-4 text-lg font-bold">Historico concluido</h2>
+        <h2 class="mb-4 text-lg font-bold">Histórico concluído</h2>
         <div v-if="perfil.historicoConcluido.length" class="grid gap-3">
           <HtCard v-for="item in perfil.historicoConcluido" :key="item.agendamentoId">
             <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
@@ -76,13 +76,13 @@
                 </p>
               </div>
               <div class="text-sm">
-                <p class="text-yellow-500">Servico: {{ formatarEstrelas(item.notaServico ?? 0) }}</p>
-                <p class="text-yellow-500">Prestador: {{ formatarEstrelas(item.notaPrestador ?? 0) }}</p>
+                <p class="text-yellow-500">Serviço: {{ estrelas(item.notaServico ?? 0) }}</p>
+                <p class="text-yellow-500">Prestador: {{ estrelas(item.notaPrestador ?? 0) }}</p>
               </div>
             </div>
           </HtCard>
         </div>
-        <p v-else class="text-sm text-muted">Nenhum servico concluido disponivel.</p>
+        <p v-else class="text-sm text-muted">Nenhum serviço concluído disponível.</p>
       </div>
     </template>
   </div>

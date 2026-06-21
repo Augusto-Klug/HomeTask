@@ -1,6 +1,7 @@
 using HomeTask.Application.Dtos;
 using HomeTask.Application.Interfaces;
 using HomeTask.Application.Mappings;
+using HomeTask.Domain.Enums;
 using HomeTask.Domain.Repositories;
 
 namespace HomeTask.Application.Services;
@@ -82,9 +83,9 @@ public class ServicoPrestadorService : IServicoPrestadorService
         await _servicoPrestadorRepository.SalvarAlteracoesAsync(cancellationToken);
     }
 
-    public async Task<ServicoBuscaPaginadaDto> BuscarTodosPaginadoAsync(HomeTask.Domain.Enums.CategoriaServico? categoria, string? cidade, decimal? precoMaximo, Guid? usuarioId, int pagina, int tamanhoPagina, CancellationToken cancellationToken = default)
+    public async Task<ServicoBuscaPaginadaDto> BuscarTodosPaginadoAsync(HomeTask.Domain.Enums.CategoriaServico? categoria, string? cidade, decimal? precoMaximo, TipoAnuncio? tipoAnuncio, Guid? usuarioId, int pagina, int tamanhoPagina, CancellationToken cancellationToken = default)
     {
-        var resultado = await _servicoPrestadorRepository.BuscarTodosPaginadoAsync(categoria, cidade, precoMaximo, usuarioId, pagina, tamanhoPagina, cancellationToken);
+        var resultado = await _servicoPrestadorRepository.BuscarTodosPaginadoAsync(categoria, cidade, precoMaximo, tipoAnuncio, usuarioId, pagina, tamanhoPagina, cancellationToken);
         return resultado.ParaDto();
     }
 }

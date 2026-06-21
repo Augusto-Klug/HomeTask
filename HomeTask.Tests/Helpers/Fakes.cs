@@ -63,9 +63,12 @@ internal sealed class FakeServicoPrestadorRepository : FakeRepositoryBase<Servic
     public Task<IEnumerable<ServicoPrestador>> BuscarAsync(CategoriaServico? categoria, string? cidade, decimal? precoMaximo, CancellationToken cancellationToken = default) =>
         Task.FromResult(Itens.Values.Where(s => s.Ativo && (!categoria.HasValue || s.Categoria == categoria) && (!precoMaximo.HasValue || s.PrecoBase <= precoMaximo)).AsEnumerable());
 
-    public Task<PaginacaoResultado<ServicoBase>> BuscarTodosPaginadoAsync(CategoriaServico? categoria, string? cidade, decimal? precoMaximo, Guid? usuarioId, int pagina, int tamanhoPagina, CancellationToken cancellationToken = default)
+    public Task<PaginacaoResultado<ServicoBase>> BuscarTodosPaginadoAsync(CategoriaServico? categoria, string? cidade, decimal? precoMaximo, TipoAnuncio? tipoAnuncio, Guid? usuarioId, int pagina, int tamanhoPagina, CancellationToken cancellationToken = default)
     {
-        var itens = Itens.Values.Cast<ServicoBase>().ToList();
+        var itens = Itens.Values
+            .Cast<ServicoBase>()
+            .Where(s => !tipoAnuncio.HasValue || s.TipoAnuncio == tipoAnuncio.Value)
+            .ToList();
         return Task.FromResult(new PaginacaoResultado<ServicoBase>
         {
             Itens = itens,
@@ -173,6 +176,33 @@ internal sealed class FakeClienteRepository : FakeRepositoryBase<Cliente>, IClie
 
     public Task<int> ObterTotalServicosContratadosConcluidosAsync(Guid clienteId, CancellationToken cancellationToken = default) =>
         Task.FromResult(TotalServicosConcluidosPorCliente.GetValueOrDefault(clienteId));
+}
+
+internal sealed class FakeMensagemRepository : FakeRepositoryBase<Mensagem>, IMensagemRepository
+{
+    public Task<IEnumerable<Mensagem>> ObterConversaAsync(Guid conversaId, CancellationToken cancellationToken = default) =>
+        Task.FromResult(Itens.Values.Where(m => m.ConversaId == conversaId).OrderBy(m => m.DataEnvio).AsEnumerable());
+
+    public Task<IEnumerable<Mensagem>> ObterPorAgendamentoAsync(Guid agendamentoId, DateTime desde, CancellationToken cancellationToken = default) =>
+        Task.FromResult(Itens.Values.Where(m => m.AgendamentoId == agendamentoId && m.DataEnvio >= desde).OrderBy(m => m.DataEnvio).AsEnumerable());
+
+    public Task<List<Mensagem>> ObterUltimasPorAgendamentoAsync(Guid agendamentoId, int quantidade, CancellationToken cancellationToken = default) =>
+        Task.FromResult(Itens.Values.Where(m => m.AgendamentoId == agendamentoId).OrderByDescending(m => m.DataEnvio).Take(quantidade).ToList());
+
+    public Task<IEnumerable<Mensagem>> ObterConversasPorUsuarioAsync(Guid usuarioId, CancellationToken cancellationToken = default) =>
+        Task.FromResult(Enumerable.Empty<Mensagem>());
+
+    public Task<int> ObterNaoLidasAsync(Guid usuarioId, CancellationToken cancellationToken = default) =>
+        Task.FromResult(Itens.Values.Count(m => m.RemetenteId != usuarioId && !m.Lida));
+
+    public Task<int> RemoverEnviadasAntesDeAsync(DateTime dataLimite, CancellationToken cancellationToken = default)
+    {
+        var ids = Itens.Values.Where(m => m.DataEnvio < dataLimite).Select(m => m.Id).ToList();
+        foreach (var id in ids)
+            Itens.Remove(id);
+
+        return Task.FromResult(ids.Count);
+    }
 }
 
 internal sealed class FakeAvaliacaoRepository : FakeRepositoryBase<Avaliacao>, IAvaliacaoRepository

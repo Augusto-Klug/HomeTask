@@ -16,8 +16,8 @@ public class Mensagem
 
     public Usuario Remetente { get; private set; } = null!;
 
-    public Guid ConversaId { get; private set; }
-    public Conversa Conversa { get; private set; } = null!;
+    public Guid? ConversaId { get; private set; }
+    public Conversa? Conversa { get; private set; }
 
     /// <summary>
     /// Agendamento relacionado à conversa (opcional)
@@ -37,7 +37,7 @@ public class Mensagem
     public void DefinirDados(
         Guid id,
         Guid remetenteId,
-        Guid conversaId,
+        Guid? conversaId,
         Guid? agendamentoId,
         string conteudo,
         DateTime dataEnvio,

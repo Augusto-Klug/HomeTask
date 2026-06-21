@@ -100,7 +100,7 @@
                       {{ ag.servicos.map((s) => s.titulo).join(", ") }}
                     </p>
                     <p class="text-sm text-base-content/80">
-                      {{ formatarDataCurta(ag.dataHoraAgendada) }} as
+                      {{ formatarDataCurta(ag.dataHoraAgendada) }} às
                       {{ formatarHora(ag.dataHoraAgendada) }}
                     </p>
                   </div>
@@ -131,7 +131,7 @@
             <button
               type="button"
               class="btn btn-ghost btn-sm btn-square"
-              aria-label="Mes anterior"
+              aria-label="Mês anterior"
               @click="alterarMes(-1)"
             >
               <span class="material-symbols-rounded text-lg">chevron_left</span>
@@ -286,7 +286,7 @@ type PainelId =
   | "cancelados-recusados";
 type PainelTom = "primary" | "secondary" | "accent" | "success" | "warning" | "error" | "neutro";
 
-const diasSemana = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"] as const;
+const diasSemana = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"] as const;
 const PAINEL_TOM_CLASSES: Record<PainelTom, { container: string; hover: string; count: string; icon: string }> = {
   neutro: {
     container: "",

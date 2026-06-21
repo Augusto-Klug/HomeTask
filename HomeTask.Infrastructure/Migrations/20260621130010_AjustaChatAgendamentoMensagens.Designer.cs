@@ -4,6 +4,7 @@ using HomeTask.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HomeTask.Infrastructure.Migrations
 {
     [DbContext(typeof(HomeTaskDbContext))]
-    partial class HomeTaskDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260621130010_AjustaChatAgendamentoMensagens")]
+    partial class AjustaChatAgendamentoMensagens
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,10 +51,6 @@ namespace HomeTask.Infrastructure.Migrations
 
                     b.Property<int>("DuracaoMinutos")
                         .HasColumnType("int");
-
-                    b.Property<string>("EnderecoDescricao")
-                        .HasMaxLength(300)
-                        .HasColumnType("varchar(300)");
 
                     b.Property<Guid>("EnderecoId")
                         .HasColumnType("char(36)");
@@ -194,46 +193,6 @@ namespace HomeTask.Infrastructure.Migrations
                     b.ToTable("Avaliacoes");
                 });
 
-            modelBuilder.Entity("HomeTask.Domain.Entidades.AvaliacaoCliente", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("AgendamentoId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("ClienteId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("Comentario")
-                        .HasMaxLength(1000)
-                        .HasColumnType("varchar(1000)");
-
-                    b.Property<DateTime>("DataAvaliacao")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("Nota")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("PrestadorId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<bool>("Visivel")
-                        .HasColumnType("tinyint(1)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AgendamentoId")
-                        .IsUnique();
-
-                    b.HasIndex("ClienteId");
-
-                    b.HasIndex("PrestadorId");
-
-                    b.ToTable("AvaliacoesClientes");
-                });
-
             modelBuilder.Entity("HomeTask.Domain.Entidades.Certificacao", b =>
                 {
                     b.Property<Guid>("Id")
@@ -305,12 +264,6 @@ namespace HomeTask.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
-
-                    b.Property<decimal>("MediaAvaliacoes")
-                        .HasColumnType("decimal(65,30)");
-
-                    b.Property<int>("TotalAvaliacoes")
-                        .HasColumnType("int");
 
                     b.Property<Guid>("UsuarioId")
                         .HasColumnType("char(36)");
@@ -829,33 +782,6 @@ namespace HomeTask.Infrastructure.Migrations
                     b.Navigation("ServicoPrestador");
                 });
 
-            modelBuilder.Entity("HomeTask.Domain.Entidades.AvaliacaoCliente", b =>
-                {
-                    b.HasOne("HomeTask.Domain.Entidades.Agendamento", "Agendamento")
-                        .WithOne("AvaliacaoCliente")
-                        .HasForeignKey("HomeTask.Domain.Entidades.AvaliacaoCliente", "AgendamentoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HomeTask.Domain.Entidades.Cliente", "Cliente")
-                        .WithMany("AvaliacoesRecebidas")
-                        .HasForeignKey("ClienteId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("HomeTask.Domain.Entidades.Prestador", "Prestador")
-                        .WithMany("AvaliacoesDeClientes")
-                        .HasForeignKey("PrestadorId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Agendamento");
-
-                    b.Navigation("Cliente");
-
-                    b.Navigation("Prestador");
-                });
-
             modelBuilder.Entity("HomeTask.Domain.Entidades.Certificacao", b =>
                 {
                     b.HasOne("HomeTask.Domain.Entidades.Prestador", "Prestador")
@@ -1013,8 +939,6 @@ namespace HomeTask.Infrastructure.Migrations
 
                     b.Navigation("Avaliacao");
 
-                    b.Navigation("AvaliacaoCliente");
-
                     b.Navigation("Pagamento");
                 });
 
@@ -1028,8 +952,6 @@ namespace HomeTask.Infrastructure.Migrations
                     b.Navigation("Agendamentos");
 
                     b.Navigation("Avaliacoes");
-
-                    b.Navigation("AvaliacoesRecebidas");
 
                     b.Navigation("Conversas");
 
@@ -1051,8 +973,6 @@ namespace HomeTask.Infrastructure.Migrations
                     b.Navigation("Agendamentos");
 
                     b.Navigation("Avaliacoes");
-
-                    b.Navigation("AvaliacoesDeClientes");
 
                     b.Navigation("Certificacoes");
 

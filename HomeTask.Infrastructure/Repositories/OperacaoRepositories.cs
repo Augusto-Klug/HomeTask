@@ -275,11 +275,25 @@ public class MensagemRepository : RepositoryBase<Mensagem>, IMensagemRepository
             .OrderBy(m => m.DataEnvio)
             .ToListAsync(cancellationToken);
 
+    public async Task<IEnumerable<Mensagem>> ObterPorAgendamentoAsync(Guid agendamentoId, DateTime desde, CancellationToken cancellationToken = default) =>
+        await Context.Mensagens
+            .Include(m => m.Remetente)
+            .Where(m => m.AgendamentoId == agendamentoId && m.DataEnvio >= desde)
+            .OrderBy(m => m.DataEnvio)
+            .ToListAsync(cancellationToken);
+
+    public Task<List<Mensagem>> ObterUltimasPorAgendamentoAsync(Guid agendamentoId, int quantidade, CancellationToken cancellationToken = default) =>
+        Context.Mensagens
+            .Where(m => m.AgendamentoId == agendamentoId)
+            .OrderByDescending(m => m.DataEnvio)
+            .Take(quantidade)
+            .ToListAsync(cancellationToken);
+
     public async Task<IEnumerable<Mensagem>> ObterConversasPorUsuarioAsync(Guid usuarioId, CancellationToken cancellationToken = default) =>
         await Context.Mensagens
             .Include(m => m.Remetente)
             .Include(m => m.Conversa)
-            .Where(m => m.Conversa.ClienteId == usuarioId || m.Conversa.PrestadorId == usuarioId)
+            .Where(m => m.Conversa != null && (m.Conversa.ClienteId == usuarioId || m.Conversa.PrestadorId == usuarioId))
             .GroupBy(m => m.ConversaId)
             .Select(g => g.OrderByDescending(m => m.DataEnvio).First())
             .OrderByDescending(m => m.DataEnvio)
@@ -287,9 +301,14 @@ public class MensagemRepository : RepositoryBase<Mensagem>, IMensagemRepository
 
     public Task<int> ObterNaoLidasAsync(Guid usuarioId, CancellationToken cancellationToken = default) =>
         Context.Mensagens
-            .Where(m => m.Conversa.ClienteId == usuarioId || m.Conversa.PrestadorId == usuarioId)
+            .Where(m => m.Conversa != null && (m.Conversa.ClienteId == usuarioId || m.Conversa.PrestadorId == usuarioId))
             .Where(m => m.RemetenteId != usuarioId && !m.Lida)
             .CountAsync(cancellationToken);
+
+    public Task<int> RemoverEnviadasAntesDeAsync(DateTime dataLimite, CancellationToken cancellationToken = default) =>
+        Context.Mensagens
+            .Where(m => m.DataEnvio < dataLimite)
+            .ExecuteDeleteAsync(cancellationToken);
 }
 
 public class ConversaRepository : RepositoryBase<Conversa>, IConversaRepository

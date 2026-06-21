@@ -68,7 +68,7 @@ public class ServicoPrestadorRepository : RepositoryBase<ServicoPrestador>, ISer
             .Include(s => s.Avaliacoes)
             .FirstOrDefaultAsync(s => s.Id == servicoPrestadorId, cancellationToken);
 
-    public async Task<PaginacaoResultado<ServicoBase>> BuscarTodosPaginadoAsync(CategoriaServico? categoria, string? cidade, decimal? precoMaximo, Guid? usuarioId, int pagina, int tamanhoPagina, CancellationToken cancellationToken = default)
+    public async Task<PaginacaoResultado<ServicoBase>> BuscarTodosPaginadoAsync(CategoriaServico? categoria, string? cidade, decimal? precoMaximo, TipoAnuncio? tipoAnuncio, Guid? usuarioId, int pagina, int tamanhoPagina, CancellationToken cancellationToken = default)
     {
         var paginaAtual = pagina < 1 ? 1 : pagina;
         var tamanhoPaginaNormalizado = tamanhoPagina is 10 or 30 or 50 ? tamanhoPagina : 30;
@@ -115,8 +115,8 @@ public class ServicoPrestadorRepository : RepositoryBase<ServicoPrestador>, ISer
             queryClientes = queryClientes.Where(s => s.Cliente.UsuarioId != usuarioId.Value);
         }
 
-        var servicosPrestadores = await queryPrestadores.ToListAsync(cancellationToken);
-        var servicosClientes = await queryClientes.ToListAsync(cancellationToken);
+        var servicosPrestadores = tipoAnuncio == TipoAnuncio.Pedido ? [] : await queryPrestadores.ToListAsync(cancellationToken);
+        var servicosClientes = tipoAnuncio == TipoAnuncio.Oferta ? [] : await queryClientes.ToListAsync(cancellationToken);
 
         var servicosOrdenados = servicosPrestadores
             .Cast<ServicoBase>()
