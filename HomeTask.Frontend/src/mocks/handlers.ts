@@ -1,5 +1,5 @@
 import { delay, http, HttpResponse } from "msw";
-import type { AgendamentoResumo, AuthResponse, Avaliacao, PagamentoResumo, PerfilForm, PrestadorPerfilPublico, Servico } from "@/types";
+import type { AgendamentoResumo, AuthResponse, Avaliacao, AvaliacaoCliente, ClientePerfilPublico, PagamentoResumo, PerfilForm, PrestadorPerfilPublico, Servico } from "@/types";
 import { StatusAgendamento, StatusPagamento, TipoUsuario, UnidadeCobranca } from "@/types";
 
 const MOCK_DELAY = 200;
@@ -25,6 +25,9 @@ const MOCK_SERVICOS: Servico[] = [
     prestadorId: "10",
     prestadorNome: "Maria Silva",
     categoria: 1,
+    logradouro: "Rua das Palmeiras",
+    numero: "120",
+    bairro: "Centro",
     cidade: "Blumenau",
     estado: "SC",
     mediaAvaliacoes: 4.5,
@@ -40,6 +43,9 @@ const MOCK_SERVICOS: Servico[] = [
     prestadorId: "11",
     prestadorNome: "Joao Santos",
     categoria: 2,
+    logradouro: "Rua Sao Paulo",
+    numero: "88",
+    bairro: "Victor Konder",
     cidade: "Blumenau",
     estado: "SC",
     mediaAvaliacoes: 4,
@@ -55,8 +61,13 @@ const MOCK_SERVICOS: Servico[] = [
     clienteId: "2",
     clienteNome: "Pedro Martins",
     categoria: 1,
+    logradouro: "Rua XV de Novembro",
+    numero: "320",
+    bairro: "Centro",
     cidade: "Blumenau",
     estado: "SC",
+    mediaAvaliacoes: 4.4,
+    totalAvaliacoes: 8,
     dataDesejada: diasAPartirDeHoje(3, "10:00"),
   },
 ];
@@ -91,6 +102,7 @@ const MOCK_AVALIACOES: Record<string, Avaliacao[]> = {
 };
 
 const MOCK_AVALIACOES_POR_AGENDAMENTO: Record<string, Avaliacao> = {};
+const MOCK_AVALIACOES_CLIENTE_POR_AGENDAMENTO: Record<string, AvaliacaoCliente> = {};
 
 function diasAPartirDeHoje(dias: number, hora = "09:00") {
   const d = new Date();
@@ -118,6 +130,10 @@ const MOCK_AGENDAMENTOS_CLIENTE: AgendamentoResumo[] = [
     dataConclusao: null,
     motivoRecusa: null,
     aguardandoRespostaDe: null,
+    podeClienteAvaliarPrestador: false,
+    clienteJaAvaliouPrestador: false,
+    podePrestadorAvaliarCliente: false,
+    prestadorJaAvaliouCliente: false,
     servicos: [
       {
         id: "srv-001",
@@ -148,6 +164,10 @@ const MOCK_AGENDAMENTOS_CLIENTE: AgendamentoResumo[] = [
     dataConclusao: null,
     motivoRecusa: null,
     aguardandoRespostaDe: TipoUsuario.Cliente,
+    podeClienteAvaliarPrestador: false,
+    clienteJaAvaliouPrestador: false,
+    podePrestadorAvaliarCliente: false,
+    prestadorJaAvaliouCliente: false,
     servicos: [
       {
         id: "11",
@@ -181,6 +201,10 @@ const MOCK_AGENDAMENTOS_PRESTADOR: AgendamentoResumo[] = [
     dataConclusao: null,
     motivoRecusa: null,
     aguardandoRespostaDe: TipoUsuario.Prestador,
+    podeClienteAvaliarPrestador: false,
+    clienteJaAvaliouPrestador: false,
+    podePrestadorAvaliarCliente: false,
+    prestadorJaAvaliouCliente: false,
     servicos: [
       {
         id: "srv-012",
@@ -211,6 +235,10 @@ const MOCK_AGENDAMENTOS_PRESTADOR: AgendamentoResumo[] = [
     dataConclusao: null,
     motivoRecusa: null,
     aguardandoRespostaDe: null,
+    podeClienteAvaliarPrestador: false,
+    clienteJaAvaliouPrestador: false,
+    podePrestadorAvaliarCliente: false,
+    prestadorJaAvaliouCliente: false,
     servicos: [
       {
         id: "11",
@@ -264,6 +292,16 @@ const MOCK_PERFIL_PUBLICO: PrestadorPerfilPublico = {
       notaPrestador: 5,
     },
   ],
+};
+
+const MOCK_PERFIL_CLIENTE_PUBLICO: ClientePerfilPublico = {
+  id: "2",
+  nome: "Pedro Martins",
+  cidade: "Blumenau",
+  estado: "SC",
+  mediaAvaliacoes: 4.4,
+  totalAvaliacoes: 8,
+  totalServicosContratados: 14,
 };
 
 const CATEGORIA_LABELS: Record<string, string> = {
@@ -324,6 +362,13 @@ export const handlers = [
     return HttpResponse.json(servico);
   }),
 
+  http.get("*/api/ServicoOferecido/ObterServicosPorPrestador", async ({ request }) => {
+    await delay(MOCK_DELAY);
+    const url = new URL(request.url);
+    const prestadorId = url.searchParams.get("prestadorId");
+    return HttpResponse.json(MOCK_SERVICOS.filter((servico) => servico.prestadorId === prestadorId));
+  }),
+
   http.get("*/api/Avaliacao/ObterAvaliacoesPorPrestador", async ({ request }) => {
     await delay(MOCK_DELAY);
     const url = new URL(request.url);
@@ -336,6 +381,15 @@ export const handlers = [
     const url = new URL(request.url);
     const agendamentoId = url.searchParams.get("agendamentoId") ?? "";
     const avaliacao = MOCK_AVALIACOES_POR_AGENDAMENTO[agendamentoId];
+    if (!avaliacao) return new HttpResponse(null, { status: 404 });
+    return HttpResponse.json(avaliacao);
+  }),
+
+  http.get("*/api/Avaliacao/ObterAvaliacaoClientePorAgendamento", async ({ request }) => {
+    await delay(MOCK_DELAY);
+    const url = new URL(request.url);
+    const agendamentoId = url.searchParams.get("agendamentoId") ?? "";
+    const avaliacao = MOCK_AVALIACOES_CLIENTE_POR_AGENDAMENTO[agendamentoId];
     if (!avaliacao) return new HttpResponse(null, { status: 404 });
     return HttpResponse.json(avaliacao);
   }),
@@ -364,6 +418,25 @@ export const handlers = [
     return HttpResponse.json(avaliacao);
   }),
 
+  http.post("*/api/Avaliacao/CriarAvaliacaoCliente", async ({ request }) => {
+    await delay(MOCK_DELAY);
+    const body = await request.json() as Partial<AvaliacaoCliente>;
+    const avaliacao: AvaliacaoCliente = {
+      id: crypto.randomUUID(),
+      agendamentoId: String(body.agendamentoId ?? ""),
+      clienteId: String(body.clienteId ?? ""),
+      prestadorId: String(body.prestadorId ?? ""),
+      nota: Number(body.nota ?? 0),
+      comentario: body.comentario ?? null,
+      dataAvaliacao: new Date().toISOString(),
+      clienteNome: "Usuario Demo",
+      prestadorNome: "Prestador Demo",
+    };
+
+    MOCK_AVALIACOES_CLIENTE_POR_AGENDAMENTO[avaliacao.agendamentoId] = avaliacao;
+    return HttpResponse.json(avaliacao);
+  }),
+
   http.post("*/api/Auth/Login", async () => {
     await delay(MOCK_DELAY);
     return HttpResponse.json(MOCK_USER);
@@ -375,6 +448,7 @@ export const handlers = [
   http.post("*/api/Usuario/CriarUsuario", async () => HttpResponse.json(MOCK_USER, { status: 201 })),
 
   http.get("*/api/Cliente/ObterClientesPorUsuarioId", async () => HttpResponse.json(MOCK_CLIENTE)),
+  http.get("*/api/Cliente/ObterPerfilPublico", async () => HttpResponse.json(MOCK_PERFIL_CLIENTE_PUBLICO)),
   http.get("*/api/Prestador/ObterPrestadorPorUsuarioId", async () => HttpResponse.json(MOCK_PRESTADOR)),
   http.get("*/api/Prestador/ObterPerfilPublico", async () => HttpResponse.json(MOCK_PERFIL_PUBLICO)),
 
@@ -399,6 +473,12 @@ export const handlers = [
     const id = url.searchParams.get("id");
     const todos = [...MOCK_AGENDAMENTOS_CLIENTE, ...MOCK_AGENDAMENTOS_PRESTADOR];
     const alvo = todos.find((a) => a.id === id);
+    if (alvo) {
+      alvo.clienteJaAvaliouPrestador = Boolean(MOCK_AVALIACOES_POR_AGENDAMENTO[alvo.id]);
+      alvo.prestadorJaAvaliouCliente = Boolean(MOCK_AVALIACOES_CLIENTE_POR_AGENDAMENTO[alvo.id]);
+      alvo.podeClienteAvaliarPrestador = alvo.status === StatusAgendamento.Concluido && !alvo.clienteJaAvaliouPrestador;
+      alvo.podePrestadorAvaliarCliente = alvo.status === StatusAgendamento.Concluido && !alvo.prestadorJaAvaliouCliente;
+    }
     return HttpResponse.json(alvo ?? null, { status: alvo ? 200 : 404 });
   }),
 

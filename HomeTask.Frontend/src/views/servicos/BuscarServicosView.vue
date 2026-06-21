@@ -62,7 +62,14 @@
               <h3 class="text-sm font-semibold text-foreground">{{ servico.titulo }}</h3>
               <p class="mt-0.5 text-xs text-muted">
                 {{ servico.prestadorId ? "Prestador:" : "Solicitante:" }}
-                {{ servico.prestadorNome || servico.clienteNome || "N/A" }}
+                <router-link
+                  v-if="obterRotaResponsavel(servico)"
+                  :to="obterRotaResponsavel(servico)!"
+                  class="hover:text-primary hover:underline"
+                >
+                  {{ servico.prestadorNome || servico.clienteNome || "N/A" }}
+                </router-link>
+                <span v-else>{{ servico.prestadorNome || servico.clienteNome || "N/A" }}</span>
               </p>
             </div>
             <HtBadge :variant="HtBadgeVariant.Primary">{{ obterNomeCategoria(servico.categoria) }}</HtBadge>
@@ -70,19 +77,19 @@
 
           <p class="mb-3 flex items-center gap-1 text-xs text-muted">
             <span class="material-symbols-rounded text-sm">location_on</span>
-            {{ servico.cidade || "N/A" }}/{{ servico.estado || "N/A" }}
+            {{ formatarEnderecoServico(servico) }}
           </p>
 
           <div class="mb-4 flex items-center justify-between gap-3">
             <span class="text-sm font-bold text-primary">
               {{ formatarPrecoServico(servico.precoBase, servico.unidadeCobranca) }}
             </span>
-            <div v-if="servico.prestadorId" class="text-right text-xs">
+            <div class="text-right text-xs">
               <p v-if="typeof servico.mediaAvaliacoes === 'number'" class="text-yellow-500">
-                Servico {{ estrelas(servico.mediaAvaliacoes) }}
+                {{ servico.prestadorId ? "Servico" : "Cliente" }} {{ formatarEstrelas(servico.mediaAvaliacoes) }}
               </p>
-              <p v-if="typeof servico.mediaAvaliacoesPrestador === 'number'" class="text-yellow-500">
-                Prestador {{ estrelas(servico.mediaAvaliacoesPrestador) }}
+              <p v-if="servico.prestadorId && typeof servico.mediaAvaliacoesPrestador === 'number'" class="text-yellow-500">
+                Prestador {{ formatarEstrelas(servico.mediaAvaliacoesPrestador) }}
               </p>
             </div>
           </div>
@@ -141,7 +148,7 @@
 import { computed, reactive, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import api from "@/services/api"
-import { formatarPrecoServico } from "@/shared/utils"
+import { formatarEstrelas, formatarPrecoServico } from "@/shared/utils"
 import { CATEGORIAS_SERVICO, type BuscarFiltro, type ResultadoPaginado, type ServicoBuscaResumo } from "@/types"
 import HtInput from "@/components/ui/HtInput.vue"
 import HtSelect from "@/components/ui/HtSelect.vue"
@@ -331,6 +338,26 @@ function obterNomeCategoria(categoria: number | { id: string; nome: string; icon
 
   const encontrada = CATEGORIAS_SERVICO.find((item) => String(item.value) === String(categoria))
   return encontrada?.label ?? String(categoria)
+}
+
+function obterRotaResponsavel(servico: ServicoBuscaResumo): string | null {
+  if (servico.clienteId) {
+    return `/clientes/${servico.clienteId}`
+  }
+
+  if (servico.prestadorId) {
+    return `/prestadores/${servico.prestadorId}`
+  }
+
+  return null
+}
+
+function formatarEnderecoServico(servico: ServicoBuscaResumo): string {
+  const base = [servico.logradouro, servico.numero].filter(Boolean).join(", ")
+  const bairro = servico.bairro ? ` - ${servico.bairro}` : ""
+  const cidadeEstado = [servico.cidade || "N/A", servico.estado || "N/A"].join("/")
+
+  return base ? `${base}${bairro} - ${cidadeEstado}` : cidadeEstado
 }
 
 function normalizarResultadoBusca(

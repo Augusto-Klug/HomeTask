@@ -47,4 +47,40 @@ describe("BuscarServicosConsumo", () => {
     await flushPromises();
     expect(wrapper.text()).toContain("R$");
   });
+
+  it("exibe media do cliente em pedidos do cliente", async () => {
+    vi.mocked(apiModule.default.get).mockResolvedValue({
+      data: {
+        itens: [
+          {
+            id: "11",
+            titulo: "Limpeza Pos-obra",
+            descricao: "desc",
+            precoBase: 160,
+            unidadeCobranca: UnidadeCobranca.Total,
+            clienteId: "2",
+            clienteNome: "Pedro",
+            categoria: 1,
+            cidade: "Blumenau",
+            estado: "SC",
+            mediaAvaliacoes: 4,
+          },
+        ],
+        paginaAtual: 1,
+        tamanhoPagina: 30,
+        totalRegistros: 1,
+        totalPaginas: 1,
+      },
+    });
+
+    router.push("/servicos/buscar");
+    await router.isReady();
+
+    const wrapper = mount(BuscarServicosView, {
+      global: { plugins: [router] },
+    });
+
+    await flushPromises();
+    expect(wrapper.text()).toContain("Cliente");
+  });
 });

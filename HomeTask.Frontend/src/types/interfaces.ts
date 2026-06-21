@@ -55,6 +55,9 @@ export interface Servico {
   clienteId?: string
   clienteNome?: string
   categoria: number | { id: string; nome: string; icone: string }
+  logradouro?: string | null
+  numero?: string | null
+  bairro?: string | null
   cidade: string
   estado: string
   mediaAvaliacoes?: number | null
@@ -76,6 +79,19 @@ export interface Avaliacao {
   servicoTitulo?: string
   notaServico: number
   notaPrestador: number
+  comentario?: string | null
+  dataAvaliacao: string
+  visivel?: boolean
+}
+
+export interface AvaliacaoCliente {
+  id: string
+  agendamentoId: string
+  clienteId: string
+  clienteNome?: string
+  prestadorId: string
+  prestadorNome?: string
+  nota: number
   comentario?: string | null
   dataAvaliacao: string
   visivel?: boolean
@@ -156,6 +172,7 @@ export interface AgendamentoEndereco {
   bairro: string
   cidade: string
   estado: string
+  descricao?: string | null
 }
 
 export interface AgendamentoResumo {
@@ -168,6 +185,7 @@ export interface AgendamentoResumo {
   duracaoMinutos: number
   status: StatusAgendamento
   endereco: AgendamentoEndereco
+  enderecoDescricao?: string | null
   observacoes: string | null
   valorTotal: number
   dataSolicitacao: string
@@ -175,8 +193,10 @@ export interface AgendamentoResumo {
   dataConclusao: string | null
   motivoRecusa: string | null
   aguardandoRespostaDe?: TipoUsuario | null
-  podeAvaliar?: boolean
-  avaliado?: boolean
+  podeClienteAvaliarPrestador?: boolean
+  clienteJaAvaliouPrestador?: boolean
+  podePrestadorAvaliarCliente?: boolean
+  prestadorJaAvaliouCliente?: boolean
   servicos: Array<ServicoOferecido & { unidadeCobranca: UnidadeCobranca }>
 }
 
@@ -252,6 +272,16 @@ export interface PrestadorPerfilPublico {
   totalServicosConcluidos: number
   servicosOferecidos: Servico[]
   historicoConcluido: PrestadorHistoricoPublico[]
+}
+
+export interface ClientePerfilPublico {
+  id: string
+  nome: string
+  cidade?: string | null
+  estado?: string | null
+  mediaAvaliacoes: number
+  totalAvaliacoes: number
+  totalServicosContratados: number
 }
 
 export interface CertificacaoForm {

@@ -65,6 +65,8 @@ if (app.Environment.IsDevelopment())
 using var scope = app.Services.CreateScope();
 var dbContext = scope.ServiceProvider.GetRequiredService<HomeTaskDbContext>();
 dbContext.Database.Migrate();
+var cidadeCatalogBootstrapper = scope.ServiceProvider.GetRequiredService<CidadeCatalogBootstrapper>();
+await cidadeCatalogBootstrapper.SincronizarAsync();
 
 if (!app.Environment.IsDevelopment())
 {

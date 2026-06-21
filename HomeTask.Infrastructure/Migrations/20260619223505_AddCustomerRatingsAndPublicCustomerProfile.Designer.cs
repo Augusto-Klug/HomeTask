@@ -4,6 +4,7 @@ using HomeTask.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HomeTask.Infrastructure.Migrations
 {
     [DbContext(typeof(HomeTaskDbContext))]
-    partial class HomeTaskDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260619223505_AddCustomerRatingsAndPublicCustomerProfile")]
+    partial class AddCustomerRatingsAndPublicCustomerProfile
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,10 +51,6 @@ namespace HomeTask.Infrastructure.Migrations
 
                     b.Property<int>("DuracaoMinutos")
                         .HasColumnType("int");
-
-                    b.Property<string>("EnderecoDescricao")
-                        .HasMaxLength(300)
-                        .HasColumnType("varchar(300)");
 
                     b.Property<Guid>("EnderecoId")
                         .HasColumnType("char(36)");

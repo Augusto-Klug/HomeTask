@@ -17,5 +17,13 @@ namespace HomeTask.Domain.Entidades
         public string? CodIBGE { get; private set; }
 
         public ICollection<Endereco> Enderecos { get; private set; } = [];
+
+        public void DefinirDados(Guid id, string nome, string estado, string? codIbge)
+        {
+            Id = id;
+            Nome = nome;
+            Estado = estado;
+            CodIBGE = codIbge;
+        }
     }
 }

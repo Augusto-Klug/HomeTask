@@ -1,5 +1,6 @@
 ﻿using HomeTask.Application.Dtos;
 using HomeTask.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HomeTask.WebApi.Controllers
@@ -34,6 +35,17 @@ namespace HomeTask.WebApi.Controllers
                 return NotFound();
 
             return cliente;
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<ActionResult<ClientePerfilPublicoDto>> ObterPerfilPublico([FromQuery] Guid clienteId, CancellationToken cancellationToken)
+        {
+            var perfil = await _clienteService.ObterPerfilPublicoAsync(clienteId, cancellationToken);
+            if (perfil == null)
+                return NotFound();
+
+            return perfil;
         }
 
         [HttpPost]

@@ -101,23 +101,24 @@
               regra="required"
               required
             />
-            <HtSelect
-              ref="inputCidade"
-              v-model="form.cidadeId"
-              label="Cidade"
-              :options="cidades"
-              placeholder="Selecione a cidade"
-              :hint="carregandoCidades ? 'Carregando cidades...' : undefined"
+            <HtSearchSelect
+              ref="inputEstado"
+              v-model="form.estado"
+              label="Estado (UF)"
+              :options="UF_OPTIONS"
+              placeholder="Busque pela UF"
               required
             />
           </div>
 
-          <HtSearchSelect
-            ref="inputEstado"
-            v-model="form.estado"
-            label="Estado (UF)"
-            :options="UF_OPTIONS"
-            placeholder="Busque pela UF"
+          <HtSelect
+            ref="inputCidade"
+            v-model="form.cidadeId"
+            label="Cidade"
+            :options="cidadesDisponiveis"
+            :placeholder="form.estado ? 'Selecione a cidade' : 'Selecione primeiro o estado'"
+            :hint="cidadeHint"
+            :disabled="!form.estado || carregandoCidades"
             required
           />
 
@@ -152,7 +153,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/services/api'
 import { validarCampos } from '@/shared/validacao'
@@ -193,7 +194,7 @@ const form = reactive<CadastroForm>({
 const carregando = ref(false)
 const erro = ref<string | null>(null)
 const carregandoCidades = ref(false)
-const cidades = ref<Array<{ label: string; value: string }>>([])
+const todasCidades = ref<Array<{ label: string; value: string; estado: string }>>([])
 
 // Refs dos campos
 const inputNome      = ref<InstanceType<typeof HtInput> | null>(null)
@@ -228,9 +229,25 @@ function mapearCidade(cidade: CidadeApi) {
   const value = cidade.id ?? cidade.Id ?? cidade.cidadeId ?? cidade.CidadeId ?? ''
   const nome = cidade.nome ?? cidade.Nome ?? cidade.descricao ?? cidade.Descricao ?? ''
   const uf = cidade.uf ?? cidade.Uf ?? cidade.UF ?? cidade.estado ?? cidade.Estado ?? ''
-  const label = uf && nome ? `${nome} - ${uf}` : nome
-  return { value: String(value), label: label || String(value) }
+  return {
+    value: String(value),
+    label: nome || String(value),
+    estado: String(uf).toUpperCase(),
+  }
 }
+
+const cidadesDisponiveis = computed(() =>
+  todasCidades.value
+    .filter(cidade => cidade.estado === form.estado)
+    .map(({ value, label }) => ({ value, label })),
+)
+
+const cidadeHint = computed(() => {
+  if (carregandoCidades.value) return 'Carregando cidades...'
+  if (!form.estado) return 'Selecione um estado para listar as cidades.'
+  if (cidadesDisponiveis.value.length === 0) return 'Nenhuma cidade encontrada para o estado selecionado.'
+  return undefined
+})
 
 async function carregarCidades() {
   carregandoCidades.value = true
@@ -239,7 +256,7 @@ async function carregarCidades() {
     const lista = (Array.isArray(response.data)
       ? response.data
       : response.data?.cidades ?? response.data?.data ?? response.data?.value ?? []) as CidadeApi[]
-    cidades.value = lista.map(mapearCidade).filter(cidade => cidade.value)
+    todasCidades.value = lista.map(mapearCidade).filter(cidade => cidade.value && cidade.estado)
   } catch (err: unknown) {
     const e = err as { response?: { status?: number } }
     if (e.response?.status === 404) {
@@ -248,18 +265,31 @@ async function carregarCidades() {
         const lista = (Array.isArray(response.data)
           ? response.data
           : response.data?.cidades ?? response.data?.data ?? response.data?.value ?? []) as CidadeApi[]
-        cidades.value = lista.map(mapearCidade).filter(cidade => cidade.value)
+        todasCidades.value = lista.map(mapearCidade).filter(cidade => cidade.value && cidade.estado)
         return
       } catch {
-        cidades.value = []
+        todasCidades.value = []
       }
     } else {
-      cidades.value = []
+      todasCidades.value = []
     }
   } finally {
     carregandoCidades.value = false
   }
 }
+
+watch(
+  () => form.estado,
+  () => {
+    const cidadeSelecionadaPermaneceValida = cidadesDisponiveis.value.some(
+      cidade => cidade.value === form.cidadeId,
+    )
+
+    if (!cidadeSelecionadaPermaneceValida) {
+      form.cidadeId = ''
+    }
+  },
+)
 
 onMounted(() => {
   void carregarCidades()

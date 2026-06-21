@@ -29,6 +29,9 @@ public class ServicoPrestadorDto
     public bool AceitaPagamentoAposFinalizacao { get; set; }
     public TipoAnuncio TipoAnuncio { get; set; } = TipoAnuncio.Oferta;
     public string? PrestadorNome { get; set; }
+    public string? Logradouro { get; set; }
+    public string? Numero { get; set; }
+    public string? Bairro { get; set; }
     public string? Cidade { get; set; }
     public string? Estado { get; set; }
     public decimal? MediaAvaliacoes { get; set; }
@@ -60,8 +63,13 @@ public class ServicoClienteDto
     public DateTime? DataDesejada { get; set; }
     public TipoAnuncio TipoAnuncio { get; set; } = TipoAnuncio.Pedido;
     public string? ClienteNome { get; set; }
+    public string? Logradouro { get; set; }
+    public string? Numero { get; set; }
+    public string? Bairro { get; set; }
     public string? Cidade { get; set; }
     public string? Estado { get; set; }
+    public decimal? MediaAvaliacoes { get; set; }
+    public int TotalAvaliacoes { get; set; }
 }
 
 public class ServicoBuscaPaginadaDto

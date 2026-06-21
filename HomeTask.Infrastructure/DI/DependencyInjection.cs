@@ -30,6 +30,8 @@ public static class DependencyInjection
             )
         );
 
+        services.AddScoped<CidadeCatalogBootstrapper>();
+
         services.Configure<MercadoPagoOptions>(configuration.GetSection(MercadoPagoOptions.SectionName));
         services.Configure<SmtpOptions>(configuration.GetSection(SmtpOptions.SectionName));
         services.AddHttpClient<IPagamentoGateway, MercadoPagoPaymentGateway>();
@@ -40,6 +42,7 @@ public static class DependencyInjection
         services.AddScoped<IPrestadorRepository, PrestadorRepository>();
         services.AddScoped<IAgendamentoRepository, AgendamentoRepository>();
         services.AddScoped<IAvaliacaoRepository, AvaliacaoRepository>();
+        services.AddScoped<IAvaliacaoClienteRepository, AvaliacaoClienteRepository>();
         services.AddScoped<IPagamentoRepository, PagamentoRepository>();
         services.AddScoped<IMensagemRepository, MensagemRepository>();
         services.AddScoped<IConversaRepository, ConversaRepository>();
@@ -58,6 +61,7 @@ public static class DependencyInjection
         services.AddScoped<IServicoClienteService, ServicoClienteService>();
         services.AddScoped<IAgendamentoService, AgendamentoService>();
         services.AddScoped<IAvaliacaoService, AvaliacaoService>();
+        services.AddScoped<IAvaliacaoClienteService, AvaliacaoClienteService>();
         services.AddScoped<IPagamentoService, PagamentoService>();
         services.AddScoped<IMensagemService, MensagemService>();
         services.AddScoped<IArquivoService, LocalArquivoService>();

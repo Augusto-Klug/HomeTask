@@ -31,7 +31,17 @@
                 {{ nomeResponsavel }}
               </router-link>
             </p>
-            <p v-else class="mt-0.5 text-sm text-muted">Solicitante: {{ nomeResponsavel }}</p>
+            <div v-else class="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted">
+              <p>
+                Solicitante:
+                <router-link :to="`/clientes/${servico.clienteId}`" class="font-medium text-primary hover:underline">
+                  {{ nomeResponsavel }}
+                </router-link>
+              </p>
+              <router-link :to="`/clientes/${servico.clienteId}`" class="text-primary hover:underline">
+                Ver perfil do cliente
+              </router-link>
+            </div>
           </div>
           <HtBadge :variant="HtBadgeVariant.Primary">{{ obterNomeCategoria(servico.categoria) }}</HtBadge>
         </div>
@@ -40,19 +50,19 @@
 
         <div class="mb-2 flex items-center gap-2 text-sm text-muted">
           <span class="material-symbols-rounded text-base">location_on</span>
-          {{ servico.cidade || "N/A" }}/{{ servico.estado || "N/A" }}
+          {{ formatarEnderecoServico(servico) }}
         </div>
 
         <div class="mb-4 flex items-center justify-between">
           <span class="text-lg font-bold text-primary">
             {{ formatarPrecoServico(servico.precoBase, servico.unidadeCobranca) }}
           </span>
-          <div v-if="ehServicoPrestador" class="text-right text-sm">
+          <div class="text-right text-sm">
             <p v-if="typeof servico.mediaAvaliacoes === 'number'" class="text-yellow-500">
-              Servico {{ estrelas(servico.mediaAvaliacoes) }}
+              {{ ehServicoPrestador ? "Servico" : "Cliente" }} {{ formatarEstrelas(servico.mediaAvaliacoes) }}
             </p>
-            <p v-if="typeof servico.mediaAvaliacoesPrestador === 'number'" class="text-yellow-500">
-              Prestador {{ estrelas(servico.mediaAvaliacoesPrestador) }}
+            <p v-if="ehServicoPrestador && typeof servico.mediaAvaliacoesPrestador === 'number'" class="text-yellow-500">
+              Prestador {{ formatarEstrelas(servico.mediaAvaliacoesPrestador) }}
             </p>
           </div>
         </div>
@@ -91,8 +101,8 @@
             <div class="mb-1 flex items-center justify-between">
               <span class="text-sm font-semibold text-foreground">{{ avaliacao.clienteNome }}</span>
               <div class="text-right text-xs text-yellow-500">
-                <p>Servico {{ estrelas(avaliacao.notaServico) }}</p>
-                <p>Prestador {{ estrelas(avaliacao.notaPrestador) }}</p>
+                <p>Servico {{ formatarEstrelas(avaliacao.notaServico) }}</p>
+                <p>Prestador {{ formatarEstrelas(avaliacao.notaPrestador) }}</p>
               </div>
             </div>
             <p class="mb-1 text-xs text-muted">{{ avaliacao.servicoTitulo }}</p>
@@ -109,7 +119,7 @@
 import { computed, onMounted, ref } from "vue"
 import { useRouter } from "vue-router"
 import api from "@/services/api"
-import { formatarData, formatarHora, formatarPrecoServico } from "@/shared/utils"
+import { formatarData, formatarEstrelas, formatarHora, formatarPrecoServico } from "@/shared/utils"
 import { useAuthStore } from "@/stores/auth"
 import { CATEGORIAS_SERVICO, type Avaliacao, type ServicoDetalhe } from "@/types"
 import HtButton from "@/components/ui/HtButton.vue"
@@ -186,5 +196,13 @@ function obterNomeCategoria(categoria: number | { id: string; nome: string; icon
 
   const encontrada = CATEGORIAS_SERVICO.find((item) => String(item.value) === String(categoria))
   return encontrada?.label ?? String(categoria)
+}
+
+function formatarEnderecoServico(detalhe: ServicoDetalhe): string {
+  const base = [detalhe.logradouro, detalhe.numero].filter(Boolean).join(", ")
+  const bairro = detalhe.bairro ? ` - ${detalhe.bairro}` : ""
+  const cidadeEstado = [detalhe.cidade || "N/A", detalhe.estado || "N/A"].join("/")
+
+  return base ? `${base}${bairro} - ${cidadeEstado}` : cidadeEstado
 }
 </script>
