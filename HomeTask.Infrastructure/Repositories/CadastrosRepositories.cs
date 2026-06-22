@@ -181,8 +181,17 @@ public class PrestadorRepository : RepositoryBase<Prestador>, IPrestadorReposito
 
     public Task<Prestador?> ObterComAvaliacoesAsync(Guid prestadorId, CancellationToken cancellationToken = default) =>
         Context.Prestadores
+            .Include(p => p.Usuario)
             .Include(p => p.Avaliacoes)
             .FirstOrDefaultAsync(p => p.Id == prestadorId, cancellationToken);
+
+    public Task<List<Prestador>> ObterSuspensosComSuspensaoExpiradaAsync(DateTime dataLimiteUtc, CancellationToken cancellationToken = default) =>
+        Context.Prestadores
+            .Where(p =>
+                p.Status == StatusPrestador.Suspenso &&
+                p.DataFimSuspensao.HasValue &&
+                p.DataFimSuspensao <= dataLimiteUtc)
+            .ToListAsync(cancellationToken);
 }
 
 public class CidadeRepository : RepositoryBase<Cidade>, ICidadeRepository

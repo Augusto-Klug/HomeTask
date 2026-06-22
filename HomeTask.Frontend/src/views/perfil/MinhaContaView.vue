@@ -143,12 +143,16 @@
                 :options="UF_OPTIONS"
                 required
                 :disabled="!editando"
+                placeholder="Busque pela UF"
               />
             </div>
-            <HtInput
-              v-model="form.cidade"
+            <HtSelect
+              v-model="form.cidadeId"
               label="Cidade"
-              :disabled="!editando"
+              :options="cidadesDisponiveis"
+              :placeholder="form.estado ? 'Selecione a cidade' : 'Selecione primeiro o estado'"
+              :hint="cidadeHint"
+              :disabled="!editando || !form.estado || carregandoCidades"
             />
           </div>
         </section>
@@ -236,6 +240,7 @@ import type {
 } from "@/types";
 import HtInput from "@/components/ui/HtInput.vue";
 import HtSearchSelect from "@/components/ui/HtSearchSelect.vue";
+import HtSelect from "@/components/ui/HtSelect.vue";
 import HtButton from "@/components/ui/HtButton.vue";
 import HtAlert from "@/components/ui/HtAlert.vue";
 import HtSpinner from "@/components/ui/HtSpinner.vue";
@@ -243,6 +248,7 @@ import HtCertificacaoForm from "./components/HtCertificacaoForm.vue";
 import HtPortfolioGaleria from "./components/HtPortfolioGaleria.vue";
 import HtCertificacaoDetail from "./components/HtCertificacaoDetail.vue";
 import HtPagamentosRecebidos from "./components/HtPagamentosRecebidos.vue";
+import { useCidadeEstadoOptions } from "@/composables/useCidadeEstadoOptions";
 import { UF_OPTIONS } from "@/statics/selects";
 
 const auth = useAuthStore();
@@ -268,6 +274,7 @@ const form = reactive<PerfilForm>({
   logradouro: "",
   bairro: "",
   cidade: "",
+  cidadeId: "",
   estado: "",
   descricao: "",
   raioAtendimentoKm: null,
@@ -280,6 +287,12 @@ const recebimentos = reactive<PrestadorRecebimentosResumo>({
   totalServicosRecebidos: 0,
   servicosRecebidos: [],
 });
+const {
+  carregandoCidades,
+  cidadesDisponiveis,
+  cidadeHint,
+  carregarCidades,
+} = useCidadeEstadoOptions(() => form.estado);
 
 const isPrestador = computed(
   () => auth.user?.tipo === 2 || auth.user?.tipo === 3,
@@ -336,9 +349,38 @@ async function carregarRecebimentos() {
 }
 
 onMounted(async () => {
+  await carregarCidades();
   await carregarDados();
   carregando.value = false;
 });
+
+watch(
+  () => form.estado,
+  (estadoAtual, estadoAnterior) => {
+    const cidadeSelecionadaPermaneceValida = cidadesDisponiveis.value.some(
+      (cidade) => cidade.value === form.cidadeId,
+    );
+
+    if (!cidadeSelecionadaPermaneceValida) {
+      form.cidadeId = "";
+      form.cidade = "";
+    }
+
+    if (estadoAnterior && estadoAtual !== estadoAnterior) {
+      sucesso.value = false;
+    }
+  },
+);
+
+watch(
+  () => form.cidadeId,
+  (cidadeId) => {
+    const cidadeSelecionada = cidadesDisponiveis.value.find(
+      (cidade) => cidade.value === cidadeId,
+    );
+    form.cidade = cidadeSelecionada?.label ?? "";
+  },
+);
 
 watch(abaAtiva, async (aba) => {
   if ((aba === "certificacoes" || aba === "portfolio")

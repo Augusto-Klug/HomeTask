@@ -53,6 +53,7 @@ builder.Services.AddControllers();
 builder.Services.AddSignalR();
 builder.Services.AddMemoryCache();
 builder.Services.AddHostedService<MensagemRetentionService>();
+builder.Services.AddHostedService<PrestadorSuspensaoService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

@@ -69,6 +69,7 @@ internal static class EntityDtoMapper
             perfil.Cep = endereco.Cep;
             perfil.Logradouro = endereco.Logradouro;
             perfil.Bairro = endereco.Bairro;
+            perfil.CidadeId = endereco.CidadeId;
             perfil.Cidade = endereco.Cidade?.Nome;
             perfil.Estado = endereco.Cidade?.Estado;
         }

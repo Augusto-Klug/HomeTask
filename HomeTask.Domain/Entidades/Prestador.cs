@@ -19,6 +19,10 @@ public class Prestador
     public int TotalAvaliacoes { get; private set; } = 0;
     public int TotalServicosConcluidos { get; private set; } = 0;
     public DateTime? DataVerificacao { get; private set; }
+    public DateTime? DataPrimeiraNotificacaoBaixaAvaliacao { get; private set; }
+    public int? TotalAvaliacoesNaNotificacao { get; private set; }
+    public DateTime? DataInicioSuspensao { get; private set; }
+    public DateTime? DataFimSuspensao { get; private set; }
 
     // Navegação
     public ICollection<ServicoPrestador> ServicosOferecidos { get; private set; } = [];
@@ -39,7 +43,11 @@ public class Prestador
         decimal mediaAvaliacoes,
         int totalAvaliacoes,
         int totalServicosConcluidos,
-        DateTime? dataVerificacao)
+        DateTime? dataVerificacao,
+        DateTime? dataPrimeiraNotificacaoBaixaAvaliacao = null,
+        int? totalAvaliacoesNaNotificacao = null,
+        DateTime? dataInicioSuspensao = null,
+        DateTime? dataFimSuspensao = null)
     {
         Id = id;
         UsuarioId = usuarioId;
@@ -50,6 +58,10 @@ public class Prestador
         TotalAvaliacoes = totalAvaliacoes;
         TotalServicosConcluidos = totalServicosConcluidos;
         DataVerificacao = dataVerificacao;
+        DataPrimeiraNotificacaoBaixaAvaliacao = dataPrimeiraNotificacaoBaixaAvaliacao;
+        TotalAvaliacoesNaNotificacao = totalAvaliacoesNaNotificacao;
+        DataInicioSuspensao = dataInicioSuspensao;
+        DataFimSuspensao = dataFimSuspensao;
     }
 
     public void DefinirStatusInicial()
@@ -58,6 +70,8 @@ public class Prestador
         MediaAvaliacoes = 0;
         TotalAvaliacoes = 0;
         TotalServicosConcluidos = 0;
+        LimparObservacaoBaixaAvaliacao();
+        LimparSuspensaoTemporaria();
     }
 
     public void DefinirStatus(StatusPrestador status)
@@ -74,6 +88,38 @@ public class Prestador
     {
         MediaAvaliacoes = mediaAvaliacoes;
         TotalAvaliacoes = totalAvaliacoes;
+    }
+
+    public void RegistrarObservacaoBaixaAvaliacao(DateTime dataNotificacao, int totalAvaliacoesNaNotificacao)
+    {
+        DataPrimeiraNotificacaoBaixaAvaliacao = dataNotificacao;
+        TotalAvaliacoesNaNotificacao = totalAvaliacoesNaNotificacao;
+    }
+
+    public void LimparObservacaoBaixaAvaliacao()
+    {
+        DataPrimeiraNotificacaoBaixaAvaliacao = null;
+        TotalAvaliacoesNaNotificacao = null;
+    }
+
+    public void AplicarSuspensaoTemporaria(DateTime dataInicioSuspensao, DateTime dataFimSuspensao)
+    {
+        Status = StatusPrestador.Suspenso;
+        DataInicioSuspensao = dataInicioSuspensao;
+        DataFimSuspensao = dataFimSuspensao;
+    }
+
+    public void LimparSuspensaoTemporaria()
+    {
+        DataInicioSuspensao = null;
+        DataFimSuspensao = null;
+    }
+
+    public void EncerrarSuspensaoTemporaria()
+    {
+        Status = StatusPrestador.Ativo;
+        LimparSuspensaoTemporaria();
+        LimparObservacaoBaixaAvaliacao();
     }
 
     public void IncrementarTotalServicosConcluidos()

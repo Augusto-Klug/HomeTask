@@ -28,6 +28,30 @@ internal static class EntidadeFactory
         return prestador;
     }
 
+    public static Avaliacao CriarAvaliacaoPrestador(
+        Guid agendamentoId,
+        Guid clienteId,
+        Guid prestadorId,
+        Guid servicoPrestadorId,
+        int notaPrestador,
+        bool visivel = true,
+        DateTime? dataAvaliacao = null)
+    {
+        var avaliacao = new Avaliacao();
+        avaliacao.DefinirDados(
+            Guid.NewGuid(),
+            agendamentoId,
+            clienteId,
+            prestadorId,
+            servicoPrestadorId,
+            5,
+            notaPrestador,
+            null,
+            dataAvaliacao ?? DateTime.UtcNow,
+            visivel);
+        return avaliacao;
+    }
+
     public static ServicoPrestador CriarServicoPrestador(Guid? id = null, Guid? prestadorId = null, CategoriaServico categoria = CategoriaServico.Faxina, decimal preco = 100, DateTime? dataCriacao = null, bool ativo = true)
     {
         var servico = new ServicoPrestador();

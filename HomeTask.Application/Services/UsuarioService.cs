@@ -83,7 +83,7 @@ public class UsuarioService : IUsuarioService
         usuario.DefinirDados(
             usuario.Id,
             dto.Nome,
-            usuario.Email,
+            dto.Email,
             dto.Documento,
             dto.Telefone ?? string.Empty,
             usuario.TipoUsuario,
@@ -95,12 +95,24 @@ public class UsuarioService : IUsuarioService
         if (endereco != null)
         {
             endereco.DefinirDados(
-                endereco.CidadeId,
+                dto.CidadeId != Guid.Empty ? dto.CidadeId : endereco.CidadeId,
                 dto.Logradouro ?? string.Empty,
                 endereco.Numero,
                 endereco.Complemento,
                 dto.Bairro ?? string.Empty,
                 dto.Cep ?? string.Empty);
+        }
+        else if (dto.CidadeId != Guid.Empty)
+        {
+            var novoEndereco = new Endereco();
+            novoEndereco.DefinirDados(
+                dto.CidadeId,
+                dto.Logradouro ?? string.Empty,
+                null,
+                null,
+                dto.Bairro ?? string.Empty,
+                dto.Cep ?? string.Empty);
+            usuario.DefinirEndereco(novoEndereco);
         }
 
         if (usuario.Prestador != null)

@@ -254,6 +254,7 @@ export interface PerfilForm {
   logradouro: string
   bairro: string
   cidade: string
+  cidadeId: string
   estado: string
   descricao: string
   raioAtendimentoKm: number | null
@@ -281,6 +282,8 @@ export interface PrestadorPerfilPublico {
   mediaAvaliacoes: number
   totalAvaliacoes: number
   totalServicosConcluidos: number
+  certificacoes: Certificacao[]
+  portfolios: Portfolio[]
   servicosOferecidos: Servico[]
   historicoConcluido: PrestadorHistoricoPublico[]
 }

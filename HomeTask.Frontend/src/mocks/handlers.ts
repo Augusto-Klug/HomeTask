@@ -265,6 +265,7 @@ const MOCK_PERFIL: PerfilForm = {
   logradouro: "Rua XV de Novembro, 320",
   bairro: "Centro",
   cidade: "Blumenau",
+  cidadeId: "cidade-blumenau",
   estado: "SC",
   descricao: "Profissional com experiência.",
   raioAtendimentoKm: 15,
@@ -279,6 +280,39 @@ const MOCK_PERFIL_PUBLICO: PrestadorPerfilPublico = {
   mediaAvaliacoes: 4.7,
   totalAvaliacoes: 12,
   totalServicosConcluidos: 28,
+  certificacoes: [
+    {
+      id: "cert-1",
+      prestadorId: "10",
+      nome: "Curso de Limpeza Profissional",
+      instituicao: "Instituto Casa em Ordem",
+      dataEmissao: "2025-01-15T00:00:00Z",
+      dataValidade: "2027-01-15T00:00:00Z",
+      urlDocumento: "https://picsum.photos/seed/certificacao/1200/900.jpg",
+      verificada: true,
+      dataCadastro: "2025-01-20T00:00:00Z",
+    },
+  ],
+  portfolios: [
+    {
+      id: "port-1",
+      prestadorId: "10",
+      titulo: "Cozinha finalizada",
+      descricao: "Organizacao e limpeza completa apos reforma.",
+      urlImagem: "https://picsum.photos/seed/portfolio-1/1200/900.jpg",
+      dataCadastro: "2026-05-10T00:00:00Z",
+      ordem: 1,
+    },
+    {
+      id: "port-2",
+      prestadorId: "10",
+      titulo: "Sala renovada",
+      descricao: "Resultado final de limpeza pesada com detalhamento.",
+      urlImagem: "https://picsum.photos/seed/portfolio-2/1200/900.jpg",
+      dataCadastro: "2026-05-12T00:00:00Z",
+      ordem: 2,
+    },
+  ],
   servicosOferecidos: MOCK_SERVICOS.filter((item) => item.prestadorId === "10"),
   historicoConcluido: [
     {
@@ -590,8 +624,8 @@ export const handlers = [
   }),
 
   http.post("*/api/ServicoOferecido/CriarServicoCliente", async () => HttpResponse.json({ id: 999 }, { status: 201 })),
-  http.get("*/api/Usuarios/perfil", async () => HttpResponse.json(MOCK_PERFIL)),
-  http.put("*/api/Usuarios/perfil", async ({ request }) => {
+  http.get("*/api/Usuario/ObterPerfilUsuario", async () => HttpResponse.json(MOCK_PERFIL)),
+  http.put("*/api/Usuario/AtualizarPrefilUsuario", async ({ request }) => {
     const body = (await request.json()) as Partial<PerfilForm>;
     Object.assign(MOCK_PERFIL, body);
     return HttpResponse.json(MOCK_PERFIL);

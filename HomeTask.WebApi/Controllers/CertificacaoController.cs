@@ -23,32 +23,29 @@ public class CertificacaoController : ControllerBase
     }
 
     [HttpPost]
+    [Consumes("multipart/form-data")]
     public async Task<ActionResult<CertificacaoDto>> Adicionar(
         Guid prestadorId,
-        [FromForm] string nome,
-        [FromForm] string? instituicao,
-        [FromForm] DateTime? dataEmissao,
-        [FromForm] DateTime? dataValidade,
-        [FromForm] IFormFile? documento,
+        [FromForm] AdicionarCertificacaoRequest request,
         CancellationToken cancellationToken)
     {
         Stream? stream = null;
         string? nomeArquivo = null;
 
-        if (documento != null)
+        if (request.Documento != null)
         {
-            stream = documento.OpenReadStream();
-            nomeArquivo = documento.FileName;
+            stream = request.Documento.OpenReadStream();
+            nomeArquivo = request.Documento.FileName;
         }
 
         var certificacao = await _certificacaoService.AdicionarAsync(
             prestadorId,
-                stream!,
-                nomeArquivo!,
-            nome,
-            instituicao,
-            dataEmissao,
-            dataValidade,
+            stream!,
+            nomeArquivo!,
+            request.Nome,
+            request.Instituicao,
+            request.DataEmissao,
+            request.DataValidade,
             cancellationToken);
 
         return CreatedAtAction(nameof(Listar), new { prestadorId }, certificacao);
