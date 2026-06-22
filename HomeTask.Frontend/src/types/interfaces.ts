@@ -282,6 +282,8 @@ export interface PrestadorPerfilPublico {
   mediaAvaliacoes: number
   totalAvaliacoes: number
   totalServicosConcluidos: number
+  certificacoes: Certificacao[]
+  portfolios: Portfolio[]
   servicosOferecidos: Servico[]
   historicoConcluido: PrestadorHistoricoPublico[]
 }

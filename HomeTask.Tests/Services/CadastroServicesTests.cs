@@ -117,6 +117,44 @@ public class CadastroServicesTests
     }
 
     [Fact]
+    public async Task PrestadorObterPerfilPublicoAsync_DeveRetornarCertificacoesEPortfolios()
+    {
+        var repository = new FakePrestadorRepository();
+        var service = new PrestadorService(repository);
+        var usuario = EntidadeFactory.CriarUsuario(nome: "Maria Silva", tipo: TipoUsuario.Prestador);
+        var cidade = EntidadeFactory.CriarCidade(nome: "Blumenau", estado: "SC");
+        var endereco = EntidadeFactory.CriarEndereco(usuarioId: usuario.Id, cidadeId: cidade.Id);
+        EntidadeFactory.DefinirNavegacao(endereco, nameof(endereco.Cidade), cidade);
+        usuario.DefinirEndereco(endereco);
+
+        var prestador = EntidadeFactory.CriarPrestador(usuarioId: usuario.Id);
+        EntidadeFactory.DefinirNavegacao(prestador, nameof(prestador.Usuario), usuario);
+
+        var certificacao = new HomeTask.Domain.Entidades.Certificacao();
+        certificacao.DefinirDados(prestador.Id, "Curso Profissional", "Instituto X", new DateTime(2025, 1, 1), null, "/arquivos/cert.pdf", DateTime.UtcNow);
+        EntidadeFactory.DefinirNavegacao(certificacao, nameof(certificacao.Verificada), true);
+
+        var portfolio = new HomeTask.Domain.Entidades.Portfolio();
+        portfolio.DefinirDados(prestador.Id, "/arquivos/portfolio.jpg", "Antes e Depois", "Descricao do trabalho", DateTime.UtcNow);
+        EntidadeFactory.DefinirNavegacao(portfolio, nameof(portfolio.Ordem), 1);
+
+        EntidadeFactory.DefinirNavegacao(prestador, nameof(prestador.Certificacoes), new List<HomeTask.Domain.Entidades.Certificacao> { certificacao });
+        EntidadeFactory.DefinirNavegacao(prestador, nameof(prestador.Portfolios), new List<HomeTask.Domain.Entidades.Portfolio> { portfolio });
+        EntidadeFactory.DefinirNavegacao(prestador, nameof(prestador.ServicosOferecidos), new List<HomeTask.Domain.Entidades.ServicoPrestador>());
+        repository.Seed(prestador);
+
+        var perfil = await service.ObterPerfilPublicoAsync(prestador.Id);
+
+        Assert.NotNull(perfil);
+        Assert.Equal("Maria Silva", perfil!.Nome);
+        Assert.Equal("Blumenau", perfil.Cidade);
+        Assert.Single(perfil.Certificacoes);
+        Assert.Equal("Curso Profissional", perfil.Certificacoes[0].Nome);
+        Assert.Single(perfil.Portfolios);
+        Assert.Equal("Antes e Depois", perfil.Portfolios[0].Titulo);
+    }
+
+    [Fact]
     public async Task PrestadorAtualizarMediaAvaliacoesAsync_ComMenosDeCincoAvaliacoesNaoDeveNotificar()
     {
         var repository = new FakePrestadorRepository();

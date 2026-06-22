@@ -106,6 +106,8 @@ public class PrestadorPerfilPublicoDto
     public decimal MediaAvaliacoes { get; set; }
     public int TotalAvaliacoes { get; set; }
     public int TotalServicosConcluidos { get; set; }
+    public List<CertificacaoDto> Certificacoes { get; set; } = [];
+    public List<PortfolioDto> Portfolios { get; set; } = [];
     public List<ServicoPrestadorDto> ServicosOferecidos { get; set; } = [];
     public List<PrestadorHistoricoPublicoDto> HistoricoConcluido { get; set; } = [];
 }

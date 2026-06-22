@@ -280,6 +280,39 @@ const MOCK_PERFIL_PUBLICO: PrestadorPerfilPublico = {
   mediaAvaliacoes: 4.7,
   totalAvaliacoes: 12,
   totalServicosConcluidos: 28,
+  certificacoes: [
+    {
+      id: "cert-1",
+      prestadorId: "10",
+      nome: "Curso de Limpeza Profissional",
+      instituicao: "Instituto Casa em Ordem",
+      dataEmissao: "2025-01-15T00:00:00Z",
+      dataValidade: "2027-01-15T00:00:00Z",
+      urlDocumento: "https://picsum.photos/seed/certificacao/1200/900.jpg",
+      verificada: true,
+      dataCadastro: "2025-01-20T00:00:00Z",
+    },
+  ],
+  portfolios: [
+    {
+      id: "port-1",
+      prestadorId: "10",
+      titulo: "Cozinha finalizada",
+      descricao: "Organizacao e limpeza completa apos reforma.",
+      urlImagem: "https://picsum.photos/seed/portfolio-1/1200/900.jpg",
+      dataCadastro: "2026-05-10T00:00:00Z",
+      ordem: 1,
+    },
+    {
+      id: "port-2",
+      prestadorId: "10",
+      titulo: "Sala renovada",
+      descricao: "Resultado final de limpeza pesada com detalhamento.",
+      urlImagem: "https://picsum.photos/seed/portfolio-2/1200/900.jpg",
+      dataCadastro: "2026-05-12T00:00:00Z",
+      ordem: 2,
+    },
+  ],
   servicosOferecidos: MOCK_SERVICOS.filter((item) => item.prestadorId === "10"),
   historicoConcluido: [
     {

@@ -258,6 +258,16 @@ public class PrestadorService : IPrestadorService
             MediaAvaliacoes = prestador.MediaAvaliacoes,
             TotalAvaliacoes = prestador.TotalAvaliacoes,
             TotalServicosConcluidos = prestador.TotalServicosConcluidos,
+            Certificacoes = prestador.Certificacoes
+                .OrderByDescending(c => c.Verificada)
+                .ThenBy(c => c.Nome)
+                .Select(c => c.ParaDto())
+                .ToList(),
+            Portfolios = prestador.Portfolios
+                .OrderBy(p => p.Ordem)
+                .ThenByDescending(p => p.DataCadastro)
+                .Select(p => p.ParaDto())
+                .ToList(),
             ServicosOferecidos = prestador.ServicosOferecidos
                 .Where(s => s.Ativo)
                 .Select(s => s.ParaDto())
