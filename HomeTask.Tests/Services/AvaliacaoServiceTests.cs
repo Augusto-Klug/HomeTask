@@ -13,7 +13,7 @@ public class AvaliacaoServiceTests
         var avaliacaoRepository = new FakeAvaliacaoRepository();
         var prestadorRepository = new FakePrestadorRepository();
         var servicoRepository = new FakeServicoPrestadorRepository();
-        var prestadorService = new PrestadorService(prestadorRepository);
+        var prestadorService = new PrestadorService(prestadorRepository, new FakeEmailService());
         var servicoService = new ServicoPrestadorService(servicoRepository);
         var service = new AvaliacaoService(avaliacaoRepository, prestadorService, servicoService);
 
@@ -50,7 +50,7 @@ public class AvaliacaoServiceTests
     {
         var service = new AvaliacaoService(
             new FakeAvaliacaoRepository(),
-            new PrestadorService(new FakePrestadorRepository()),
+            new PrestadorService(new FakePrestadorRepository(), new FakeEmailService()),
             new ServicoPrestadorService(new FakeServicoPrestadorRepository()));
 
         var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => service.CriarAsync(new AvaliacaoDto
@@ -72,7 +72,7 @@ public class AvaliacaoServiceTests
         var servicoRepository = new FakeServicoPrestadorRepository();
         var service = new AvaliacaoService(
             avaliacaoRepository,
-            new PrestadorService(prestadorRepository),
+            new PrestadorService(prestadorRepository, new FakeEmailService()),
             new ServicoPrestadorService(servicoRepository));
 
         var prestador = EntidadeFactory.CriarPrestador();
@@ -109,7 +109,7 @@ public class AvaliacaoServiceTests
         var servicoRepository = new FakeServicoPrestadorRepository();
         var service = new AvaliacaoService(
             avaliacaoRepository,
-            new PrestadorService(prestadorRepository),
+            new PrestadorService(prestadorRepository, new FakeEmailService()),
             new ServicoPrestadorService(servicoRepository));
 
         var prestador = EntidadeFactory.CriarPrestador();
@@ -143,7 +143,7 @@ public class AvaliacaoServiceTests
         var servicoRepository = new FakeServicoPrestadorRepository();
         var service = new AvaliacaoService(
             avaliacaoRepository,
-            new PrestadorService(prestadorRepository),
+            new PrestadorService(prestadorRepository, new FakeEmailService()),
             new ServicoPrestadorService(servicoRepository));
 
         var prestador = EntidadeFactory.CriarPrestador();

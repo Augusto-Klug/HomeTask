@@ -254,6 +254,7 @@ export interface PerfilForm {
   logradouro: string
   bairro: string
   cidade: string
+  cidadeId: string
   estado: string
   descricao: string
   raioAtendimentoKm: number | null

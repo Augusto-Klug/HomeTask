@@ -265,6 +265,7 @@ const MOCK_PERFIL: PerfilForm = {
   logradouro: "Rua XV de Novembro, 320",
   bairro: "Centro",
   cidade: "Blumenau",
+  cidadeId: "cidade-blumenau",
   estado: "SC",
   descricao: "Profissional com experiência.",
   raioAtendimentoKm: 15,
@@ -590,8 +591,8 @@ export const handlers = [
   }),
 
   http.post("*/api/ServicoOferecido/CriarServicoCliente", async () => HttpResponse.json({ id: 999 }, { status: 201 })),
-  http.get("*/api/Usuarios/perfil", async () => HttpResponse.json(MOCK_PERFIL)),
-  http.put("*/api/Usuarios/perfil", async ({ request }) => {
+  http.get("*/api/Usuario/ObterPerfilUsuario", async () => HttpResponse.json(MOCK_PERFIL)),
+  http.put("*/api/Usuario/AtualizarPrefilUsuario", async ({ request }) => {
     const body = (await request.json()) as Partial<PerfilForm>;
     Object.assign(MOCK_PERFIL, body);
     return HttpResponse.json(MOCK_PERFIL);

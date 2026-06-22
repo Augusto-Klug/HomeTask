@@ -195,6 +195,7 @@ public class AgendamentoChatHubTests
         public Task<PrestadorRecebimentosResumoDto> ObterRecebimentosAsync(Guid prestadorId, CancellationToken cancellationToken = default) => throw new NotImplementedException();
         public Task AtualizarMediaAvaliacoesAsync(Guid prestadorId, CancellationToken cancellationToken = default) => throw new NotImplementedException();
         public Task AtualizarStatusAsync(Guid prestadorId, StatusPrestador status, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+        public Task<int> ProcessarSuspensoesExpiradasAsync(CancellationToken cancellationToken = default) => throw new NotImplementedException();
         public Task<PrestadorPerfilPublicoDto?> ObterPerfilPublicoAsync(Guid prestadorId, CancellationToken cancellationToken = default) => throw new NotImplementedException();
     }
 

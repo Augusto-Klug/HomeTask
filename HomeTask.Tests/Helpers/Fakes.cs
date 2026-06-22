@@ -83,6 +83,18 @@ internal sealed class FakeServicoPrestadorRepository : FakeRepositoryBase<Servic
         ObterPorIdAsync(servicoPrestadorId, cancellationToken);
 }
 
+internal sealed class FakeUsuarioRepository : FakeRepositoryBase<Usuario>, IUsuarioRepository
+{
+    public Task<Usuario?> ObterPorEmailAsync(string email, CancellationToken cancellationToken = default) =>
+        Task.FromResult(Itens.Values.FirstOrDefault(u => u.Email == email));
+
+    public Task<bool> ExisteEmailAsync(string email, CancellationToken cancellationToken = default) =>
+        Task.FromResult(Itens.Values.Any(u => u.Email == email));
+
+    public Task<bool> ExisteCpfAsync(string cpf, CancellationToken cancellationToken = default) =>
+        Task.FromResult(Itens.Values.Any(u => u.Documento == cpf));
+}
+
 internal sealed class FakeServicoClienteRepository : FakeRepositoryBase<ServicoCliente>, IServicoClienteRepository
 {
     public Task<IEnumerable<ServicoCliente>> ObterPorClienteAsync(Guid clienteId, CancellationToken cancellationToken = default) =>
@@ -136,6 +148,11 @@ internal sealed class FakePrestadorRepository : FakeRepositoryBase<Prestador>, I
         Task.FromResult(HistoricoServicos.Where(a => a.PrestadorId == prestadorId).AsEnumerable());
 
     public Task<Prestador?> ObterComAvaliacoesAsync(Guid prestadorId, CancellationToken cancellationToken = default) => ObterPorIdAsync(prestadorId, cancellationToken);
+
+    public Task<List<Prestador>> ObterSuspensosComSuspensaoExpiradaAsync(DateTime dataLimiteUtc, CancellationToken cancellationToken = default) =>
+        Task.FromResult(Itens.Values
+            .Where(p => p.Status == StatusPrestador.Suspenso && p.DataFimSuspensao.HasValue && p.DataFimSuspensao <= dataLimiteUtc)
+            .ToList());
 }
 
 internal sealed class FakePagamentoRepository : FakeRepositoryBase<Pagamento>, IPagamentoRepository
@@ -259,5 +276,30 @@ internal sealed class FakeAvaliacaoClienteRepository : FakeRepositoryBase<Avalia
         if (agendamento?.PrestadorId != prestadorId)
             agendamento = null;
         return Task.FromResult(agendamento);
+    }
+}
+
+internal sealed class FakeEmailService : IEmailService
+{
+    public int AvisosBaixaAvaliacaoEnviados { get; private set; }
+    public int AvisosSuspensaoEnviados { get; private set; }
+    public (string Destinatario, string Nome, decimal MediaAvaliacoes, int TotalAvaliacoes)? UltimoAvisoBaixaAvaliacao { get; private set; }
+    public (string Destinatario, string Nome, DateTime DataFimSuspensao)? UltimoAvisoSuspensao { get; private set; }
+
+    public Task EnviarResetSenhaAsync(string destinatario, string nome, string token, int validadeMinutos, CancellationToken cancellationToken = default) =>
+        Task.CompletedTask;
+
+    public Task EnviarAvisoBaixaAvaliacaoPrestadorAsync(string destinatario, string nome, decimal mediaAvaliacoes, int totalAvaliacoes, CancellationToken cancellationToken = default)
+    {
+        AvisosBaixaAvaliacaoEnviados++;
+        UltimoAvisoBaixaAvaliacao = (destinatario, nome, mediaAvaliacoes, totalAvaliacoes);
+        return Task.CompletedTask;
+    }
+
+    public Task EnviarAvisoSuspensaoPrestadorAsync(string destinatario, string nome, DateTime dataFimSuspensao, CancellationToken cancellationToken = default)
+    {
+        AvisosSuspensaoEnviados++;
+        UltimoAvisoSuspensao = (destinatario, nome, dataFimSuspensao);
+        return Task.CompletedTask;
     }
 }

@@ -31,6 +31,7 @@ public interface IPrestadorRepository : IRepositoryBase<Prestador>
     Task<IEnumerable<Prestador>> BuscarAsync(CategoriaServico? categoria, string? cidade, DateTime? dataDisponivel, CancellationToken cancellationToken = default);
     Task<IEnumerable<Agendamento>> ObterHistoricoServicosAsync(Guid prestadorId, CancellationToken cancellationToken = default);
     Task<Prestador?> ObterComAvaliacoesAsync(Guid prestadorId, CancellationToken cancellationToken = default);
+    Task<List<Prestador>> ObterSuspensosComSuspensaoExpiradaAsync(DateTime dataLimiteUtc, CancellationToken cancellationToken = default);
 }
 
 public interface IAgendamentoRepository : IRepositoryBase<Agendamento>

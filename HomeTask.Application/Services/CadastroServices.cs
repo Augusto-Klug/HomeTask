@@ -95,11 +95,27 @@ public class ClienteService : IClienteService
 
 public class PrestadorService : IPrestadorService
 {
+    private const int QuantidadeMinimaAvaliacoesParaRegra = 5;
+    private static readonly TimeSpan DuracaoSuspensaoBaixaAvaliacao = TimeSpan.FromDays(7);
     private readonly IPrestadorRepository _prestadorRepository;
+    private readonly IEmailService _emailService;
+    private readonly Func<DateTime> _utcNowProvider;
 
     public PrestadorService(IPrestadorRepository prestadorRepository)
+        : this(prestadorRepository, NullEmailService.Instance, static () => DateTime.UtcNow)
+    {
+    }
+
+    public PrestadorService(IPrestadorRepository prestadorRepository, IEmailService emailService)
+        : this(prestadorRepository, emailService, static () => DateTime.UtcNow)
+    {
+    }
+
+    public PrestadorService(IPrestadorRepository prestadorRepository, IEmailService emailService, Func<DateTime> utcNowProvider)
     {
         _prestadorRepository = prestadorRepository;
+        _emailService = emailService;
+        _utcNowProvider = utcNowProvider;
     }
 
     public async Task<PrestadorDto?> ObterPorIdAsync(Guid id, CancellationToken cancellationToken = default)
@@ -168,25 +184,57 @@ public class PrestadorService : IPrestadorService
         if (prestador == null)
             return;
 
+        var agora = _utcNowProvider();
         var avaliacoesVisiveis = prestador.Avaliacoes.Where(a => a.Visivel).ToList();
-        if (avaliacoesVisiveis.Count == 0)
-        {
-            prestador.AtualizarMetricasAvaliacao(0, 0);
-        }
-        else
-        {
-            prestador.AtualizarMetricasAvaliacao(
-                (decimal)avaliacoesVisiveis.Average(a => a.NotaPrestador),
-                avaliacoesVisiveis.Count);
-        }
+        var totalAvaliacoes = avaliacoesVisiveis.Count;
+        var mediaAvaliacoes = totalAvaliacoes == 0
+            ? 0
+            : (decimal)avaliacoesVisiveis.Average(a => a.NotaPrestador);
 
-        var avaliacoesRecentes = avaliacoesVisiveis
-            .OrderByDescending(a => a.DataAvaliacao)
-            .Take(5)
-            .ToList();
+        prestador.AtualizarMetricasAvaliacao(mediaAvaliacoes, totalAvaliacoes);
 
-        if (avaliacoesRecentes.Count >= 5 && avaliacoesRecentes.Average(a => a.NotaPrestador) < 2)
-            prestador.DefinirStatus(StatusPrestador.Suspenso);
+        if (prestador.Status != StatusPrestador.Suspenso)
+        {
+            if (totalAvaliacoes >= QuantidadeMinimaAvaliacoesParaRegra && mediaAvaliacoes < 4)
+            {
+                if (!prestador.TotalAvaliacoesNaNotificacao.HasValue)
+                {
+                    prestador.RegistrarObservacaoBaixaAvaliacao(agora, totalAvaliacoes);
+
+                    if (!string.IsNullOrWhiteSpace(prestador.Usuario?.Email))
+                    {
+                        await _emailService.EnviarAvisoBaixaAvaliacaoPrestadorAsync(
+                            prestador.Usuario.Email,
+                            prestador.Usuario.Nome,
+                            mediaAvaliacoes,
+                            totalAvaliacoes,
+                            cancellationToken);
+                    }
+                }
+                else
+                {
+                    var novasAvaliacoesDesdeAviso = totalAvaliacoes - prestador.TotalAvaliacoesNaNotificacao.Value;
+                    if (novasAvaliacoesDesdeAviso >= QuantidadeMinimaAvaliacoesParaRegra)
+                    {
+                        var dataFimSuspensao = agora.Add(DuracaoSuspensaoBaixaAvaliacao);
+                        prestador.AplicarSuspensaoTemporaria(agora, dataFimSuspensao);
+
+                        if (!string.IsNullOrWhiteSpace(prestador.Usuario?.Email))
+                        {
+                            await _emailService.EnviarAvisoSuspensaoPrestadorAsync(
+                                prestador.Usuario.Email,
+                                prestador.Usuario.Nome,
+                                dataFimSuspensao,
+                                cancellationToken);
+                        }
+                    }
+                }
+            }
+            else if (mediaAvaliacoes >= 4)
+            {
+                prestador.LimparObservacaoBaixaAvaliacao();
+            }
+        }
 
         _prestadorRepository.Atualizar(prestador);
         await _prestadorRepository.SalvarAlteracoesAsync(cancellationToken);
@@ -237,6 +285,25 @@ public class PrestadorService : IPrestadorService
         await _prestadorRepository.SalvarAlteracoesAsync(cancellationToken);
     }
 
+    public async Task<int> ProcessarSuspensoesExpiradasAsync(CancellationToken cancellationToken = default)
+    {
+        var agora = _utcNowProvider();
+        var prestadoresSuspensos = await _prestadorRepository.ObterSuspensosComSuspensaoExpiradaAsync(agora, cancellationToken);
+
+        if (prestadoresSuspensos.Count == 0)
+            return 0;
+
+        foreach (var prestador in prestadoresSuspensos)
+        {
+            prestador.EncerrarSuspensaoTemporaria();
+            prestador.DefinirDataVerificacao(agora);
+            _prestadorRepository.Atualizar(prestador);
+        }
+
+        await _prestadorRepository.SalvarAlteracoesAsync(cancellationToken);
+        return prestadoresSuspensos.Count;
+    }
+
     private static PrestadorHistoricoPublicoDto? MapearHistoricoPublico(Agendamento agendamento)
     {
         var servicoPrestador = agendamento.AgendamentoServicos
@@ -280,6 +347,20 @@ public class PrestadorService : IPrestadorService
             Cidade = agendamento.Endereco?.Cidade?.Nome ?? string.Empty,
             Estado = agendamento.Endereco?.Cidade?.Estado ?? string.Empty
         };
+    }
+
+    private sealed class NullEmailService : IEmailService
+    {
+        public static NullEmailService Instance { get; } = new();
+
+        public Task EnviarResetSenhaAsync(string destinatario, string nome, string token, int validadeMinutos, CancellationToken cancellationToken = default) =>
+            Task.CompletedTask;
+
+        public Task EnviarAvisoBaixaAvaliacaoPrestadorAsync(string destinatario, string nome, decimal mediaAvaliacoes, int totalAvaliacoes, CancellationToken cancellationToken = default) =>
+            Task.CompletedTask;
+
+        public Task EnviarAvisoSuspensaoPrestadorAsync(string destinatario, string nome, DateTime dataFimSuspensao, CancellationToken cancellationToken = default) =>
+            Task.CompletedTask;
     }
 }
 

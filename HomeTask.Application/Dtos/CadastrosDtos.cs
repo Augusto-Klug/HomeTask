@@ -50,6 +50,7 @@ public class PerfilDto
     public string? Bairro { get; set; }
     public string? Estado { get; set; }
     public string? Cidade { get; set; }
+    public Guid CidadeId { get; set; }
     public string? Descricao { get; set; }
     public int? RaioAtendimentoKm { get; set; }
     public StatusPrestador? Status { get; set; }

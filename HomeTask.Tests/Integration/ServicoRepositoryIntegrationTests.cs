@@ -1,6 +1,7 @@
 using HomeTask.Domain.Enums;
 using HomeTask.Infrastructure.Repositories;
 using HomeTask.Tests.Helpers;
+using Microsoft.EntityFrameworkCore;
 
 namespace HomeTask.Tests.Integration;
 
@@ -157,5 +158,61 @@ public class ServicoRepositoryIntegrationTests
         // Assert
         Assert.Single(resultado);
         Assert.Equal(pedidoValido.Id, resultado[0].Id);
+    }
+
+    [Fact]
+    [Trait("categoria", "integracao")]
+    public async Task PrestadorRepository_ObterSuspensosComSuspensaoExpiradaAsync_DeveRetornarApenasSuspensosExpirados()
+    {
+        using var sqlite = new SqliteTestContext();
+        var repository = new PrestadorRepository(sqlite.Db);
+        var cidade = EntidadeFactory.CriarCidade();
+        var usuarioExpirado = EntidadeFactory.CriarUsuario(tipo: TipoUsuario.Prestador, documento: "99999999981");
+        var usuarioAtivo = EntidadeFactory.CriarUsuario(tipo: TipoUsuario.Prestador, documento: "99999999982");
+        var usuarioFuturo = EntidadeFactory.CriarUsuario(tipo: TipoUsuario.Prestador, documento: "99999999983");
+        var enderecoExpirado = EntidadeFactory.CriarEndereco(usuarioId: usuarioExpirado.Id, cidadeId: cidade.Id);
+        var enderecoAtivo = EntidadeFactory.CriarEndereco(usuarioId: usuarioAtivo.Id, cidadeId: cidade.Id);
+        var enderecoFuturo = EntidadeFactory.CriarEndereco(usuarioId: usuarioFuturo.Id, cidadeId: cidade.Id);
+        var prestadorExpirado = EntidadeFactory.CriarPrestador(usuarioId: usuarioExpirado.Id, status: StatusPrestador.Suspenso);
+        var prestadorAtivo = EntidadeFactory.CriarPrestador(usuarioId: usuarioAtivo.Id, status: StatusPrestador.Ativo);
+        var prestadorFuturo = EntidadeFactory.CriarPrestador(usuarioId: usuarioFuturo.Id, status: StatusPrestador.Suspenso);
+        var agora = new DateTime(2026, 6, 21, 12, 0, 0, DateTimeKind.Utc);
+
+        prestadorExpirado.AplicarSuspensaoTemporaria(agora.AddDays(-8), agora.AddDays(-1));
+        prestadorFuturo.AplicarSuspensaoTemporaria(agora.AddDays(-1), agora.AddDays(2));
+
+        sqlite.Db.AddRange(cidade, usuarioExpirado, usuarioAtivo, usuarioFuturo, enderecoExpirado, enderecoAtivo, enderecoFuturo, prestadorExpirado, prestadorAtivo, prestadorFuturo);
+        await sqlite.Db.SaveChangesAsync();
+
+        var resultado = await repository.ObterSuspensosComSuspensaoExpiradaAsync(agora);
+
+        Assert.Single(resultado);
+        Assert.Equal(prestadorExpirado.Id, resultado[0].Id);
+    }
+
+    [Fact]
+    [Trait("categoria", "integracao")]
+    public async Task PrestadorMap_DevePersistirCamposDaRegraDeSuspensaoAutomatica()
+    {
+        using var sqlite = new SqliteTestContext();
+        var cidade = EntidadeFactory.CriarCidade();
+        var usuario = EntidadeFactory.CriarUsuario(tipo: TipoUsuario.Prestador, documento: "99999999984");
+        var endereco = EntidadeFactory.CriarEndereco(usuarioId: usuario.Id, cidadeId: cidade.Id);
+        var prestador = EntidadeFactory.CriarPrestador(usuarioId: usuario.Id, status: StatusPrestador.Suspenso);
+        var agora = new DateTime(2026, 6, 21, 12, 0, 0, DateTimeKind.Utc);
+
+        prestador.RegistrarObservacaoBaixaAvaliacao(agora.AddDays(-5), 5);
+        prestador.AplicarSuspensaoTemporaria(agora.AddDays(-2), agora.AddDays(5));
+
+        sqlite.Db.AddRange(cidade, usuario, endereco, prestador);
+        await sqlite.Db.SaveChangesAsync();
+        sqlite.Db.ChangeTracker.Clear();
+
+        var recarregado = await sqlite.Db.Prestadores.SingleAsync(p => p.Id == prestador.Id);
+
+        Assert.Equal(agora.AddDays(-5), recarregado.DataPrimeiraNotificacaoBaixaAvaliacao);
+        Assert.Equal(5, recarregado.TotalAvaliacoesNaNotificacao);
+        Assert.Equal(agora.AddDays(-2), recarregado.DataInicioSuspensao);
+        Assert.Equal(agora.AddDays(5), recarregado.DataFimSuspensao);
     }
 }

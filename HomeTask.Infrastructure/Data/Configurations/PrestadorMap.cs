@@ -25,5 +25,10 @@ public class PrestadorMap : IEntityTypeConfiguration<Prestador>
 
         builder.Property(p => p.MediaAvaliacoes)
             .HasColumnType("decimal(3,2)");
+
+        builder.Property(p => p.DataPrimeiraNotificacaoBaixaAvaliacao);
+        builder.Property(p => p.TotalAvaliacoesNaNotificacao);
+        builder.Property(p => p.DataInicioSuspensao);
+        builder.Property(p => p.DataFimSuspensao);
     }
 }

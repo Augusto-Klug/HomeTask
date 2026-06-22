@@ -45,6 +45,34 @@ public class SmtpEmailService : IEmailService
         await client.DisconnectAsync(true, cancellationToken);
     }
 
+    public async Task EnviarAvisoBaixaAvaliacaoPrestadorAsync(string destinatario, string nome, decimal mediaAvaliacoes, int totalAvaliacoes, CancellationToken cancellationToken = default)
+    {
+        ValidarConfiguracao();
+
+        var corpo = $$"""
+        <p>Ola, {{WebUtility.HtmlEncode(nome)}}.</p>
+        <p>Sua media geral visivel na HomeTask esta em {{mediaAvaliacoes:F2}} apos {{totalAvaliacoes}} avaliacoes.</p>
+        <p>Se a media continuar abaixo de 4 apos mais 5 avaliacoes visiveis, sua conta sera suspensa automaticamente por 7 dias.</p>
+        <p>Revise a qualidade do atendimento para evitar a suspensao.</p>
+        """;
+
+        await EnviarEmailAsync(destinatario, "Aviso de qualidade da conta HomeTask", corpo, cancellationToken);
+    }
+
+    public async Task EnviarAvisoSuspensaoPrestadorAsync(string destinatario, string nome, DateTime dataFimSuspensao, CancellationToken cancellationToken = default)
+    {
+        ValidarConfiguracao();
+
+        var corpo = $$"""
+        <p>Ola, {{WebUtility.HtmlEncode(nome)}}.</p>
+        <p>Sua conta foi suspensa automaticamente por 7 dias porque a media geral permaneceu abaixo de 4 apos um novo ciclo de 5 avaliacoes visiveis.</p>
+        <p>A reativacao sera feita automaticamente em {{dataFimSuspensao:dd/MM/yyyy 'as' HH:mm}} UTC.</p>
+        <p>Durante esse periodo, seus anuncios nao ficarao disponiveis para novos agendamentos.</p>
+        """;
+
+        await EnviarEmailAsync(destinatario, "Suspensao temporaria da conta HomeTask", corpo, cancellationToken);
+    }
+
     private string CriarLinkResetSenha(string token)
     {
         var baseUrl = _options.FrontendBaseUrl.TrimEnd('/');
@@ -54,6 +82,21 @@ public class SmtpEmailService : IEmailService
 
     private string ObterRemetente() =>
         string.IsNullOrWhiteSpace(_options.FromEmail) ? _options.UserName : _options.FromEmail;
+
+    private async Task EnviarEmailAsync(string destinatario, string assunto, string corpoHtml, CancellationToken cancellationToken)
+    {
+        var mensagem = new MimeMessage();
+        mensagem.From.Add(new MailboxAddress(_options.FromName, ObterRemetente()));
+        mensagem.To.Add(MailboxAddress.Parse(destinatario));
+        mensagem.Subject = assunto;
+        mensagem.Body = new BodyBuilder { HtmlBody = corpoHtml }.ToMessageBody();
+
+        using var client = new SmtpClient();
+        await client.ConnectAsync(_options.Host, _options.Port, ObterSecureSocketOptions(), cancellationToken);
+        await AutenticarAsync(client, cancellationToken);
+        await client.SendAsync(mensagem, cancellationToken);
+        await client.DisconnectAsync(true, cancellationToken);
+    }
 
     private void ValidarConfiguracao()
     {
